@@ -51,15 +51,15 @@
 
   所谓前端，一般是指互联网用户可以直接看到并与之交互以达到各种目的的页面，如网站、电脑软件客户端、移动APP软件等。所以前端也叫web客户端。在web客户端页面中，所有能够满足我们交互使用需求的显示内容和功能，都是前端开发工程师的“舞台”。
 
-  ![image-20220930203028638](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20220930203028638.png)
+
 
   前端开发主要使用HTML5、CSS3、JavaScript等开发语言和插件工具来创建、维护和更新网页，包括APP软件、小程序、H5页面和简单后端服务的开发。相比后端服务器开发和数据开发，前端开发不需要深厚的技术土壤，属于浅层开发技术。
 
-  ![image-20220930203037487](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20220930203037487.png)
+ 
 
   首先是开发和维护网站或APP，保证网站的功能实现和交互体验优化；另外，保证不同浏览器、手机系统、手机型号的网站和应用的兼容性；
 
-  ![image-20220930203041742](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20220930203041742.png)
+  
 
   其次是保证网站或APP能够顺利适应不同屏幕尺寸的设备，使页面能够在不同型号的手机和电脑上正常显示，这就是我们常说的响应式开发；
 
