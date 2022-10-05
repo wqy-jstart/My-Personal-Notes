@@ -8,7 +8,7 @@
 
 源代码如下:
 
-![image-20221005132928791](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20221005132928791.png)
+![image-20221005132928791](image-20221005132928791.png)
 
 测试代码:
 

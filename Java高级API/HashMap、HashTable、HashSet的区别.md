@@ -18,8 +18,8 @@
 
 ## HashMap与HashTable的比较:
 
-![image-20221005145533156](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20221005145533156.png)
+![image-20221005145533156](image-20221005145533156.png)
 
 ## HashMap与HashSet的比较:
 
-![image-20221005145739540](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20221005145739540.png)
+![image-20221005145739540](image-20221005145739540.png)
