@@ -1,0 +1,207 @@
+# SpringMVC框架:
+
+### 1.@ResponseBody注解
+
+- #### 此注解的作用是,用指定的格式将一个方法的返回值加载到response的body区域，向客户端返回数据信息。
+
+- #### 如果不添加该注解,返回的数据,客户端请求不到.
+
+```java
+@Controller
+public class HelloController {
+    @RequestMapping("/hello")
+    @ResponseBody //此注解的作用是,可以通过返回值的方式给客户端响应数据
+    public String hello(){
+        return "服务器接收到了响应!";
+    }
+}
+```
+
+##### 注解源码如下:
+
+```java
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface ResponseBody {
+}
+```
+
+- #### 处理表单信息的传参方式
+
+```java
+@Controller
+public class ParamController {
+    @RequestMapping("/param1")
+    @ResponseBody
+    public String param1(HttpServletRequest request){
+        //从Request对象中获取参数(该种方法只能传字符串,之后做转换)
+        String info = request.getParameter("info");
+        return "接收到了:"+info;
+        //提交后浏览器路径信息:http://localhost:8080/param1?info=xxx
+    }
+
+    @RequestMapping("/param2")
+    @ResponseBody
+    //SpringMVC框架提供的方式,直接在参数列表中传入表单中的信息,★如果传入参数类型有误,报400错误
+    public String param2(String name,int age){//变量名应当与表单上的name值一致
+        return name+":"+age;
+        //提交后浏览器路径信息:http://localhost:8080/param2?name=xxx&age=xxx
+    }
+
+    @RequestMapping("/param3")
+    @ResponseBody
+    public String param3(Emp emp){//将表单中的信息封装到对象中,在参数列表中传递该对象即可!
+        return emp.toString();
+        //提交后浏览器路径信息:http://localhost:8080/param3?name=xxx&salary=xxx&job=xxx
+    }
+}
+```
+
+#### 浏览器400错误:传参时不符合对应数据类型导致
+
+```html
+Whitelabel Error Page
+This application has no explicit mapping for /error, so you are seeing this as a fallback.
+
+Sat Oct 08 15:57:05 CST 2022
+There was an unexpected error (type=Bad Request, status=400).
+```
+
+### 2.@RequestMapping注解
+
+- #### @RequestMapping注解是一个用来处理请求地址映射的注解，可用于映射一个请求或一个方法，可以用在类或方法上。
+
+  - ##### 方法上:表示该方法中处理的业务以该地址作为父路径
+
+    ```java
+    @RequestMapping("/testRequest")
+    @ResponseBody
+    public String testRequest(){
+        retrun "success";
+    }
+    ```
+
+  - ##### 类上:表示类中所有响应请求的方法都是以该地址作为父路径
+
+    ```java
+    @Controller
+    @RequestMapping("/hello")
+    public class RequestMappingController{
+        
+    }
+    ```
+
+  #### 该注解源码如下:
+
+  ```java
+  @Target({ElementType.TYPE, ElementType.METHOD})
+  @Retention(RetentionPolicy.RUNTIME)
+  @Documented
+  @Mapping
+  public @interface RequestMapping {
+      String name() default "";
+  
+      @AliasFor("path")
+      String[] value() default {};
+  
+      @AliasFor("value")
+      String[] path() default {};
+  
+      RequestMethod[] method() default {};
+  
+      String[] params() default {};
+  
+      String[] headers() default {};
+  
+      String[] consumes() default {};
+  
+      String[] produces() default {};
+  }
+  ```
+
+  
+
+### 3.封装对象时要注意的细节
+
+- #### getter,setter方法,重写toString,有参和全参构造器(行业标准)
+
+```java
+//无参构造器默认存在,但是当有了有参构造器,无参构造器就不存在了,由于SpringMVC内部会用到无参构造器,所以需再加入无参构造器
+    public Product(){}
+
+    public Product(Integer id, String title, Double price, Integer num) {
+        this.id = id;
+        this.title = title;
+        this.price = price;
+        this.num = num;
+    }
+```
+
+### 4.@RestController注解
+
+- #### 与@Controller注解相似,不同的是使用@RestController相当于在每一个方法上都添加了@ResponseBody注解(该注解通过返回值方式向浏览器响应数据)
+
+#### 该注解源码如下:
+
+```java
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Controller
+@ResponseBody
+public @interface RestController {
+    @AliasFor(
+        annotation = Controller.class
+    )
+    String value() default "";
+}
+```
+
+### 5.@Mapper注解
+
+- #### 该注解是一个接口类型,在接口中书写实体类和数据库中表之间的对应关系,Mybatis框架会自动通过此关系生成JDBC代码
+
+- #### @Insert/Select/Delete/Update()该注解方法用来写SQL语句,配合抽象方法传入的参数完成与数据库的相关操作(增删改查...)
+
+#### 该注解源码如下:
+
+```java
+@Documented
+@Inherited
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
+public @interface Mapper {
+}
+```
+
+### 6.@Autowired注解
+
+- #### 自动装配 此框架添加之后,Mybatis和Spring框架会生成ProductMapper的实现类,并且实例化该实现类(实现类里面会实现ProductMapper中的抽象方法,实现的方法里面写的就是JDBC代码),并且把实例化好的对象赋值给了mapper变量
+
+#### 该注解源码如下:
+
+```java
+@Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface Autowired {
+    boolean required() default true;
+}
+```
+
+### 7.@ReqestBody注解
+
+- #### 如果发出的请求方式为post请求并且传递过来的是自定义JS对象接收参数时需要添加@RequestBody注解  如果不加注解  接收到的参数是null
+
+#### 该注解源码如下:
+
+```java
+@Target({ElementType.PARAMETER})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface RequestBody {
+    boolean required() default true;
+}
+```
+
