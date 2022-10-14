@@ -6,6 +6,8 @@
 
 - #### 如果不添加该注解,返回的数据,客户端请求不到.
 
+- #### 也可以不加返回值
+
 ```java
 @Controller
 public class HelloController {
@@ -17,14 +19,21 @@ public class HelloController {
 }
 ```
 
-##### 注解源码如下:
+#### 注解源码如下:
 
 ```java
+package org.springframework.web.bind.annotation;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ResponseBody {
-}
+public @interface ResponseBody {}
 ```
 
 - #### 处理表单信息的传参方式
@@ -95,31 +104,20 @@ There was an unexpected error (type=Bad Request, status=400).
   #### 该注解源码如下:
 
   ```java
+  package org.springframework.web.bind.annotation;
+  
+  import java.lang.annotation.Documented;
+  import java.lang.annotation.ElementType;
+  import java.lang.annotation.Retention;
+  import java.lang.annotation.RetentionPolicy;
+  import java.lang.annotation.Target;
+  
   @Target({ElementType.TYPE, ElementType.METHOD})
   @Retention(RetentionPolicy.RUNTIME)
   @Documented
   @Mapping
-  public @interface RequestMapping {
-      String name() default "";
-  
-      @AliasFor("path")
-      String[] value() default {};
-  
-      @AliasFor("value")
-      String[] path() default {};
-  
-      RequestMethod[] method() default {};
-  
-      String[] params() default {};
-  
-      String[] headers() default {};
-  
-      String[] consumes() default {};
-  
-      String[] produces() default {};
-  }
+  public @interface RequestMapping {}
   ```
-
   
 
 ### 3.封装对象时要注意的细节
@@ -145,17 +143,21 @@ There was an unexpected error (type=Bad Request, status=400).
 #### 该注解源码如下:
 
 ```java
+package org.springframework.web.bind.annotation;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import org.springframework.stereotype.Controller;
+
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Controller
 @ResponseBody
-public @interface RestController {
-    @AliasFor(
-        annotation = Controller.class
-    )
-    String value() default "";
-}
+public @interface RestController {}
 ```
 
 ### 5.@Mapper注解
@@ -167,12 +169,20 @@ public @interface RestController {
 #### 该注解源码如下:
 
 ```java
+package org.apache.ibatis.annotations;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 @Documented
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
-public @interface Mapper {
-}
+public @interface Mapper {}
 ```
 
 ### 6.@Autowired注解
@@ -182,26 +192,115 @@ public @interface Mapper {
 #### 该注解源码如下:
 
 ```java
+package org.springframework.beans.factory.annotation;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 @Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Autowired {
-    boolean required() default true;
-}
+public @interface Autowired {}
 ```
 
 ### 7.@ReqestBody注解
 
-- #### 如果发出的请求方式为post请求并且传递过来的是自定义JS对象接收参数时需要添加@RequestBody注解  如果不加注解  接收到的参数是null
+- #### 如果发出的请求方式为post请求并且传递过来的是自定义JS对象接收参数时需要添加@RequestBody注解 
+
+- ####  如果不加注解  接收到的参数是null
 
 #### 该注解源码如下:
 
 ```java
+package org.springframework.web.bind.annotation;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 @Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface RequestBody {
-    boolean required() default true;
-}
+public @interface RequestBody {}
+```
+
+### 8.@JsonFormat注解
+
+- ##### 该注解处理事件属性的呈现格式和时区
+
+  ```java
+  private Integer id;
+      private String content;
+      private String url; //微博图片路径
+      //通过JsonFormat设置显示的时间格式
+      // 2022年10月12号 15时23分22秒   2022-10-12 15:23:22
+      // yyyy年MM月dd号 HH时mm分ss秒   yyyy-MM-dd HH:mm:ss (h为1-12时,H为1-24时)
+      @JsonFormat(pattern = "yyy年MM月dd号 HH时mm分ss秒",timezone = "GMT+8")//指定时间呈现格式和时区GMT+8东八区
+      private Date created; //发布微博时间
+  ```
+
+### 9.@Configuration注解
+
+- ##### @Configuration注解可告诉编译器该工程所有Mapper接口都在这个包路径path里面.
+
+#### 该注解源码如下:
+
+```java
+package org.springframework.context.annotation;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Component
+public @interface Configuration {}
+```
+
+# MyBatis框架:
+
+### 1.@Configuration和@MapperScan()注解的结合使用
+
+- ##### @Configuration注解可告诉编译器该工程所有Mapper接口都在这个包路径path里面.
+
+- ##### @MapperScan()注解用于传入要告知服务器mapper接口的包路径.
+
+- ##### 这两种注解Config配置完成后,在接口中就无序添加@Mapper注解和增删改查的@Insert()/@Delete()/@Update()/@Select()注解方法了
+
+  ```java
+  @Configuration
+  @MapperScan("cn.tedu.boot08.mapper")
+  public class MyBatisConfig {
+  }
+  ```
+
+#### 注解源码如下:
+
+```java
+package org.mybatis.spring.annotation;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import org.springframework.context.annotation.Import;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+@Documented
+@Import({MapperScannerRegistrar.class})
+@Repeatable(MapperScans.class)
+public @interface MapperScan {}
 ```
 
