@@ -240,7 +240,7 @@ public @interface RequestBody {}
       //通过JsonFormat设置显示的时间格式
       // 2022年10月12号 15时23分22秒   2022-10-12 15:23:22
       // yyyy年MM月dd号 HH时mm分ss秒   yyyy-MM-dd HH:mm:ss (h为1-12时,H为1-24时)
-      @JsonFormat(pattern = "yyy年MM月dd号 HH时mm分ss秒",timezone = "GMT+8")//指定时间呈现格式和时区GMT+8东八区
+      @JsonFormat(pattern = "yyyy年MM月dd号 HH时mm分ss秒",timezone = "GMT+8")//指定时间呈现格式和时区GMT+8东八区
       private Date created; //发布微博时间
   ```
 
