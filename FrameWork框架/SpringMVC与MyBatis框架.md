@@ -266,6 +266,55 @@ import java.lang.annotation.Target;
 public @interface Configuration {}
 ```
 
+### 10.@Value注解
+
+- ##### 该注解会将XML配置文件中的变量赋给注解下的变量
+
+- ##### 例如配置文件中:
+
+  - ```xml
+    spring.web.resources.static-locations=file:${dirPath},classpath:static
+    #设置上传文件大小  默认1MB
+    spring.servlet.multipart.max-file-size=10MB
+    #配置Mybatis书写SQL语句的xml文件的位置
+    mybatis.mapper-locations=classpath:mappers/*xml
+    #配置静态资源文件夹路径,利用${}调用
+    dirPath=G:/files
+    ```
+
+- ##### 在java类中使用时:
+
+  - ```java
+    @RestController
+    public class UploadController {
+        @Value("${dirPath}")//该注解会将配置文件中的变量传递到当下的全局变量中
+        private String dirPath;
+        //准备保存图片的文件夹
+        File dirFile = new File(dirPath);
+        if (!dirFile.exists()){
+            dirFile.mkdirs();
+        }
+    ```
+
+#### 该注解源码如下:
+
+```java
+package org.springframework.beans.factory.annotation;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface Value {
+    String value();
+}
+```
+
 # MyBatis框架:
 
 ### 1.@Configuration和@MapperScan()注解的结合使用
