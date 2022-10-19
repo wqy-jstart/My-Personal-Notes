@@ -45,11 +45,11 @@
 
   - 例如,向HashCode的元素,HashMap的Key等都要求"唯一",如果即将添加的元素的hashCode与集合中已有的每个元素的hashCode均不同,则可以视为"当前集合中尚不存在即将添加的元素"
 
-    ---如果2个对象的hashCode相同,Hash容器还会调用equals()方法,晋档equals()也返回true时,才会视为"相同"
+    ---如果2个对象的hashCode相同,Hash容器还会调用equals()方法,即当equals()也返回true时,才会视为"相同"
 
 ## 总结(1/2)
 
-- ##### hashCode()是Object定义的方法,它将返回一个整型值,它并不代表对象在内存中的地址,它存在的价值视为Hash容器处理数据时提供支持,Hash容器可以根据hashCode定位需要使用的对象,也可以根据hashCode来排除2个不相同的对象,即:hashCode不同,则视为2个对象不同
+- ##### hashCode()是Object定义的方法,它将返回一个整型值,它并不代表对象在内存中的地址,它存在的价值是为Hash容器处理数据时提供支持,Hash容器可以根据hashCode定位需要使用的对象,也可以根据hashCode来排除2个不相同的对象,即:hashCode不同,则视为2个对象不同
 
 ## 总结(2/2)
 
