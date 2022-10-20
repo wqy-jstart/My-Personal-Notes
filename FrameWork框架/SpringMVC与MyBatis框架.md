@@ -315,6 +315,24 @@ public @interface Value {
 }
 ```
 
+### 11.@ServletComponentScan注解
+
+- ##### 该注解作用在类上,通常在启动类中
+
+- ##### 作用是扫描当前包以及子包中的过滤器
+
+  ![image-20221020102649124](images/image-20221020102649124.png)
+
+#### 该注解源码如下:
+
+```java
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Import({ServletComponentScanRegistrar.class})
+public @interface ServletComponentScan {}
+```
+
 # MyBatis框架:
 
 ### 1.@Configuration和@MapperScan()注解的结合使用
