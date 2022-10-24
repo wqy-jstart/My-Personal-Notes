@@ -1,4 +1,4 @@
-# SpringMVC框架:
+# Spring框架:
 
 ### 1.@ResponseBody注解
 
