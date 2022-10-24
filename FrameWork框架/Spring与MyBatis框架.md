@@ -333,6 +333,28 @@ public @interface Value {
 public @interface ServletComponentScan {}
 ```
 
+### 12.@SpringBootTest注解
+
+- ##### 该注解用于测试类上
+
+### 13.@Test注解
+
+- ##### 该注解用于测试类中的方法上
+
+### 14.@Data注解
+
+- #### 该注解是Lombok的依赖项产生的注解(Lombok框架),可自动提供getter和setter方法,重写toString()和hashCode()方法
+
+- ```xml
+   <!-- Lombok的依赖项，主要用于简化POJO类的编写 -->
+          <dependency>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+              <version>1.18.20</version>
+              <scope>provided</scope>
+          </dependency>
+  ```
+
 # MyBatis框架:
 
 ### 1.@Configuration和@MapperScan()注解的结合使用
