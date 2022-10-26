@@ -187,7 +187,9 @@ public @interface Mapper {}
 
 ### 6.@Autowired注解
 
-- #### 自动装配 此框架添加之后,Mybatis和Spring框架会生成ProductMapper的实现类,并且实例化该实现类(实现类里面会实现ProductMapper中的抽象方法,实现的方法里面写的就是JDBC代码),并且把实例化好的对象赋值给了mapper变量
+- ##### 自动装配 此框架添加之后,Mybatis和Spring框架会生成ProductMapper的实现类,并且实例化该实现类(实现类里面会实现ProductMapper中的抽象方法,实现的方法里面写的就是JDBC代码),并且把实例化好的对象赋值给了mapper变量
+
+- ##### Spring会自动帮你把bean里面引用的对象的setter/getter方法省略,它会自动帮你set/get
 
 #### 该注解源码如下:
 
@@ -272,7 +274,7 @@ public @interface Configuration {}
 
 - ##### 例如配置文件中:
 
-  - ```xml
+  - ```properties
     spring.web.resources.static-locations=file:${dirPath},classpath:static
     #设置上传文件大小  默认1MB
     spring.servlet.multipart.max-file-size=10MB
@@ -355,9 +357,37 @@ public @interface ServletComponentScan {}
           </dependency>
   ```
 
-# MyBatis框架:
+### 15.@Repository注解
 
-### 1.@Configuration和@MapperScan()注解的结合使用
+- #### 当自动装配Mapper接口的对象时，IntelliJ IDEA可能会报错，提示无法装配此对象，但是，并不影响运行!
+
+- #### 添加该注解是为了引导IntelliJ IDEA作出正确的判断
+
+- ```java
+  @Repository//该注解用于引导IDEA作出正确的判断
+  public interface CategoryMapper {}
+  ```
+
+#### 该注解源码如下:
+
+```java
+package org.springframework.stereotype;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import org.springframework.core.annotation.AliasFor;
+
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Component
+public @interface Repository {}
+```
+
+### 16.@Configuration和@MapperScan()注解的结合使用
 
 - ##### @Configuration注解可告诉编译器该工程所有Mapper接口都在这个包路径path里面.
 
@@ -393,3 +423,10 @@ import org.springframework.context.annotation.Import;
 public @interface MapperScan {}
 ```
 
+### 17.@Resource注解
+
+- #### 自动装配/注入,与@Autowired注解类似
+
+### 18.@Service注解
+
+- ##### `@Service`注解用于类上，标记当前类是一个service类，加上该注解会将当前类自动注入到spring容器中，不需要再在applicationContext.xml文件定义bean了。
