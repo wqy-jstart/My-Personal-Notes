@@ -2,9 +2,9 @@
 
 ### 1.@ResponseBody注解
 
-- #### 此注解的作用是,用指定的格式将一个方法的返回值加载到response的body区域，向客户端返回数据信息。
+- #### 此注解的作用是,用JSON格式将一个方法的返回值加载到response的body区域，向客户端返回数据信息。
 
-- #### 如果不添加该注解,返回的数据,客户端请求不到.
+- #### 如果设置了返回值但不添加该注解,返回的数据,客户端请求不到.
 
 - #### 也可以不加返回值
 
@@ -208,9 +208,11 @@ import java.lang.annotation.Target;
 public @interface Autowired {}
 ```
 
-### 7.@ReqestBody注解
+### 7.@RequestBody(请求体)注解
 
 - #### 如果发出的请求方式为post请求并且传递过来的是自定义JS对象接收参数时需要添加@RequestBody注解 
+
+- #### 传递JSON格式数据,把JSON格式数据封装到对象里面{...}
 
 - ####  如果不加注解  接收到的参数是null
 
@@ -453,9 +455,16 @@ public @interface Service {}
 
 ### 19.@ExceptionHandler注解
 
-- ##### 处理请求的方法抛出的异常由SpringMVC框架进行处理
+- ##### 首先处理请求方法抛出的异常由SpringMVC框架进行处理
 
 - ##### 该注解会让SpringMVC自行捕获当前Controller类中处理请求的所有方法抛出的异常
+
+- ##### 在该注解下可捕获可能产生的不同种类的异常
+
+  - **全局异常处理**(只要出现异常,执行这个处理)
+  - **特定异常处理**(针对特定异常处理)
+  - **自定义异常处理**(自己编写异常类,手动抛出异常)
+    - 自定义类编写完成并添加注解后,它不会自动抛出,因此需要在对应的异常代码中使用try-catch来将该自定义异常进行抛出
 
 - ##### 防止频繁的进行try-catch
 
@@ -478,13 +487,43 @@ public @interface ExceptionHandler {
 }
 ```
 
-### 20.@RestControllerAdvice注解
+### 20.ControllerAdvice注解
+
+- ##### 该注解用来标注类,用于处理当前项目的全局异常
+
+- ##### 该类应当定义处理各种`@RequestMapping`标注的处理业务方法可能抛出的所有异常,达到全局的效果
+
+- ##### 每种经`@RequestMapping`标注的处理业务的方法都还需增加`@ResponseBody`注解,用于将返回值以JSON的格式加载到response的Body区域,给用户返回
+
+#### 该注解源码如下:
+
+```java
+package org.springframework.web.bind.annotation;
+
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import org.springframework.stereotype.Component;
+
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Component
+public @interface ControllerAdvice {}
+```
+
+### 21.@RestControllerAdvice注解
 
 - ##### 该注解用于处理全局异常(对于整个项目而言),作用在类上
 
 - ##### 该类应当定义处理各种`@RequestMapping`标注的处理业务方法可能抛出的所有异常,达到全局的效果
 
-- ##### 使得任何标注@RequestMapping处理请求的方法对于XXXException都应该是抛出的且各Controller控制器类中都不必关心如何处理XXXException
+- ##### 使得任何标注`@RequestMapping`处理请求的方法对于XXXException都应该是抛出的且各`Controller`控制器类中都不必关心如何处理XXXException
+
+- ##### 添加该注解后就不用在每一个处理异常的方法上添加`@ResponseBody`注解来以特定的JOSN格式返回数据
 
 #### 该注解源码如下:
 
@@ -506,3 +545,61 @@ import java.lang.annotation.Target;
 public @interface RestControllerAdvice {}
 ```
 
+### 22.@PathVariable注解
+
+- ##### 该注解作用在参数列表中,作用是获取`@RequestMapping`的请求路径中用`{}`占位符标注的部分
+
+- #### 例:
+
+  ```java
+  // http://localhost:8080/albums/233/delete
+      @RequestMapping("/{id}/delete")
+      public String delete(@PathVariable Long id){//接收路径中通过占位符传入的信息(类型要匹配)
+          String message = "尝试删除id值为["+id+"]的相册";//id=233
+          log.debug(message);//输出日志
+          return message;//向客户端返回结果
+      }
+  ```
+
+#### 该注解源码如下:
+
+> @AliasFor该注解有相较于的意思,这里的"value"相当于"name"
+
+```java
+package org.springframework.web.bind.annotation;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import org.springframework.core.annotation.AliasFor;
+
+@Target({ElementType.PARAMETER})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface PathVariable {
+    //@AliasFor该注解有相较于的意思,这里的"value"相当于"name"
+    @AliasFor("name")
+    String value() default "";
+
+    @AliasFor("value")
+    String name() default "";
+
+    boolean required() default true;
+}
+```
+
+### 23.Spring MVC框架还定义了已经限制了请求方式的、与`@RequestMapping`类似的注解，包括：
+
+- ### `@GetMapping`
+
+- ### `@PostMapping`
+
+- ### `@PutMapping`
+
+- ### `@DeleteMapping`
+
+- ### `@PatchMapping`
+
+> 通过地址栏访问的都是get请求,为便于开发人员测试,可使用Knife4j文档框架进行测试

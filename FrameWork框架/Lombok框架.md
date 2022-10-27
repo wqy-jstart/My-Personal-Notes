@@ -18,12 +18,13 @@
 
 #### Lombok的常用注解有：
 
+- `@Slf4j`：添加在类上
+
 - `@Data`：添加在类上，可在编译期生成全部属性对应的Setters & Getters、`hashCode()`与`equals()`、`toString()`，使用此注解时，必须保证当前类的父类存在无参数构造方法
 - `@Setter`：可以添加在属性上，将仅作用于当前属性，也可以添加在类上，将作用于类中所有属性，用于生成对应的Setter方法
 - `@Getter`：同上，用于生成对应的Getter方法
 - `@EqualsAndHashCode`：添加在类上，用于生成规范的`equals()`和`hashCode()`，关于`equals()`方法，如果2个对象的所有属性的值完全相同，则返回`true`，否则返回`false`，关于`hashCode()`也是如此，如果2个对象的所有属性的值完全相同，则生成的HashCode值相同，否则，不应该相同
 - `@ToString`：添加在类上，用于生成全属性对应的`toString()`方法
-- `@Slf4j`：添加在类上
 
 ## 关于Slf4j日志
 
@@ -61,3 +62,88 @@ log.info("{}+{}={}", x, y, x + y);//写法前后对应
 使用以上做法，可以避免字符串的拼接，提高了代码的可阅读性，也提高了程序的执行效率！并且，在Slf4j日志中，以上第1个参数由于是字符串常量，将被缓存，如果反复执行此日志输出，执行效率也会更高！
 
 另外，SLF4j是一个日志标准，并不是具体的实现，通常，是通过`logback`或`log4j`等日志框架实现的，当前主流的Spring Boot版本中，都是使用`logback`来实现的。
+
+## 关于@Slf4j日志的Profile配置问题
+
+- ##### 如果application.properties与被激活的Profile配置中存在同名的属性(trace,debug,info,warn,error),配置值却不相同,在执行时,将以Profile配置为准!
+
+- ##### 不同环境下使用不同的日志级别
+
+```yaml
+# 激活Profile配置(不同环境下使用不同的日志级别,当前为dev开发环境)
+spring:
+  profiles:
+    active: dev
+
+# Mybatis相关配置
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+
+#logging.level.cn.tedu.csmall=info
+```
+
+#### 1.开发环境:
+
+```yaml
+# ######################### #
+# 此配置文件是【开发环境】的配置 #
+#  此配置文件需要被激活才会生效 #
+# ######################## #
+
+# 连接数据库的配置参数
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/mall_pms?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+
+# 日志的显示级别默认info(根包尽量这样写,若简写会扩大不必要的范围,多写比较麻烦)
+logging:
+  level:
+    cn.tedu.csmall: trace
+```
+
+#### 2.生产环境:
+
+```yaml
+# ######################### #
+# 此配置文件是【生产环境】的配置 #
+#  此配置文件需要被激活才会生效 #
+# ######################## #
+
+# 连接数据库的配置参数
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/mall_pms?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+
+# 日志的显示级别默认info(根包尽量这样写,若简写会扩大不必要的范围,多写比较麻烦)
+logging:
+  level:
+    cn.tedu.csmall: info
+```
+
+#### 3.测试环境:
+
+```yaml
+# ######################### #
+# 此配置文件是【测试环境】的配置 #
+#  此配置文件需要被激活才会生效 #
+# ######################## #
+
+# 连接数据库的配置参数
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/mall_pms?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+
+# 日志的显示级别默认info(根包尽量这样写,若简写会扩大不必要的范围,多写比较麻烦)
+logging:
+  level:
+    cn.tedu.csmall: debug
+```
+
+
+
