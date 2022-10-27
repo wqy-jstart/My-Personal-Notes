@@ -81,7 +81,7 @@ There was an unexpected error (type=Bad Request, status=400).
 
 - #### @RequestMapping注解是一个用来处理请求地址映射的注解，可用于映射一个请求或一个方法，可以用在类或方法上。
 
-  - ##### 方法上:表示该方法中处理的业务以该地址作为父路径
+  - ##### 方法上:表示该方法中处理的业务以该地址作为路径
 
     ```java
     @RequestMapping("/testRequest")
@@ -429,4 +429,80 @@ public @interface MapperScan {}
 
 ### 18.@Service注解
 
-- ##### `@Service`注解用于类上，标记当前类是一个service类，加上该注解会将当前类自动注入到spring容器中，不需要再在applicationContext.xml文件定义bean了。
+- ##### `@Service`注解用于类上，标记当前类是一个service类，位于Service层
+
+- ##### 加上该注解会将当前类自动注入到spring容器中，不需要再在applicationContext.xml文件定义bean了。
+
+#### 该注解源码如下:
+
+```java
+package org.springframework.stereotype;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Component
+public @interface Service {}
+```
+
+### 19.@ExceptionHandler注解
+
+- ##### 处理请求的方法抛出的异常由SpringMVC框架进行处理
+
+- ##### 该注解会让SpringMVC自行捕获当前Controller类中处理请求的所有方法抛出的异常
+
+- ##### 防止频繁的进行try-catch
+
+#### 该注解源码如下:
+
+```java
+package org.springframework.web.bind.annotation;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target({ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface ExceptionHandler {
+    Class<? extends Throwable>[] value() default {};
+}
+```
+
+### 20.@RestControllerAdvice注解
+
+- ##### 该注解用于处理全局异常(对于整个项目而言),作用在类上
+
+- ##### 该类应当定义处理各种`@RequestMapping`标注的处理业务方法可能抛出的所有异常,达到全局的效果
+
+- ##### 使得任何标注@RequestMapping处理请求的方法对于XXXException都应该是抛出的且各Controller控制器类中都不必关心如何处理XXXException
+
+#### 该注解源码如下:
+
+```java
+package org.springframework.web.bind.annotation;
+
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@ControllerAdvice
+@ResponseBody
+public @interface RestControllerAdvice {}
+```
+
