@@ -77,13 +77,11 @@ Sat Oct 08 15:57:05 CST 2022
 There was an unexpected error (type=Bad Request, status=400).
 ```
 
-### 2.@RequestMapping注解
+### 2.@RequestMapping注解★
 
-- #### @RequestMapping注解是一个用来处理请求地址映射的注解，可用于映射一个请求或一个方法，可以用在类或方法上。
+- #### 在Spring MVC框架中，可以在处理请求的方法上添加`@RequestMapping`注解，以配置**请求路径**与**处理请求的方法**的映射关系。
 
-  - ##### 方法上:表示该方法中处理的业务以该地址作为路径
-
-    ```java
+  - ```java
     @RequestMapping("/testRequest")
     @ResponseBody
     public String testRequest(){
@@ -91,34 +89,164 @@ There was an unexpected error (type=Bad Request, status=400).
     }
     ```
 
-  - ##### 类上:表示类中所有响应请求的方法都是以该地址作为父路径
+- #### 此注解还可以添加在控制器类上，作为当前类中每个请求路径的统一前缀！
 
-    ```java
+  - ```java
     @Controller
     @RequestMapping("/hello")
-    public class RequestMappingController{
-        
-    }
+    public class RequestMappingController{}
     ```
 
-  #### 该注解源码如下:
+- #### 在开发实践中，强烈建议在类上配置`@RequestMapping`！
 
-  ```java
-  package org.springframework.web.bind.annotation;
-  
-  import java.lang.annotation.Documented;
-  import java.lang.annotation.ElementType;
-  import java.lang.annotation.Retention;
-  import java.lang.annotation.RetentionPolicy;
-  import java.lang.annotation.Target;
-  
-  @Target({ElementType.TYPE, ElementType.METHOD})
-  @Retention(RetentionPolicy.RUNTIME)
-  @Documented
-  @Mapping
-  public @interface RequestMapping {}
-  ```
-  
+  - ##### 当在类上和方法上都使用`@RequestMapping`配置了路径后，实践使用的路径应该是这2个路径值结合起来的路径值，而`@RequestMapping`在处理时，会自动处理两端必要的、多余的`/`符号。
+
+  - #### 例如：
+
+- - | 类上的配置值 | 方法上的配置值 |
+    | ------------ | -------------- |
+    | /album       | /add-new       |
+    | /album       | add-new        |
+    | album        | /add-new       |
+    | album        | add-new        |
+    | album/       | /add-new       |
+    | album/       | add-new        |
+    | /album/      | /add-new       |
+    | /album/      | add-new        |
+
+  - ##### 以上8种配置的组合是等效的！通常，建议在同一个项目中使用统一的风格，例如使用第1种，或使用第4种。
+
+**注意：`@RequestMapping("/")`和`@RequestMapping("")`不是等效的！**
+
+##### 关于`@RequestMapping`注解的源代码，声明部分为：
+
+```java
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Mapping
+public @interface RequestMapping {
+    // 暂不关心内部代码
+}
+```
+
+以上源代码中，`@Target({ElementType.TYPE, ElementType.METHOD})`表示当前注解可以添加在哪些位置，`ElementType.TYPE`表示可以添加在“类型”上，`ElementType.METHOD`表示可以添加在“方法”上。
+
+在`@RequestMapping`注解源代码的内部，还有：
+
+```java
+@AliasFor("path")
+String[] value() default {};
+```
+
+以上代码中，`value()`表示此注解可以配置名为`value`的属性，`String[]`表示此`value`属性的值是`String[]`类型的，`default {}`表示此属性的默认值是`{}`，即空数组，则可以配置为：
+
+```java
+@RequestMapping(value = {"a", "b", "c"})
+```
+
+而`value`的意义需要通过学习来了解。
+
+另外，`@AliasFor("path")`表示当前`value`属性**等效于**`path`属性。
+
+在Java语言中，如果某个注解属性的值是某种数组类型，但是，需要配置的值只有1个（数组中只有1个元素），可以不必使用一对大括号将其框住！
+
+例如，以下2种配置是完全等效的：
+
+```java
+@RequestMapping(value = {"a"})
+@RequestMapping(value = "a")
+```
+
+在Java语言中，`value`是各注解默认的属性名，如果注解只需要配置这1个属性，可以不必显式指定属性名！
+
+例如，以下2种配置是完全等效的：
+
+```java
+@RequestMapping(value = "a")
+@RequestMapping("a")
+```
+
+另外，在`@RequestMapping`的源代码中，还包含：
+
+```java
+RequestMethod[] method() default {};
+```
+
+此属性的作用的是限制请求方式，在默认情况下，客户端提交请求时，所有请求方式都是允许的！如果配置此属性，则只有与配置值匹配的请求方式才是允许的，如果客户端提交请求的方式有误，则会导致`405`错误！
+
+> 提示：目前，提交POST请求的方式有：使用HTML的`<form>`标签的`method="post"`、使用`axios`的`post()`函数，或其它通过JavaScript程序发出POST请求，除此以外，都是GET请求，例如：直接在浏览器的地址栏中输入URL并访问、点击页面上的超链接、打开浏览器收藏夹中的收藏地址等。
+
+通常，建议：**以获取数据为主要目的的请求，应该限制为GET方式，除此以外，都应该限制为POST方式。**
+
+Spring MVC框架还定义了已经限制了请求方式的、与`@RequestMapping`类似的注解，包括：
+
+- ##### `@GetMapping`
+
+- ##### `@PostMapping`
+
+- ##### `@PutMapping`
+
+- ##### `@DeleteMapping`
+
+- ##### `@PatchMapping`
+
+> 通过地址栏访问的都是get请求,为便于开发人员测试,可使用Knife4j文档框架进行测试
+
+以`@GetMapping`为例，其源代码片段：
+
+```java
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@RequestMapping(method = RequestMethod.GET)
+public @interface GetMapping {
+
+	/**
+	 * Alias for {@link RequestMapping#name}.
+	 */
+	@AliasFor(annotation = RequestMapping.class)
+	String name() default "";
+
+	/**
+	 * Alias for {@link RequestMapping#value}.
+	 */
+	@AliasFor(annotation = RequestMapping.class)
+	String[] value() default {};
+
+	/**
+	 * Alias for {@link RequestMapping#path}.
+	 */
+	@AliasFor(annotation = RequestMapping.class)
+	String[] path() default {};
+
+	/**
+	 * Alias for {@link RequestMapping#params}.
+	 */
+	@AliasFor(annotation = RequestMapping.class)
+	String[] params() default {};
+
+	/**
+	 * Alias for {@link RequestMapping#headers}.
+	 */
+	@AliasFor(annotation = RequestMapping.class)
+	String[] headers() default {};
+
+	/**
+	 * Alias for {@link RequestMapping#consumes}.
+	 * @since 4.3.5
+	 */
+	@AliasFor(annotation = RequestMapping.class)
+	String[] consumes() default {};
+
+	/**
+	 * Alias for {@link RequestMapping#produces}.
+	 */
+	@AliasFor(annotation = RequestMapping.class)
+	String[] produces() default {};
+
+}
+```
 
 ### 3.封装对象时要注意的细节
 
@@ -549,13 +677,15 @@ public @interface RestControllerAdvice {}
 
 - ##### 该注解作用在参数列表中,作用是获取`@RequestMapping`的请求路径中用`{}`占位符标注的部分
 
+- ##### 每添加一个占位符(添加一个参数),参数列表中的参数声明前都要添加一次该注解
+
 - #### 例:
 
   ```java
-  // http://localhost:8080/albums/233/delete
-      @RequestMapping("/{id}/delete")
-      public String delete(@PathVariable Long id){//接收路径中通过占位符传入的信息(类型要匹配)
-          String message = "尝试删除id值为["+id+"]的相册";//id=233
+      @PostMapping("/{name:[a-z]+}/{sort:[a-z]+}/delete")//在请求路径中先用占位符进行占位
+      //接收路径中通过占位符传入的信息(类型要匹配否则报400)
+      public String deleteAlbum1(@PathVariable String name,@PathVariable Integer sort{
+          String message = "尝试删除名称为[" + name + "],排序为[" + sort + "]的相册";
           log.debug(message);//输出日志
           return message;//向客户端返回结果
       }
@@ -590,16 +720,3 @@ public @interface PathVariable {
 }
 ```
 
-### 23.Spring MVC框架还定义了已经限制了请求方式的、与`@RequestMapping`类似的注解，包括：
-
-- ### `@GetMapping`
-
-- ### `@PostMapping`
-
-- ### `@PutMapping`
-
-- ### `@DeleteMapping`
-
-- ### `@PatchMapping`
-
-> 通过地址栏访问的都是get请求,为便于开发人员测试,可使用Knife4j文档框架进行测试
