@@ -693,7 +693,7 @@ public @interface RestControllerAdvice {}
 
 #### 该注解源码如下:
 
-> @AliasFor该注解有相较于的意思,这里的"value"相当于"name"
+> @AliasFor该注解有相较于的意思,表示这里的"value"相当于"name"
 
 ```java
 package org.springframework.web.bind.annotation;
