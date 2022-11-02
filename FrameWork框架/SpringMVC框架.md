@@ -742,3 +742,29 @@ public @interface PathVariable {
 }
 ```
 
+### 23.@Transactional注解
+
+> ### 基于Spring JDBC的事务管理
+
+1. ##### 接口实现类或接口实现方法上，而不是接口类中。
+
+2. ##### 访问权限：public 的方法才起作用。
+
+3. ##### @Transactional 注解应该只被应用到 public 方法上，这是由 Spring AOP 的本质决定的。
+
+4. ##### 系统设计：将标签放置在需要进行事务管理的方法上，而不是放在所有接口实现类上：只读的接口就不需要事务管理，由于配置了@Transactional就需要[AOP](https://so.csdn.net/so/search?q=AOP&spm=1001.2101.3001.7020)拦截及事务的处理，可能影响系统性能。
+
+- #### 事务（Transaction）：是关系型数据库中一种能够保障多个写操作（增、删、改）要么全部成功，要么全部失败的机制,不存在执行一半的情况。
+
+- #### 在基于Spring JDBC的项目中，只需要在业务方法上添加`@Transactional`注解，即可使得此方法是**事务性**的。
+
+  - ##### 该注解的添加,使得在想数据库中插入数据操作时,若在中途发生了错误,则结果不会被执行,最多在内存中执行该操作,但不会被插入到数据库中,保证了安全性和事务本身具有的特点.
+
+  ```java
+  @Override
+  @Transactional // 新添加的注解
+  public void addNew(CategoryAddNewDTO categoryAddNewDTO) {
+      // 暂不关心方法内部代码
+  }
+  ```
+
