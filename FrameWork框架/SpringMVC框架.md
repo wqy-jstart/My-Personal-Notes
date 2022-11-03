@@ -768,3 +768,49 @@ public @interface PathVariable {
   }
   ```
 
+#### 该注解源码如下:
+
+```java
+package org.springframework.transaction.annotation;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import org.springframework.core.annotation.AliasFor;
+
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+@Documented
+public @interface Transactional {
+    @AliasFor("transactionManager")
+    String value() default "";
+
+    @AliasFor("value")
+    String transactionManager() default "";
+
+    String[] label() default {};
+
+    Propagation propagation() default Propagation.REQUIRED;
+
+    Isolation isolation() default Isolation.DEFAULT;
+
+    int timeout() default -1;
+
+    String timeoutString() default "";
+
+    boolean readOnly() default false;
+
+    Class<? extends Throwable>[] rollbackFor() default {};//可自定义回滚异常,利用反射配置
+
+    String[] rollbackForClassName() default {};//利用异常的完全限定名来配置
+
+    Class<? extends Throwable>[] noRollbackFor() default {};//自定义不回滚的异常,利用反射配置
+
+    String[] noRollbackForClassName() default {};//自定义不回滚的异常,利用异常的完全限定名
+}
+```
+
