@@ -10,7 +10,7 @@
 
   - 服务器端处理完请求后将响应数据，不会由服务器响应页面到客户端
 
-- #### 通常会将具有唯一性的请求参数设计到URL中，成为URL的一部分
+- #### 通常会将具有"唯一性"的请求参数设计到URL中，成为URL的一部分
 
   - `https://blog.csdn.net/gghbf45219/article/details/1045245854`
   - `https://blog.csdn.net/m4465sfd46/article/details/1042276671`
