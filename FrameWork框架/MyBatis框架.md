@@ -29,10 +29,10 @@ SQL 映射文件只有很少的几个顶级元素（按照应被定义的顺序�
 - `resultMap` – 描述如何从数据库结果集中加载对象，是最复杂也是最强大的元素。
 - `parameterMap` – 老式风格的参数映射。此元素已被废弃，并可能在将来被移除！请使用行内参数映射。文档中不会介绍此元素。
 - `sql` – 可被其它语句引用的可重用语句块。
-- `insert` – 映射插入语句。
-- `update` – 映射更新语句。
-- `delete` – 映射删除语句。
-- `select` – 映射查询语句。
+- `@insert` – 映射插入语句。
+- `@update` – 映射更新语句。
+- `@delete` – 映射删除语句。
+- `@select` – 映射查询语句。
 
 ## 动态 SQL:
 
@@ -68,3 +68,57 @@ Mybatis 通过使用内置的日志工厂提供日志功能。内置日志工厂
 - ##### `error`：错误信息
 
 使用Slf4j时，可以使用`log`变量调用以上5个级别对应的方法，来输出不同级别的日志！
+
+------
+
+# 相关注解:
+
+### 1.@Param注解
+
+- ##### 当Mapper接口中的抽象方法有多个参数时,使用该注解来配置参数名称,与Xml文件中的SQL语句进行对应
+
+  - ##### Mapper:
+
+  ```java
+  int updatePasswordById(@Param("i") Long id,@Param("pass") String password);
+  ```
+
+  - ##### Xml:
+
+  ```xml
+  	<!--int updatePasswordById(@Param("id") Long id,@Param("password") String 	password);-->
+      <update id="updatePasswordById">
+          UPDATE ams_admin SET password=#{pass} WHERE id = #{i}
+      </update>
+  ```
+
+  - ##### MapperTests:
+
+  ```java
+      @Test
+      void updatePasswordById(){
+          Long i = 21L;
+          String pass = "1234";
+          adminMapper.updatePasswordById(i,pass);
+      }
+  ```
+
+#### 该注解源码如下:
+
+```java
+package org.apache.ibatis.annotations;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.PARAMETER})
+public @interface Param {
+    String value();
+}
+```
+
