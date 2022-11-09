@@ -18,13 +18,14 @@
 
 #### Lombok的常用注解有：
 
-- `@Slf4j`：添加在类上
-
-- `@Data`：添加在类上，可在编译期生成全部属性对应的Setters & Getters、`hashCode()`与`equals()`、`toString()`，使用此注解时，必须保证当前类的父类存在无参数构造方法
+- `@Slf4j`：添加在类上,便于输出日志,例如:log.debug()
+- `@Data`：添加在类上，可在编译期生成全部属性对应的Setters & Getters、`hashCode()`与`equals()`、`toString()`和**无参构造**,使用此注解时，必须保证当前类的父类存在无参数构造方法
 - `@Setter`：可以添加在属性上，将仅作用于当前属性，也可以添加在类上，将作用于类中所有属性，用于生成对应的Setter方法
 - `@Getter`：同上，用于生成对应的Getter方法
 - `@EqualsAndHashCode`：添加在类上，用于生成规范的`equals()`和`hashCode()`，关于`equals()`方法，如果2个对象的所有属性的值完全相同，则返回`true`，否则返回`false`，关于`hashCode()`也是如此，如果2个对象的所有属性的值完全相同，则生成的HashCode值相同，否则，不应该相同
 - `@ToString`：添加在类上，用于生成全属性对应的`toString()`方法
+- `@AllArgsConstructor`:全参构造方法
+- `@NoArgsConstructor`:无参构造方法
 
 ## 关于Slf4j日志
 

@@ -764,7 +764,7 @@ public @interface PathVariable {
   @Override
   @Transactional // 新添加的注解
   public void addNew(CategoryAddNewDTO categoryAddNewDTO) {
-      // 暂不关心方法内部代码
+      // 不关心方法内部代码
   }
   ```
 
@@ -804,13 +804,13 @@ public @interface Transactional {
 
     boolean readOnly() default false;
 
-    Class<? extends Throwable>[] rollbackFor() default {};//可自定义回滚异常,利用反射配置
+    Class<? extends Throwable>[] rollbackFor() default {};// 可自定义回滚异常,利用反射配置
 
-    String[] rollbackForClassName() default {};//利用异常的完全限定名来配置
+    String[] rollbackForClassName() default {};// 利用异常的完全限定名来配置
 
-    Class<? extends Throwable>[] noRollbackFor() default {};//自定义不回滚的异常,利用反射配置
+    Class<? extends Throwable>[] noRollbackFor() default {};// 自定义不回滚的异常,利用反射配置
 
-    String[] noRollbackForClassName() default {};//自定义不回滚的异常,利用异常的完全限定名
+    String[] noRollbackForClassName() default {};// 自定义不回滚的异常,利用异常的完全限定名
 }
 ```
 

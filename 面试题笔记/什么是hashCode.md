@@ -11,10 +11,49 @@
 ### hashCode()的描述
 
 - 返回该对象的哈希值.这个方法是为哈希表提供支持的,比如由HashMap提供的哈希表
+
 - hashCode的一般原则是:
+
 - 在Java应用程序的执行过程中,只要对同一个对象调用一次以上,hashCode方法就必须始终返回相同的整数,前提是在对象的equals比较中使用的信息没有被修改.对于同一个应用程序而言,某一次的执行与另一次执行时,该值不需要保持不一致
+
 - 如果两个对象根据equals(Object)方法对比的结果是相等的,那么在这两个对象上调用hashCode方法必须产生相同的整数结果.
+
 - 有种情况并不是强制的:如果根据equals(java.lang.Object)方法,两个对象不相等,那么在这两个对象上调用hashCode方法必须产生不同的整数结果.然而,程序员应该知道,为不相等的对象产生不同的整数结果可能会提高哈希表的性能
+
+- 当使用hashCode()来比较栈中的变量时,会直接返回它的字面值
+
+  - 例如[-128,127]范围之间的包装类
+
+    ```java
+    // 包装类在[-128,127]之间equals()与==效果相同,且hashCode()会返回字面值
+        Integer i1 = 127;
+        Integer i2 = 127;
+        System.out.println(i1.hashCode());// 127
+        System.out.println(i2.hashCode());// 127
+    ```
+
+
+- #### HashCode()方法的源代码如下(返回的是int):
+
+  - ```java
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(value);
+    }
+    
+    /**
+     * Returns a hash code for a {@code int} value; compatible with
+     * {@code Integer.hashCode()}.
+     *
+     * @param value the value to hash
+     * @since 1.8
+     *
+     * @return a hash code value for a {@code int} value.
+     */
+    public static int hashCode(int value) {
+        return value;
+    }
+    ```
 
 ### 常见的误区
 

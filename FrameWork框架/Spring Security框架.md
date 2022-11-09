@@ -199,3 +199,173 @@ Spring Security是一个能够为基于Spring的企业应用系统提供声明�
 ### 功能:
 
 Spring Security对Web安全性的支持大量地依赖于Servlet过滤器。这些过滤器拦截进入请求，并且在应用程序处理该请求之前进行某些安全处理。 Spring Security提供有若干个过滤器，它们能够拦截Servlet请求，并将这些请求转给认证和访问决策管理器处理，从而增强安全性。根据自己的需要，可以使用适当的过滤器来保护自己的应用程序。
+
+------
+
+## 相关注解:
+
+### 1.@AuthenticationPrincipal注解
+
+- 该注解用来让Spring Security框架自动去获取标注对象的当事人信息
+
+  ```java
+  /**
+   * 处理查询管理员列表的请求
+   * @return JsonResult
+   */
+  // http://localhost:9081/admins
+  @ApiOperation("管理员列表")
+  @ApiOperationSupport(order = 210)//排序
+  @GetMapping("")
+  public JsonResult<List<AdminListItemVO>> list(
+          @ApiIgnore @AuthenticationPrincipal LoginPrincipal loginPrincipal){// 添加@ApiIgnore注解告诉Api文档忽略当前的输入框
+      log.debug("开始处理[查询管理员列表]的请求,无参数");
+      log.debug("当前登录的当事人:{}",loginPrincipal);
+      List<AdminListItemVO> list = adminService.list();
+      return JsonResult.ok(list);
+  }
+  ```
+
+- 该对象封装了登录且认证成功后get到的当事人信息
+
+  ```java
+  // 2.认证成功后,从认证结果中获取所需的数据,将用于生成JWT
+          Object principal = authenticateResult.getPrincipal();// 获取认证的当事人对象Principal
+  // 这里得到的是登录时loadUserByUsername()中返回的类型,该类型一定"是或者继承"了UserDetails
+  log.debug("认证结果中的当事人类型:{}", principal.getClass().getName());
+  //例: cn.tedu.csmall.passport.security.AdminDetails
+  ```
+
+#### 该注解源码如下:
+
+```java
+package org.springframework.security.core.annotation;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target({ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface AuthenticationPrincipal {
+    boolean errorOnInvalidType() default false;
+
+    String expression() default "";
+}
+```
+
+### 2.@EnableGlobalMethodSecurity注解
+
+- 该注解用来启用方法级别的权限检查,用在`SecurityConfiguration`配置类中
+- 该注解可搭配`@PreAuthorize`注解,在控制器方法上指定权限的`value`,仅当含有该权限的用户可以请求
+- 不符合权限的用户请求时,服务器会报错`AccessDeniedException`,故应当进行全局异常处理并反馈到客户端
+- 搭配参数`prePostEnabled = true`可选择是否启用
+
+#### 例如:
+
+```java
+/**
+ * 创建Spring Security的配置类
+ * 配置放行路径,登录页面,认证授权,禁用"防止伪造跨域攻击的机制"
+ *
+ * @Author java.@Wqy
+ * @Version 0.0.1
+ */
+@Slf4j
+@Configuration
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+@EnableGlobalMethodSecurity(prePostEnabled = true)// 启用方法级别的权限检查!
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+    // 暂不关心方法体中的内容
+}
+```
+
+#### 该注解源码如下:
+
+```java
+package org.springframework.security.config.annotation.method.configuration;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import org.springframework.context.annotation.AdviceMode;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+@Documented
+@Import({GlobalMethodSecuritySelector.class})
+@EnableGlobalAuthentication
+@Configuration
+public @interface EnableGlobalMethodSecurity {
+    boolean prePostEnabled() default false;
+
+    boolean securedEnabled() default false;
+
+    boolean jsr250Enabled() default false;
+
+    boolean proxyTargetClass() default false;// 配置是否启用
+
+    AdviceMode mode() default AdviceMode.PROXY;
+
+    int order() default 2147483647;
+}
+```
+
+### 3.@PreAuthorize注解
+
+- 当添加了`@EnableGlobalMethodSecurity`注解并启用了方法级别的权限检查后
+- 即可使用`@PreAuthorize`注解进行约束某个控制器的请求权限,仅当某个用户在`SecurityContext`上下文中含有该权限的信息时,才能进行请求并反馈相应的结果
+
+#### 例如:在查询列表控制器中配置权限对应的value值
+
+```java
+/**
+ * 处理查询管理员列表的请求
+ * @return JsonResult
+ * ★添加@ApiIgnore注解告诉Api文档忽略当前的输入框
+ * ★添加@AuthenticationPrincipal注解可使SpringSecurity去获取认证成功的当事人
+ */
+// http://localhost:9081/admins
+@ApiOperation("管理员列表")
+@ApiOperationSupport(order = 210)//排序
+// ↓↓↓↓↓↓
+@PreAuthorize("hasAuthority('/ams/admin/read')")
+@GetMapping("")
+public JsonResult<List<AdminListItemVO>> list(
+        @ApiIgnore @AuthenticationPrincipal LoginPrincipal loginPrincipal){
+    log.debug("开始处理[查询管理员列表]的请求,无参数");
+    log.debug("当前登录的当事人:{}",loginPrincipal);
+    List<AdminListItemVO> list = adminService.list();
+    return JsonResult.ok(list);
+}
+```
+
+#### 该注解源码如下:
+
+```java
+package org.springframework.security.access.prepost;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target({ElementType.METHOD, ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+@Documented
+public @interface PreAuthorize {
+    String value();
+}
+```
+

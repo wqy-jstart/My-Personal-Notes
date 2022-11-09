@@ -267,4 +267,26 @@
         }
     ```
 
-    
+
+### 8.@ApiIgnore注解
+
+- ##### 该注解用来告诉Api文档,忽视当前的Api输入框
+
+  ```java
+  /**
+   * 处理查询管理员列表的请求
+   * @return JsonResult
+   */
+  // http://localhost:9081/admins
+  @ApiOperation("管理员列表")
+  @ApiOperationSupport(order = 210)//排序
+  @GetMapping("")
+  public JsonResult<List<AdminListItemVO>> list(
+          @ApiIgnore @AuthenticationPrincipal LoginPrincipal loginPrincipal){
+      log.debug("开始处理[查询管理员列表]的请求,无参数");
+      log.debug("当前登录的当事人:{}",loginPrincipal);
+      List<AdminListItemVO> list = adminService.list();
+      return JsonResult.ok(list);
+  }
+  ```
+
