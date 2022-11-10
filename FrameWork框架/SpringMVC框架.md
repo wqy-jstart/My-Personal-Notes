@@ -1,12 +1,87 @@
-# Spring框架:
+# SpringMVC框架:
 
-### 1.@ResponseBody注解
+### 1.@Controller注解
 
-- #### 此注解的作用是,用JSON格式将一个方法的返回值加载到response的body区域，向客户端返回数据信息。
+- ##### 该注解用来声明一个控制器类,属于组件注解,在标注的类中写控制器方法来处理不同请求路径的业务
 
-- #### 如果设置了返回值但不添加该注解,返回的数据,客户端请求不到.
+- ##### 如果该业务需要返回数据,那么还需要添加@ResponseBody注解,返回的数据会被SpringMVC框架转成JSON数组
 
-- #### 也可以不加返回值
+#### 例如:
+
+```java
+@Controller
+public class HelloController {
+    @RequestMapping("/hello")
+    @ResponseBody //此注解的作用是,可以通过返回值的方式给客户端响应数据
+    public String hello(){
+        return "服务器接收到了响应!";
+    }
+}
+```
+
+#### 该注解源代码如下:
+
+```java
+package org.springframework.stereotype;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import org.springframework.core.annotation.AliasFor;
+
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Component
+public @interface Controller {
+    @AliasFor(
+        annotation = Component.class
+    )
+    String value() default "";
+}
+```
+
+### 2.@RestController注解
+
+- ##### ★这是一个控制类组件注解
+
+- ##### 与@Controller注解相似,不同的是使用@RestController相当于在每一个方法上都添加了@ResponseBody注解(该注解通过返回值方式向浏览器响应数据)
+
+#### 该注解源码如下:
+
+```java
+package org.springframework.web.bind.annotation;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import org.springframework.core.annotation.AliasFor;
+import org.springframework.stereotype.Controller;
+
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Controller
+@ResponseBody
+public @interface RestController {
+    @AliasFor(
+        annotation = Controller.class
+    )
+    String value() default "";// 该方法可以用来指定名称,该名称是Spring管理该组件类的方法名称
+}
+```
+
+### 3.@ResponseBody注解
+
+- ##### 此注解的作用是,用JSON格式将一个方法的返回值加载到response的body区域，向客户端返回数据信息。
+
+- ##### 如果设置了返回值但不添加该注解,返回的数据,客户端请求不到.
+
+- ##### 也可以不加返回值
 
 ```java
 @Controller
@@ -77,7 +152,7 @@ Sat Oct 08 15:57:05 CST 2022
 There was an unexpected error (type=Bad Request, status=400).
 ```
 
-### 2.@RequestMapping注解★
+### 4.@RequestMapping注解★
 
 - #### 在Spring MVC框架中，可以在处理请求的方法上添加`@RequestMapping`注解，以配置**请求路径**与**处理请求的方法**的映射关系。
 
@@ -248,9 +323,9 @@ public @interface GetMapping {
 }
 ```
 
-### 3.封装对象时要注意的细节
+### 备注:封装对象时要注意的细节
 
-- #### getter,setter方法,重写toString,有参和全参构造器(行业标准)
+- ##### getter,setter方法,重写toString,有参和全参构造器(行业标准)
 
 ```java
 //无参构造器默认存在,但是当有了有参构造器,无参构造器就不存在了,由于SpringMVC内部会用到无参构造器,所以需再加入无参构造器
@@ -264,35 +339,11 @@ public @interface GetMapping {
     }
 ```
 
-### 4.@RestController注解
-
-- #### 与@Controller注解相似,不同的是使用@RestController相当于在每一个方法上都添加了@ResponseBody注解(该注解通过返回值方式向浏览器响应数据)
-
-#### 该注解源码如下:
-
-```java
-package org.springframework.web.bind.annotation;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import org.springframework.stereotype.Controller;
-
-@Target({ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Controller
-@ResponseBody
-public @interface RestController {}
-```
-
 ### 5.@Mapper注解
 
-- #### 该注解是一个接口类型,在接口中书写实体类和数据库中表之间的对应关系,Mybatis框架会自动通过此关系生成JDBC代码
+- ##### 该注解是一个接口类型,在接口中书写实体类和数据库中表之间的对应关系,Mybatis框架会自动通过此关系生成JDBC代码
 
-- #### @Insert/Select/Delete/Update()该注解方法用来写SQL语句,配合抽象方法传入的参数完成与数据库的相关操作(增删改查...)
+- ##### @Insert/Select/Delete/Update()该注解方法用来写SQL语句,配合抽象方法传入的参数完成与数据库的相关操作(增删改查...)
 
 #### 该注解源码如下:
 
@@ -319,6 +370,8 @@ public @interface Mapper {}
 
 - ##### Spring会自动帮你把bean里面引用的对象的setter/getter方法省略,它会自动帮你set/get
 
+- ##### 该注解的装配机制是先根据类型再根据名称实现自动装配
+
 #### 该注解源码如下:
 
 ```java
@@ -329,14 +382,32 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
+//                     构造方法                  方法                  参数
 @Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Autowired {}
 ```
 
-### 7.@RequestBody(请求体)注解
+### 7.@Resource注解
+
+- ##### 自动装配/注入,与@Autowired注解类似
+
+- ##### 不同的是,它先根据名称再根据类型来实现自动装配
+
+- ##### `@Resource`是`javax`包中的注解，根据此注解的声明，此注解只能添加在类上、属性上、方法上，不可以添加在构造方法上、方法的参数上。
+
+#### 该注解源码如下:
+
+```java
+@Target({TYPE, FIELD, METHOD})
+@Retention(RUNTIME)
+public @interface Resource {
+    
+}
+```
+
+### 8.@RequestBody(请求体)注解
 
 - ##### 在Spring MVC项目中（包括添加了`spring-boot-starter-web`依赖项的Spring Boot项目），可以在处理请求的方法的参数列表中，在某参数上添加`@RequestBody`注解。
 
@@ -381,7 +452,7 @@ import java.lang.annotation.Target;
 public @interface RequestBody {}
 ```
 
-### 8.@JsonFormat注解
+### 9.@JsonFormat注解
 
 - ##### 该注解处理事件属性的呈现格式和时区
 
@@ -396,7 +467,7 @@ public @interface RequestBody {}
       private Date created; //发布微博时间
   ```
 
-### 9.@Configuration注解
+### 10.@Configuration注解
 
 - ##### @Configuration注解可告诉编译器该工程所有Mapper接口都在这个包路径path里面.
 
@@ -420,7 +491,7 @@ import java.lang.annotation.Target;
 public @interface Configuration {}
 ```
 
-### 10.@Value注解
+### 11.@Value注解
 
 - ##### 该注解会将XML配置文件中的变量赋给注解下的变量
 
@@ -469,7 +540,7 @@ public @interface Value {
 }
 ```
 
-### 11.@ServletComponentScan注解
+### 12.@ServletComponentScan注解
 
 - ##### 该注解作用在类上,通常在启动类中
 
@@ -487,17 +558,17 @@ public @interface Value {
 public @interface ServletComponentScan {}
 ```
 
-### 12.@SpringBootTest注解
+### 13.@SpringBootTest注解
 
 - ##### 该注解用于测试类上
 
-### 13.@Test注解
+### 14.@Test注解
 
 - ##### 该注解用于测试类中的方法上
 
-### 14.@Data注解
+### 15.@Data注解
 
-- #### 该注解是Lombok的依赖项产生的注解(Lombok框架),可自动提供getter和setter方法,重写toString()和hashCode()方法
+- ##### 该注解是Lombok的依赖项产生的注解(Lombok框架),可自动提供getter和setter方法,重写toString()和hashCode()方法
 
 - ```xml
    <!-- Lombok的依赖项，主要用于简化POJO类的编写 -->
@@ -509,11 +580,13 @@ public @interface ServletComponentScan {}
           </dependency>
   ```
 
-### 15.@Repository注解
+### 16.@Repository注解
 
-- #### 当自动装配Mapper接口的对象时，IntelliJ IDEA可能会报错，提示无法装配此对象，但是，并不影响运行!
+- ##### ★这是一个处理数据源中的数据读写的组件注解
 
-- #### 添加该注解是为了引导IntelliJ IDEA作出正确的判断
+- ##### 当自动装配Mapper接口的对象时，IntelliJ IDEA可能会报错，提示无法装配此对象，但是，并不影响运行!
+
+- ##### 添加该注解是为了引导IntelliJ IDEA作出正确的判断
 
 - ```java
   @Repository//该注解用于引导IDEA作出正确的判断
@@ -539,7 +612,9 @@ import org.springframework.core.annotation.AliasFor;
 public @interface Repository {}
 ```
 
-### 16.@Configuration和@MapperScan()注解的结合使用
+### 17.@Configuration和@MapperScan()注解的结合使用
+
+- ##### @Configuration注解也是一个组件注解,Spring对此注解的处理更加特殊（Spring框架对配置类使用了代理模式）
 
 - ##### @Configuration注解可告诉编译器该工程所有Mapper接口都在这个包路径path里面.
 
@@ -575,11 +650,9 @@ import org.springframework.context.annotation.Import;
 public @interface MapperScan {}
 ```
 
-### 17.@Resource注解
-
-- #### 自动装配/注入,与@Autowired注解类似
-
 ### 18.@Service注解
+
+- ##### ★这是一个Service业务类组件注解
 
 - ##### `@Service`注解用于类上，标记当前类是一个service类，位于Service层
 
@@ -595,12 +668,18 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import org.springframework.core.annotation.AliasFor;
 
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Component
-public @interface Service {}
+public @interface Service {
+    @AliasFor(
+        annotation = Component.class
+    )
+    String value() default "";// 可以配置名字,改名字是Spring中给该组件类取的方法名
+}
 ```
 
 ### 19.@ExceptionHandler注解
@@ -733,7 +812,7 @@ import org.springframework.core.annotation.AliasFor;
 public @interface PathVariable {
     //@AliasFor该注解有相较于的意思,这里的"value"相当于"name"
     @AliasFor("name")
-    String value() default "";
+    String value() default "";// Url与参数列表中名称不匹配时通过它来配置
 
     @AliasFor("value")
     String name() default "";
@@ -814,3 +893,67 @@ public @interface Transactional {
 }
 ```
 
+### 24.@RequestParam注解
+
+- 作用是把请求中的指定名称的参数传递给控制器中的**形参赋值**.
+- 通俗来说可以用于修改请求参数的名称(没有太多实用价值)
+
+>#### 1.value：请求参数中的名称
+>
+>#### 2.required：请求参数中是否必须提供此参数，默认值是true，必须提供
+
+#### 控制器:
+
+```java
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+ 
+@Controller
+@RequestMapping("/dept")
+public class DeptController {
+    @RequestMapping("/save")
+    public String save(@RequestParam(value = "username",required = false) String name){
+        System.out.println(name);
+        return "suc";
+    }
+}
+```
+
+#### 表单:
+
+```javascript
+<form action="/SpringMVC/dept/save" method="get">
+    <input type="text" name="username"/><br/>
+    <input type="text" name="age"/><br/>
+    <input type="submit"/>
+</form>
+```
+
+#### 该注解源码如下:
+
+```java
+package org.springframework.web.bind.annotation;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import org.springframework.core.annotation.AliasFor;
+
+@Target({ElementType.PARAMETER})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface RequestParam {
+    @AliasFor("name")
+    String value() default "";
+
+    @AliasFor("value")
+    String name() default "";
+
+    boolean required() default true;
+
+    String defaultValue() default "\n\t\t\n\t\t\n\ue000\ue001\ue002\n\t\t\t\t\n";
+}
+```
