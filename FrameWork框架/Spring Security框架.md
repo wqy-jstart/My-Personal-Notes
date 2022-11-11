@@ -39,7 +39,7 @@ Spring Security框架主要解决了**认证**与**授权**相关的问题.
   spring.security.user.password=root
   ```
 
-  > #### 此时security登录账号密码为 : root/root, 控制台不在输出随机密码
+  > #### 此时security登录账号密码为 : root/root, 控制台不再输出随机密码
 
 - #### Bcrypt加密:
 
@@ -369,3 +369,12 @@ public @interface PreAuthorize {
 }
 ```
 
+------
+
+------
+
+| 注解                          | 所属框架        | 作用                                                         |
+| ----------------------------- | --------------- | ------------------------------------------------------------ |
+| `@EnableGlobalMethodSecurity` | Spring Security | 添加在配置类上，用于开启全局的方法级别的权限控制             |
+| `@PreAuthorize`               | Spring Security | 添加在方法上，用于配置权限                                   |
+| `@AuthenticationPrincipal`    | Spring Security | 添加在方法的参数上，且此参数应该是Security上下文中的认证信息中的当事人类型，用于为此参数注入值 |

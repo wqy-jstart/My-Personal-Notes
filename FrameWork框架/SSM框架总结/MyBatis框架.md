@@ -122,3 +122,16 @@ public @interface Param {
 }
 ```
 
+------
+
+------
+
+| 注解          | 所属框架 | 作用                                                         |
+| ------------- | -------- | ------------------------------------------------------------ |
+| `@MapperScan` | Mybatis  | 添加在配置类上，用于指定Mapper接口的根包，<br />Mybatis将根据此根包执行扫描，以找到各Mapper接口 |
+| `@Mapper`     | Mybatis  | 添加在Mapper接口上，用于标记此接口是Mybatis的Mapper接口，如果已经通过`@MapperScan`配置能够找到此接口，则不需要使用此注解 |
+| `@Param`      | Mybatis  | 添加在Mapper接口中的抽象方法的参数上，用于指定参数名称，当使用此注解指定参数名称后，SQL中的`#{}` / `${}`占位符中的名称必须是此注解指定的名称，通常，当抽象方法的参数超过1个时，强烈建议在每个参数上使用此注解配置名称 |
+| `@Select`     | Mybatis  | 添加在Mapper接口的抽象方法上，可以通过此注解直接配置此抽象方法对应的SQL语句（不必将SQL语句配置在XML文件中），用于配置`SELECT`类的SQL语句，但是，非常不推荐这种做法 |
+| `@Insert`     | Mybatis  | 同上，用于配置`INSERT`类的SQL语句                            |
+| `@Update`     | Mybatis  | 同上，用于配置`UPDATE`类的SQL语句                            |
+| `@Delete`     | Mybatis  | 同上，用于配置`DELETE`类的SQL语句                            |

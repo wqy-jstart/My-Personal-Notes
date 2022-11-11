@@ -53,8 +53,8 @@ Spring框架主要解决了创建对象、管理对象的问题。
        ：控制器类的注解
 
        - `@RestController`：仅添加Spring MVC框架后可使用
-       - `@ControllerAdvice`：仅添加Spring MVC框架后可使用
-       - `@RestControllerAdvice`：仅添加Spring MVC框架后可使用
+       - `@ControllerAdvice`：仅添加Spring MVC框架后可使用(SpringMVC的全局异常处理)
+       - `@RestControllerAdvice`：仅添加Spring MVC框架后可使用(SpringMVC的全局异常处理)
 
      - `@Service`：Service这种业务类的注解
 
@@ -67,7 +67,35 @@ Spring框架主要解决了创建对象、管理对象的问题。
 对于这2种创建对象的做法，通常：
 
 - 如果是自定义的类，优先使用组件扫描的做法来创建对象
+
+  - 例如配置类、Mapper层、Service层、控制器类。
+
 - 如果不是自定义的类，无法使用组件扫描的做法，只能在配置类中通过`@Bean`方法来创建对象
+
+  - 例如认证权限项目的Security配置类中利用@Bean注解创建密码编码器和认证信息接口
+
+    ```java
+    /**
+     * 配置密码编译器,否则无法验证密码是否正确,服务端会报错
+     * @return 密码编码器
+     */
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
+    
+    /**
+     * 重写认证信息接口
+     * @return AuthenticationManager
+     * @throws Exception Exception
+     */
+    @Bean// 该注解便于Spring框架进行管理,自动调用,放入容器,利于自动装配
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+    ```
+
 
 当Spring成功的创建了对象后，会将对象保存在Spring应用程序上下文（`ApplicationContext`）中，后续，当需要这些对象时，可以从Spring应用程序上下文中获取！
 
@@ -124,20 +152,20 @@ public class AlbumController {
 
 另外，在配置类中的`@Bean`方法也可以在需要的时候自行添加参数，如果Spring容器中有合适的值，Spring也会从容器中找到值来调用方法。
 
-关于“合适的值”，Spring对于`@Autowired`的处理机制是：查找在Spring容器中匹配类型的对象的数量：
+关于“合适的值”，Spring对于`@Autowired`的处理机制是：查找在Spring容器中**匹配类型的对象**的数量：
 
 - 1个：直接装配，且装配成功
 - 0个：取决于`@Autowired`注解的`required`属性
-  - `true`（默认值）：装配失败，在加载时即报错
+  - `true`（默认值）：装配失败，在加载时即报错----为true说明必须装配
   - `false`：放弃装配，则此量的值为`null`，在接下来的使用过程中可能导致NPE（`NullPointerException`）
-- 超过1个：取决于是否存在某个Spring Bean（Spring容器中的对象）的名称与当前量的名称匹配
+- 超过1个：取决于是否存在某个Spring Bean（Spring容器中的对象）的名称**与当前量的名称匹配**
   - 存在：成功装配
   - 不存在：装配失败，在加载时即报错
 
 关于通过名称匹配：
 
 - 默认情况下，要求量（全局变量、方法参数等）的名称与对象在Spring容器中名称完全相同，视为匹配
-- 可以在量（全局变量、方法参数等）的声明之前添加`@Qualifier`注解，通过此注解参数来指定名称，以匹配某个Spring容器的对象
+- 可以在量（全局变量、方法参数等）的声明之前添加`@Qualifier`注解，**通过此注解参数来指定名称**，以匹配某个Spring容器的对象
   - `@Qualifier`注解是用于配合自动装配机制的，单独使用没有意义
 
 其实，还可以使用`@Resource`注解实现自动装配，但不推荐！
@@ -155,3 +183,22 @@ Spring框架对`@Resource`注解的自动装配机制是：先根据名称再根
 **关系:** Spring框架通过 DI 实现/完善 了IoC。
 
 ## 7. 关于Spring AOP
+
+------
+
+# 注解:
+
+| 注解             | 所属框架 | 作用                                                         |
+| ---------------- | -------- | ------------------------------------------------------------ |
+| `@ComponentScan` | Spring   | 添加在配置类上，开启组件扫描。<br />如果没有配置包名，则扫描当前配置类所在的包，<br />如果配置了包名，则扫描所配置的包及其子孙包 |
+| `@Component`     | Spring   | 添加在类上，标记当前类是组件类，可以通过参数配置Spring Bean名称 |
+| `@Controller`    | Spring   | 添加在类上，标记当前类是控制器组件类，用法同`@Component`     |
+| `@Service`       | Spring   | 添加在类上，标记当前类是业务逻辑组件类，用法同`@Component`   |
+| `@Repository`    | Spring   | 添加在类上，标记当前类是数据访问组件类，用法同`@Component`   |
+| `@Configuration` | Spring   | 添加在类上，仅添加此注解的类才被视为配置类，通常不配置注解参数 |
+| `@Bean`          | Spring   | 添加在方法上，标记此方法将返回某个类型的对象，<br />且Spring会自动调用此方法，并将对象保存在Spring容器中 |
+| `@Autowired`     | Spring   | 添加在属性上，使得Spring自动装配此属性的值 <br />添加在构造方法上，使得Spring自动调用此构造方法<br />添加在Setter方法上，使得Spring自动调用此方法 |
+| `@Qualifier`     | Spring   | 添加在属性上，或添加在方法的参数上， <br />配合自动装配机制，用于指定需要装配的Spring Bean的名称 |
+| `@Scope`         | Spring   | 添加在组件类上，或添加在已经添加了`@Bean`注解的方法上，<br />用于指定作用域，注解参数为`singleton`（默认）时为“单例”，注解参数为`prototype`时为“非单例” |
+| `@Lazy`          | Spring   | 添加在组件类上，或添加在已经添加了`@Bean`注解的方法上， <br />用于指定作用域，当Spring Bean是单例时，注解参数为`true`（默认）时为“懒加载”，注解参数为`false`时为“预加载” |
+| `@Resource`      | Spring   | 此注解是`javax`包中的注解，<br />添加在属性上，使得Spring自动装配此属性的值， <br />通常不推荐使用此注解 |

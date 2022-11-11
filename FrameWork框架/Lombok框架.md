@@ -18,8 +18,10 @@
 
 #### Lombok的常用注解有：
 
-- `@Slf4j`：添加在类上,便于输出日志,例如:log.debug()
-- `@Data`：添加在类上，可在编译期生成全部属性对应的Setters & Getters、`hashCode()`与`equals()`、`toString()`和**无参构造**,使用此注解时，必须保证当前类的父类存在无参数构造方法
+- **`@Slf4j`**：添加在类上,便于输出日志,例如:log.debug()
+- **`@Data`**：添加在类上，可在编译期生成全部属性对应的Setters & Getters、`hashCode()`与`equals()`、`toString()`和**无参构造**,使用此注解时，**若继承了父类时必须保证当前类的父类存在无参数构造方法**
+  - 可在Target中的.class文件中查看
+
 - `@Setter`：可以添加在属性上，将仅作用于当前属性，也可以添加在类上，将作用于类中所有属性，用于生成对应的Setter方法
 - `@Getter`：同上，用于生成对应的Getter方法
 - `@EqualsAndHashCode`：添加在类上，用于生成规范的`equals()`和`hashCode()`，关于`equals()`方法，如果2个对象的所有属性的值完全相同，则返回`true`，否则返回`false`，关于`hashCode()`也是如此，如果2个对象的所有属性的值完全相同，则生成的HashCode值相同，否则，不应该相同
@@ -148,3 +150,16 @@ logging:
 
 
 
+------
+
+------
+
+| 注解                  | 所属框架 | 作用                                                         |
+| --------------------- | -------- | ------------------------------------------------------------ |
+| `@Data`               | Lombok   | 添加在类上，将在编译期生成此类中所有属性的Setter、Getter方法，及`hashCode()`、`equals()`、`toString()`方法 |
+| `@Setter`             | Lombok   | 添加在类上，将在编译期生成此类中所有属性的Setter方法，<br/>也可以添加在类的属性上，将在编译期生成此属性的Setter方法 |
+| `@Getter`             | Lombok   | 添加在类上，将在编译期生成此类中所有属性的Getter方法，<br/>也可以添加在类的属性上，将在编译期生成此属性的Getter方法 |
+| `@EqualsAndHashcode`  | Lombok   | 添加在类上，将在编译期生成基于此类中所有属性的`hashCode()`、`equals()`方法 |
+| `@ToString`           | Lombok   | 添加在类上，将在编译期生成基于此类中所有属性的`toString()`方法 |
+| `@NoArgConstructor`   | Lombok   | 添加在类上，将在编译期生成此类的无参数构造方法               |
+| `@AllArgsConstructor` | Lombok   | 添加在类上，将在编译期生成基于此类中所有属性的全参构造方法   |

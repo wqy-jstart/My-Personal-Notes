@@ -188,6 +188,8 @@ public JsonResult handleConstraintViolationException(ConstraintViolationExceptio
 
 ### 1.@Validated注解
 
+- 添加在方法的参数上时,标记此参数需要经过Validation框架的检查
+
 #### 该注解源码如下:
 
 ```java
@@ -290,3 +292,16 @@ public @interface Valid {
 
 > **注意：除了`@NotNull`注解以外，其它注解均不检查请求参数为`null`的情况，例如在某个请求参数上配置了`@NotEmpty`，当提交的请求参数为`null`时将通过检查（视为正确），所以，当某个请求参数需要配置为不允许为`null`时，必须使用`@NotNull`，且以上不冲突的多个注解可以同时添加在同一个请求参数上！**
 
+------
+
+------
+
+| 注解         | 所属框架          | 作用                                                         |
+| ------------ | ----------------- | ------------------------------------------------------------ |
+| `@Valid`     | Spring Validation | 添加在方法的参数上，标记此参数需要经过Validation框架的检查   |
+| `@Validated` | Spring Validation | 添加在方法的参数上，标记此参数需要经过Validation框架的检查；<br />添加在类上，并结合方法上的检查注解（例如`@NotNull`等）实现对未封装的参数的检查 |
+| `@NotNull`   | Spring Validation | 添加在需要被检查的参数上，或添加在需要被检查的封装类型的属性上，用于配置“不允许为`null`”的检查规则 |
+| `@NotEmpty`  | Spring Validation | 使用位置同`@NotNull`，用于配置“不允许为空字符串”的检查规则   |
+| `@NotBlank`  | Spring Validation | 使用位置同`@NotNull`，用于配置“不允许为空白”的检查规则       |
+| `@Pattern`   | Spring Validation | 使用位置同`@NotNull`，用于配置正则表达式的检查规则           |
+| `@Range`     | Spring Validation | 使用位置同`@NotNull`，用于配置“数值必须在某个取值区间”的检查规则 |

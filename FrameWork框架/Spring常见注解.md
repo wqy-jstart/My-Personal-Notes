@@ -69,7 +69,7 @@ import org.springframework.stereotype.Controller;
 @ResponseBody
 public @interface RestController {
     @AliasFor(
-        annotation = Controller.class
+        annotation = Controller.class // 这里声明该注解相当于@Controller注解
     )
     String value() default "";// 该方法可以用来指定名称,该名称是Spring管理该组件类的方法名称
 }
@@ -821,7 +821,7 @@ public @interface PathVariable {
 }
 ```
 
-### 23.@Transactional注解
+### 23.@Transactional注解(Spring JDBC中的注解)
 
 > ### 基于Spring JDBC的事务管理
 
@@ -832,6 +832,8 @@ public @interface PathVariable {
 3. ##### @Transactional 注解应该只被应用到 public 方法上，这是由 Spring AOP 的本质决定的。
 
 4. ##### 系统设计：将标签放置在需要进行事务管理的方法上，而不是放在所有接口实现类上：只读的接口就不需要事务管理，由于配置了@Transactional就需要[AOP](https://so.csdn.net/so/search?q=AOP&spm=1001.2101.3001.7020)拦截及事务的处理，可能影响系统性能。
+
+4. ##### 推荐添加的业务接口上，用于标记此接口中所有方法都是事务性的，或业务接口中的抽象方法上，用于此方法是事务性的
 
 - #### 事务（Transaction）：是关系型数据库中一种能够保障多个写操作（增、删、改）要么全部成功，要么全部失败的机制,不存在执行一半的情况。
 
