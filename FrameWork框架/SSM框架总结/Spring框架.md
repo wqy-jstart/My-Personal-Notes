@@ -40,28 +40,35 @@ Spring框架主要解决了创建对象、管理对象的问题。
        @ComponentScan("cn.tedu")
        ```
 
+     - 配置类xml中时:
+
+       - ```xml
+         <!-- 扫描controller包下的所有控制器组类 -->
+         <context:component-Scan base-package="cn.tedu.controller"></context>
+         ```
+   
    - 如果没有配置`@ComponentScan`的参数中的根包，则组件扫描的范围就是当前类的包及其子孙包
-
+   
    - 需要在各组件类上添加组件注解，才会被创建对象，常见的组件注解有：
-
+   
      - `@Component`：通用注解
-
-     - ```
+   
+     - ```java
        @Controller
        ```
-
+   
        ：控制器类的注解
-
+   
        - `@RestController`：仅添加Spring MVC框架后可使用
        - `@ControllerAdvice`：仅添加Spring MVC框架后可使用(SpringMVC的全局异常处理)
        - `@RestControllerAdvice`：仅添加Spring MVC框架后可使用(SpringMVC的全局异常处理)
-
+   
      - `@Service`：Service这种业务类的注解
-
+   
      - `@Repository`：处理数据源中的数据读写的类的注解
-
+   
    - 以上4种组件注解在Spring框架作用范围之内是完全等效的
-
+   
    - 在Spring框架中，还有`@Configuration`注解，也是组件注解的一种，但是Spring对此注解的处理更加特殊（Spring框架对配置类使用了代理模式）
 
 对于这2种创建对象的做法，通常：
