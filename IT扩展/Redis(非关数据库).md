@@ -278,6 +278,12 @@ void valueGetObject(){
 }
 ```
 
+> ##### 在终端中get一个对象,输出的内容会包含该对象反射后的完全限定名
+>
+> ```java
+> {"@class":"cn.tedu.csmall.product.pojo.vo.AlbumStandardVO","id":2022,"name":"测试相册00001","description":"测试简介00001","sort":998}
+> ```
+
 - #### 5.根据正则查询数据
 
   - ```java
