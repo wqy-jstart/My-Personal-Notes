@@ -86,7 +86,7 @@ Mybatis 通过使用内置的日志工厂提供日志功能。内置日志工厂
   - ##### Xml:
 
   ```xml
-  	<!--int updatePasswordById(@Param("id") Long id,@Param("password") String 	password);-->
+  	<!--int updatePasswordById(@Param("i") Long id,@Param("pass") String 	password);-->
       <update id="updatePasswordById">
           UPDATE ams_admin SET password=#{pass} WHERE id = #{i}
       </update>
