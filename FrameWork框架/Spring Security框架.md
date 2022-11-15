@@ -194,11 +194,11 @@ Spring Security框架主要解决了**认证**与**授权**相关的问题.
 
 ## 介绍:
 
-Spring Security是一个能够为基于Spring的企业应用系统提供声明式的安全访问控制解决方案的安全框架。它提供了一组可以在Spring应用上下文中配置的Bean，充分利用了Spring IoC，DI（控制反转Inversion of Control ,DI:Dependency Injection 依赖注入）和AOP（面向切面编程）功能，为应用系统提供声明式的安全访问控制功能，减少了为企业系统安全控制编写大量重复代码的工作。
+Spring Security是一个能够为**基于Spring的企业应用系统提供声明式的安全访问控制解决方案的安全框架**。它提供了一组**可以在Spring应用上下文中配置的Bean**，充分利用了**Spring IoC,（控制反转Inversion of Control** ,**DI:Dependency Injection 依赖注入**）和**AOP（面向切面编程）**功能，为应用系统提供声明式的安全访问控制功能，减少了为企业系统安全控制编写大量重复代码的工作。
 
 ### 功能:
 
-Spring Security对Web安全性的支持大量地依赖于Servlet过滤器。这些过滤器拦截进入请求，并且在应用程序处理该请求之前进行某些安全处理。 Spring Security提供有若干个过滤器，它们能够拦截Servlet请求，并将这些请求转给认证和访问决策管理器处理，从而增强安全性。根据自己的需要，可以使用适当的过滤器来保护自己的应用程序。
+Spring Security对Web安全性的支持大量地依赖于Servlet过滤器。这些过滤器拦截进入请求，并且在应用程序处理该请求之前进行某些安全处理。 Spring Security提供有若干个过滤器，它们**能够拦截Servlet请求，并将这些请求转给认证和访问决策管理器处理，从而增强安全性**。根据自己的需要，可以使用适当的过滤器来保护自己的应用程序。
 
 ### 流程图:
 

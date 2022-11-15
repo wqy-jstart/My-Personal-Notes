@@ -382,3 +382,433 @@ public void rightPush(){
 ![image-20221111174343596](images/image-20221111174343596.png)
 
 ![image-20221111174416595](images/image-20221111174416595.png)
+
+### Redis的List集合下标:
+
+![image-20221114093420529](images/image-20221114093420529.png)
+
+# 4.关于数据一致性问题的思考
+
+当使用Redis缓存数据后，如果数据库中的数据发生了变化，此时，Redis中的数据会暂时与MySQL数据库中的数据并不相同，通常称之为“数据一致性”问题！对于此问题，只可能：
+
+- 及时更新Redis缓存数据，使得Redis中的数据与MySQL数据库中的数据是一致的
+- 放任数据不一致的表现，即Redis中的数据在接下来的一段时间里是不准确的，直至更新Redis中的数据，才会是准确的数据
+
+如果及时更新Redis缓存数据，其优点是Redis缓存中的数据基本上是准确的，其缺点在于可能需要频繁的更新Redis缓存数据，本质上反复读MySQL、反复写Redis的操作，如果读取Redis数据的频率根本不高，则会形成浪费，并且，更新缓存的频率太高，也会增加服务器的压力，所以，对于增、删、改频率非常高的数据，可能不太适用此规则！
+
+放任数据不一致的表现，其缺点很显然就是数据可能不准确，但是，其优点是没有给服务器端增加任何压力，需要注意：其实，并不是所有数据都必须时时刻刻都要求准确性的，某些数据即使不准确，也不会产生恶劣后果（例如热门话题排行榜，定期更新即可），或者，某些数据即使准确，也没有太多实际意义（例如热门时段的火车票、飞机票等，即使在列表中显示了正确的余量，也不一定能够成功购买）。
+
+基于使用Redis缓存数据可能存在数据一致性问题，通常，使用Redis缓存的数据可能：
+
+- 数据的增、删、改的频率非常低，查询频率相对更高（甚至非常高）
+  - 例如电商平台中的商品类别、品牌
+  - 无论采取即时更新Redis的策略，还是定期更新Redis的策略，都是可行的解决方案
+- 对数据的准确性要求不高的数据
+  - 例如某些列表或榜单
+  - 通常使用定期更新Redis的策略，更新周期应该根据数据变化的频率及其价值来决定
+
+# 5.缓存品牌数据
+
+通常，推荐将Redis的读写数据操作进行封装，则先在根包下创建`repo.IBrandRedisRepository`接口：
+
+```java
+public interface IBrandRedisRepository {}
+```
+
+然后，在根包下`repo.impl.BrandRedisRepositoryImpl`创建以上接口的实现类：
+
+```java
+@Slf4j
+@Repository
+public class BrandRedisRepositoryImpl implements IBrandRedisRepository {
+    public BrandRedisRepositoryImpl() {
+        log.debug("创建处理缓存的数据访问对象：BrandRedisRepositoryImpl");
+    }
+}
+```
+
+接下来，应该在接口中添加读写数据的抽象方法，并在实现类中实现这些方法！
+
+在`IBrandRedisRepository`接口中添加抽象方法：
+
+```java
+package cn.tedu.csmall.product.repo;
+
+import cn.tedu.csmall.product.pojo.vo.BrandListItemVO;
+import cn.tedu.csmall.product.pojo.vo.BrandStandardVO;
+
+import java.util.List;
+
+/**
+ * 用来缓存Redis中品牌数据的接口类
+ *
+ * @Author java.@Wqy
+ * @Version 0.0.1
+ */
+public interface IBrandRedisRepository {
+
+    String BRAND_ITEM_KEY_PREFIX = "brand:item";// 表示品牌->item数据(多级的效果)
+
+    String BRAND_LIST_KEY = "brand:list";// 用来存放品牌中的list列表的key
+
+    String BRAND_ITEM_KEYS_KEY = "brand:item-keys";// 用来标记品牌的中item中的key成员
+
+    /**
+     * 该方法用来存储一条品牌数据,不做返回
+     *
+     * @param brandStandardVO 需要存储的品牌详情VO类
+     */
+    void save(BrandStandardVO brandStandardVO);
+
+    /**
+     * 该方法用来存储多条品牌数据,空返回
+     *
+     * @param brands 要存储的品牌List集合
+     */
+    void save(List<BrandListItemVO> brands);
+
+    /**
+     * 删除Redis中的所有数据(item数据,list集合数据,brand:list,brand:item-keys)
+     * @return 返回删除的数量
+     */
+    Long deleteAll();
+
+    /**
+     * 向Redis中取出需要的item数据
+     * 正常若向Redis中取数据需要对应的key值,
+     * 这里的key有前缀拼接,为了封装性,这里只让调用者传入id即可
+     *
+     * @param id 品牌id
+     * @return 返回品牌详情VO类
+     */
+    BrandStandardVO get(Long id);
+
+    /**
+     * 该方法用来取出所有品牌列表,无参
+     *
+     * @return 返回品牌列表的List集合
+     */
+    List<BrandListItemVO> list();
+
+    /**
+     * 该方法用来按指定下标范围取出品牌列表
+     *
+     * @param start 起始下标
+     * @param end   末尾下标
+     * @return 返回列表List集合
+     */
+    List<BrandListItemVO> list(long start, long end);
+}
+```
+
+并在`BrandRedisRepositoryImpl`中实现此方法：
+
+```java
+/**
+ * 处理Redis中品牌缓存的实现类
+ *
+ * @Author java.@Wqy
+ * @Version 0.0.1
+ */
+@Slf4j
+@Repository// 声明一个组件
+public class BrandRedisRepositoryImpl implements IBrandRedisRepository {
+
+    @Autowired
+    private RedisTemplate<String, Serializable> redisTemplate;
+
+    public BrandRedisRepositoryImpl(){
+        log.debug("创建处理缓存的数据访问对象:BrandRedisRepositoryImpl");
+    }
+
+    // 实现向Redis中写入数据的业务
+    @Override
+    public void save(BrandStandardVO brandStandardVO) {
+        String key = BRAND_ITEM_KEY_PREFIX+brandStandardVO.getId();// 这样存储便于在Redis中归类呈现
+        // ★向Redis的品牌中的brand:item-keys里,添加该次添加的品牌key值,为了删除时直接遍历里面item的key值作删除
+        redisTemplate.opsForSet().add(BRAND_ITEM_KEYS_KEY,key);
+        redisTemplate.opsForValue().set(key,brandStandardVO);// 将对应的品牌数据放到指定key中
+    }
+
+    // 实现向Redis中写入多条品牌数据的业务
+    @Override
+    public void save(List<BrandListItemVO> brands) {
+        String key = BRAND_LIST_KEY;// 用来存放品牌列表的key
+        ListOperations<String, Serializable> ops = redisTemplate.opsForList();// 获取ListOperations
+        for (BrandListItemVO brand : brands) {
+            ops.rightPush(key,brand);// 调用rightPush()方法向Redis中存入品牌列表
+        }
+    }
+
+    // 实现删除Brand中所有数据的业务(集合,item,member)
+    @Override
+    public Long deleteAll() {
+        // 获取到brand:item-keys中所有的item的key
+        Set<Serializable> members = redisTemplate.opsForSet().members(BRAND_ITEM_KEYS_KEY);
+        Set<String> keys = new HashSet<>();// 创建一个Set集合
+        for (Serializable member : members) {
+            keys.add((String) member);// 将获取的所有item的key放到Set集合中,例:brand:item1
+        }
+        // 将List集合和保存Key的Set的Key也添加到集合中
+        keys.add(BRAND_LIST_KEY);// brand:list
+        keys.add(BRAND_ITEM_KEYS_KEY);// brand:item-keys
+        return redisTemplate.delete(keys);// 调用delete()方法来删除集合中的元素
+    }
+
+    // 实现根据key向Redis中获取一条品牌数据的业务
+    @Override
+    public BrandStandardVO get(Long id) {
+        Serializable serializable = redisTemplate.opsForValue().get(BRAND_ITEM_KEY_PREFIX+id);// 传入id与brand:item拼接成key
+        BrandStandardVO brandStandardVO = null;// 预先声明一个品牌详情的引用
+        if (serializable!=null){ // 判断根据品牌key返回的数据是否为null?
+            if (serializable instanceof BrandStandardVO){ // 判断类型是否存在可转换的关系
+                brandStandardVO = (BrandStandardVO) serializable;// 将返回的Serializable强转为BrandStandardVO品牌详情
+            }
+        }
+        return brandStandardVO;// 最终作出返回
+    }
+
+    // 实现向Redis中查询所有品牌列表的业务
+    @Override
+    public List<BrandListItemVO> list() {
+        long start = 0;
+        long end = -1;
+        return list(start,end);// 调用list()方法传入起始和末尾下标,返回所有品牌列表
+    }
+
+    // 实现根据下标向Redis中获取品牌数据的方法
+    @Override
+    public List<BrandListItemVO> list(long start, long end) {
+        String key = BRAND_LIST_KEY;// 拿到品牌列表的key值
+        ListOperations<String, Serializable> ops = redisTemplate.opsForList();// 获取ListOperations
+        List<Serializable> list = ops.range(key, start, end);// 调用range()方法传入下标,返回该下标范围的品牌数据
+        List<BrandListItemVO> brands = new ArrayList<>();// 因为集合中的泛型不同,所以创建一个List集合
+        for (Serializable item : list) {// 遍历获取的指定下标范围的品牌数据
+            brands.add((BrandListItemVO) item);// 遍历的同时将每一个品牌数据放到List集合中
+        }
+        return brands;// 装满后作出返回
+    }
+}
+```
+
+# 6.缓存预热
+
+当启用项目时就将缓存数据加载到Redis缓存中，这种做法通常称之为“缓存预热”。
+
+在Spring Boot项目中，自定义组件类，实现`ApplicationRunner`接口，此接口中的`run()`方法将在启动项目之后自动执行，可以通过此机制实现缓存预热。
+
+在根包下创建`preload.CachePreload`类并实现缓存预热：
+
+```java
+package cn.tedu.csmall.product.preload;
+
+import cn.tedu.csmall.product.mapper.BrandMapper;
+import cn.tedu.csmall.product.pojo.vo.BrandListItemVO;
+import cn.tedu.csmall.product.repo.IBrandRedisRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+
+@Slf4j
+@Component
+public class CachePreload implements ApplicationRunner {
+
+    @Autowired
+    private BrandMapper brandMapper;
+    @Autowired
+    private IBrandRedisRepository brandRedisRepository;
+
+    public CachePreload() {
+        log.debug("创建开机自动执行的组件对象：CachePreload");
+    }
+
+    // ApplicationRunner中的run()方法会在项目启动成功之后自动执行
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
+        log.debug("CachePreload.run()");
+
+        log.debug("准备删除Redis缓存中的品牌数据……");
+        brandRedisRepository.deleteAll();
+        log.debug("删除Redis缓存中的品牌数据，完成！");
+
+        log.debug("准备从数据库中读取品牌列表……");
+        List<BrandListItemVO> list = brandMapper.list();
+        log.debug("从数据库中读取品牌列表，完成！");
+
+        log.debug("准备将品牌列表写入到Redis缓存……");
+        brandRedisRepository.save(list);
+        log.debug("将品牌列表写入到Redis缓存，完成！");
+    }
+
+}
+```
+
+# 7. 计划任务
+
+计划任务：设定某种规则（通常是与时间相关的规则），当满足规则时，自动执行任务，并且，此规则可能是周期性的满足，则任务也会周期性的执行。
+
+在Spring Boot项目中，需要在配置类上添加`@EnableScheduling`注解，以开启计划任务，否则，当前项目中所有计划任务都是不允许执行的！
+
+在任何组件类中，自定义方法，在方法上添加`@Scheduled`注解，则此方法就是计划任务，通过此注解的参数可以配置计划任务的执行规律。
+
+在根包下创建`config.ScheduleConfiguration`类，在此类上添加`@EnableScheduling`注解，以开启计划任务：
+
+```java
+package cn.tedu.csmall.product.config;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
+
+/**
+ * 计划任务配置类
+ *
+ * @author java@tedu.cn
+ * @version 0.0.1
+ */
+@Slf4j
+@Configuration
+@EnableScheduling
+public class ScheduleConfiguration {
+
+    public ScheduleConfiguration() {
+        log.debug("创建配置类对象：ScheduleConfiguration");
+    }
+
+}
+```
+
+然后，在根包下创建`schedule.CacheSchedule`类，在类上添加`@Component`注解，并在类中自定义计划任务方法：
+
+```java
+/**
+ * 二.利用执行计划来完成缓存的加载,计划重建缓存的时间
+ *
+ * @Author java@Wqy
+ * @Version 0.0.1
+ */
+@Slf4j
+//@Component// 声明一个组件类
+public class CacheSchedule {
+
+    @Autowired
+    private IBrandService brandService;
+
+    public CacheSchedule() {
+        log.debug("创建计划任务对象:CacheSchedule");
+    }
+
+    // 关于@Schedule注解的参数配置
+    // fixedRate：执行频率，将按照上一次开始执行的时间来计算下一次的执行时间，以毫秒值为单位
+    // fixedDelay：执行间隔时间，即上次执行结束后再过多久执行下一次，以毫秒值为单位
+    // cron：使用1个字符串，其中包括6~7个值，各值之间使用1个空格进行分隔
+    // >> 在cron的字符串中各值依次表示：秒 分 时 日 月 周（星期） [年]
+    // >> 以上各值都可以使用通配符
+    // >> 使用星号（*）表示任意值
+    // >> 使用问号（?）表示不关心具体值，问号只能用于“日”和“周（星期）”
+    // >> 例如："56 34 12 15 11 ? 2022"表示“2022年11月15日12:34:56，无视当天星期几”
+    // >> 以上各值，可以使用“x/x”格式的值，例如：在分钟对应的位置设置“1/5”，则表示当分钟值为1时执行，且每间隔5分钟执行1次
+    @Scheduled(fixedRate = 5 * 60 * 1000)
+    public void rebuildCache() {
+        log.debug("开始执行【重建品牌缓存】计划任务…………");
+        brandService.rebuildCache();// 调用BrandService中重新加载Redis缓存的方法
+        log.debug("本次【重建品牌缓存】计划任务执行完成！");
+    }
+}
+```
+
+提示：以上计划任务需要在业务逻辑层补充“重建品牌缓存”的功能，在`IBrandService`中添加：
+
+```java
+/**
+ * 重建品牌缓存
+ */
+void rebuildCache();
+```
+
+并在`BrandServiceImpl`中实现：
+
+```java
+@Override
+public void rebuildCache() {
+    log.debug("开始处理【重建品牌缓存】的业务，无参数");
+    log.debug("准备删除Redis缓存中的品牌数据……");
+    brandRedisRepository.deleteAll();
+    log.debug("删除Redis缓存中的品牌数据，完成！");
+
+    log.debug("准备从数据库中读取品牌列表……");
+    List<BrandListItemVO> list = brandMapper.list();
+    log.debug("从数据库中读取品牌列表，完成！");
+
+    log.debug("准备将品牌列表写入到Redis缓存……");
+    brandRedisRepository.save(list);
+    log.debug("将品牌列表写入到Redis缓存，完成！");
+
+    log.debug("准备将各品牌详情写入到Redis缓存……");
+    for (BrandListItemVO brandListItemVO : list) {
+        Long id = brandListItemVO.getId();
+        BrandStandardVO brandStandardVO = brandMapper.getStandardById(id);
+        brandRedisRepository.save(brandStandardVO);
+    }
+    log.debug("将各品牌详情写入到Redis缓存，完成！");
+}
+```
+
+# 8.手动更新缓存
+
+由于在业务逻辑层已经实现“重建品牌缓存”的功能，在控制器中添加处理请求的方法，即可实现手动更新缓存：
+
+```java
+// http://localhost:9080/brands/cache/rebuild
+@ApiOperation("重建品牌缓存")
+@ApiOperationSupport(order = 600)
+@PostMapping("/cache/rebuild")
+public JsonResult<Void> rebuildCache() {
+    log.debug("开始处理【重建品牌缓存】的请求，无参数");
+    brandService.rebuildCache();
+    return JsonResult.ok();
+}
+```
+
+后续，客户端只需要提交请求，即可实现“重建品牌缓存”。
+
+# 9.按需加载缓存数据
+
+假设当根据id获取品牌详情时，需要通过“按需加载缓存数据”的机制来实现缓存，可以将原业务调整为：
+
+```java
+@Override
+public BrandStandardVO getStandardById(Long id) {
+    log.debug("开始处理【根据id查询品牌详情】的业务，参数：{}", id);
+    // 根据id从缓存中获取数据
+    log.debug("将从Redis中获取相关数据");
+    BrandStandardVO brand = brandRedisRepository.get(id);
+    // 判断获取到的结果是否不为null
+    if (brand != null) {
+        // 是：直接返回
+        log.debug("命中缓存，即将返回：{}", brand);
+        return brand;
+    }
+
+    // 无缓存数据，从数据库中查找数据
+    log.debug("未命中缓存，即将从数据库中查找数据");
+    brand = brandMapper.getStandardById(id);
+    // 判断查询到的结果是否为null
+    if (brand == null) {
+        // 是：抛出异常
+        String message = "获取品牌详情失败，尝试访问的数据不存在！";
+        log.warn(message);
+        throw new ServiceException(ServiceCode.ERR_NOT_FOUND, message);
+    }
+
+    // 将查询结果写入到缓存，并返回
+    log.debug("从数据库查询到有效结果，将查询结果存入到Redis：{}", brand);
+    brandRedisRepository.save(brand);
+    log.debug("返回结果：{}", brand);
+    return brand;
+}
+```

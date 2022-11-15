@@ -195,18 +195,19 @@ Spring框架对`@Resource`注解的自动装配机制是：先根据名称再根
 
 # 注解:
 
-| 注解             | 所属框架 | 作用                                                         |
-| ---------------- | -------- | ------------------------------------------------------------ |
-| `@ComponentScan` | Spring   | 添加在配置类上，开启组件扫描。<br />如果没有配置包名，则扫描当前配置类所在的包，<br />如果配置了包名，则扫描所配置的包及其子孙包 |
-| `@Component`     | Spring   | 添加在类上，标记当前类是组件类，可以通过参数配置Spring Bean名称 |
-| `@Controller`    | Spring   | 添加在类上，标记当前类是控制器组件类，用法同`@Component`     |
-| `@Service`       | Spring   | 添加在类上，标记当前类是业务逻辑组件类，用法同`@Component`   |
-| `@Repository`    | Spring   | 添加在类上，标记当前类是数据访问组件类，用法同`@Component`   |
-| `@Configuration` | Spring   | 添加在类上，仅添加此注解的类才被视为配置类，通常不配置注解参数 |
-| `@Bean`          | Spring   | 添加在方法上，标记此方法将返回某个类型的对象，<br />且Spring会自动调用此方法，并将对象保存在Spring容器中 |
-| `@Autowired`     | Spring   | 添加在属性上，使得Spring自动装配此属性的值 <br />添加在构造方法上，使得Spring自动调用此构造方法<br />添加在Setter方法上，使得Spring自动调用此方法 |
-| `@Qualifier`     | Spring   | 添加在属性上，或添加在方法的参数上， <br />配合自动装配机制，用于指定需要装配的Spring Bean的名称 |
-| `@Scope`         | Spring   | 添加在组件类上，或添加在已经添加了`@Bean`注解的方法上，<br />用于指定作用域，注解参数为`singleton`（默认）时为“单例”，注解参数为`prototype`时为“非单例” |
-| `@Lazy`          | Spring   | 添加在组件类上，或添加在已经添加了`@Bean`注解的方法上， <br />用于指定作用域，当Spring Bean是单例时，注解参数为`true`（默认）时为“懒加载”，注解参数为`false`时为“预加载” |
-| `@Value`         | Spring   | 添加在属性上，或添加在被Spring调用的方法的参数上，<br/>用于读取`Environment`中的属性值，为对象的属性或方法的参数注入值 |
-| `@Resource`      | Spring   | 此注解是`javax`包中的注解，<br />添加在属性上，使得Spring自动装配此属性的值， <br />通常不推荐使用此注解 |
+| 注解                | 所属框架 | 作用                                                         |
+| ------------------- | -------- | ------------------------------------------------------------ |
+| `@ComponentScan`    | Spring   | 添加在配置类上，开启组件扫描。<br />如果没有配置包名，则扫描当前配置类所在的包，<br />如果配置了包名，则扫描所配置的包及其子孙包 |
+| `@Component`        | Spring   | 添加在类上，标记当前类是组件类，可以通过参数配置Spring Bean名称 |
+| `@Controller`       | Spring   | 添加在类上，标记当前类是控制器组件类，用法同`@Component`     |
+| `@Service`          | Spring   | 添加在类上，标记当前类是业务逻辑组件类，用法同`@Component`   |
+| `@Repository`       | Spring   | 添加在类上，标记当前类是数据访问组件类，用法同`@Component`   |
+| `@Configuration`    | Spring   | 添加在类上，仅添加此注解的类才被视为配置类，通常不配置注解参数 |
+| `@Bean`             | Spring   | 添加在方法上，标记此方法将返回某个类型的对象，<br />且Spring会自动调用此方法，并将对象保存在Spring容器中 |
+| `@Autowired`        | Spring   | 添加在属性上，使得Spring自动装配此属性的值 <br />添加在构造方法上，使得Spring自动调用此构造方法<br />添加在Setter方法上，使得Spring自动调用此方法 |
+| `@Qualifier`        | Spring   | 添加在属性上，或添加在方法的参数上， <br />配合自动装配机制，用于指定需要装配的Spring Bean的名称 |
+| `@Scope`            | Spring   | 添加在组件类上，或添加在已经添加了`@Bean`注解的方法上，<br />用于指定作用域，注解参数为`singleton`（默认）时为“单例”，注解参数为`prototype`时为“非单例” |
+| `@Lazy`             | Spring   | 添加在组件类上，或添加在已经添加了`@Bean`注解的方法上， <br />用于指定作用域，当Spring Bean是单例时，注解参数为`true`（默认）时为“懒加载”，注解参数为`false`时为“预加载” |
+| `@Value`            | Spring   | 添加在属性上，或添加在被Spring调用的方法的参数上，<br/>用于读取`Environment`中的属性值，为对象的属性或方法的参数注入值 |
+| `@Resource`         | Spring   | 此注解是`javax`包中的注解，<br />添加在属性上，使得Spring自动装配此属性的值， <br />通常不推荐使用此注解 |
+| `@EnableScheduling` | Spring   | 只能添加在类上 <br/>作用在配置类上,用来开启计划任务,例如定时向Redis中加载缓存 |
