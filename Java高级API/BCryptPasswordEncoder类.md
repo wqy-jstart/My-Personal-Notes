@@ -52,3 +52,31 @@ public class BCryptTests {
 1. #### BCrypt算法默认使用了随机盐值，所以，即使使用相同的原文，每次编码产生的密文都是不同的！
 
 2. #### BCrypt算法被刻意设计为慢速的，所以，可以非常有限的避免穷举式的暴力破解！
+
+## 其实现了PasswordEncoder接口
+
+![image-20221122210353063](images/image-20221122210353063.png)
+
+## ★PasswordEncoder接口中定义了三个抽象方法
+
+- encode 方法表示对密码进行加密，参数 rawPassword 就是你传入的明文密码，返回的则是加密之后的密文，这里的加密方案采用了 MD5。 
+- matches 方法表示对密码进行比对，参数 rawPassword 相当于是用户登录时传入的密码，encodedPassword 则相当于是加密后的密码(从数据库中查询而来)。
+
+- upgradeEncoding()方法 如果解析的密码能够再次进行解析且达到更 安全的结果则返回 true,否则返回 false。默认返回 false。
+
+##### 该接口源代码如下:
+
+```java
+package org.springframework.security.crypto.password;
+
+public interface PasswordEncoder {
+    String encode(CharSequence var1);
+
+    boolean matches(CharSequence var1, String var2);
+
+    default boolean upgradeEncoding(String encodedPassword) {
+        return false;
+    }
+}
+```
+
