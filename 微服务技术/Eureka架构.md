@@ -23,7 +23,7 @@ SpringCloud将它集成在其子项目spring-cloud-netflix中，以实现SpringC
 
 #### Eureka的作用:
 
-![image-20221124150705742](C:\Users\admin\Desktop\git本地仓库\Java_Important_Notes-WQY\微服务技术\images\image-20221124150705742.png)
+![image-20221124150705742](images/image-20221124150705742.png)
 
 > Eureka注册中心会将Service业务层服务提供的接口拿到保存并且每隔一定时间检查接口的状态,若某个接口不能使用时处于"非健康状态",会被Eureka从列表中剔除!
 >
@@ -92,7 +92,7 @@ eureka:
 
 ##### 最后访问:http://localhost:10086/ 即可开启Eureka服务
 
-![image-20221124153631992](C:\Users\admin\Desktop\git本地仓库\Java_Important_Notes-WQY\微服务技术\images\image-20221124153631992.png)
+![image-20221124153631992](images/image-20221124153631992.png)
 
 > ##### 在Instances currently registered with Eureka下可以观察到注册过来的服务端接口和信息
 
@@ -124,7 +124,7 @@ eureka:
 
 #### 模拟多个启动实例:
 
-![image-20221124154914329](C:\Users\admin\Desktop\git本地仓库\Java_Important_Notes-WQY\微服务技术\images\image-20221124154914329.png)
+![image-20221124154914329](images/image-20221124154914329.png)
 
 >在Environment下的VM options中配置:-Dserver.port=8082  更改启动实例的端口号,防止冲突
 
@@ -156,15 +156,15 @@ public RestTemplate restTemplate() {
 
 - ##### 负载均衡的原理流程
 
-  ![image-20221124161155371](C:\Users\admin\Desktop\git本地仓库\Java_Important_Notes-WQY\微服务技术\images\image-20221124161155371.png)
+  ![image-20221124161155371](images/image-20221124161155371.png)
 
   执行过程会被拦截并替换端口地址
 
-  ![image-20221124161224941](C:\Users\admin\Desktop\git本地仓库\Java_Important_Notes-WQY\微服务技术\images\image-20221124161224941.png)
+  ![image-20221124161224941](images/image-20221124161224941.png)
 
 > #### 总体流程如下:
 
-![image-20221124161714894](C:\Users\admin\Desktop\git本地仓库\Java_Important_Notes-WQY\微服务技术\images\image-20221124161714894.png)
+![image-20221124161714894](images/image-20221124161714894.png)
 
 ### 5.IRule接口处理负载均衡规则
 
@@ -173,11 +173,11 @@ Ribbon的负载均衡规则是一个叫做IRule的接口来定义的,每一个�
 - 规则接口是IRule
 - 默认实现的是ZoneAvoidanceRule,根据zone选择服务列表,然后轮询
 
-![image-20221124163107474](C:\Users\admin\Desktop\git本地仓库\Java_Important_Notes-WQY\微服务技术\images\image-20221124163107474.png)
+![image-20221124163107474](images/image-20221124163107474.png)
 
 #### 负载均衡的策略:
 
-![image-20221124163123646](C:\Users\admin\Desktop\git本地仓库\Java_Important_Notes-WQY\微服务技术\images\image-20221124163123646.png)
+![image-20221124163123646](images/image-20221124163123646.png)
 
 > #### 更换负载均衡的策略
 
