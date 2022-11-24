@@ -84,7 +84,7 @@ OK
 127.0.0.1:6379> keys username0
 (empty list or set)
 
-127.0.0.1:6379> keys user*
+127.0.0.1:6379> keys user* #查询所有user开头加一个通配符的key
 1) "username1"
 2) "username3"
 3) "username2"
