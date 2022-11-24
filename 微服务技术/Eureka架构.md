@@ -1,5 +1,13 @@
 # Eureka架构
 
+![image-20221124200851714](images/image-20221124200851714.png)
+
+## 百科概念:
+
+Eureka是[Netflix](https://baike.baidu.com/item/Netflix/662557?fromModule=lemma_inlink)开发的服务发现框架，本身是一个基于[REST](https://baike.baidu.com/item/REST/6330506?fromModule=lemma_inlink)的服务，主要用于定位运行在AWS域中的中间层服务，以达到负载均衡和中间层服务故障转移的目的。
+
+SpringCloud将它集成在其子项目spring-cloud-netflix中，以实现SpringCloud的服务发现功能。
+
 #### 服务调用出现的问题:
 
 - 服务消费者该如何获取服务提供者的地址信息?
@@ -28,7 +36,7 @@
 - EurekaServer:服务端,注册中心
   - 记录服务信息
   - 心跳监控
-- EurekaClient:客户端
+- EurekaClient:客户端(这是一个基于java的客户端)
   - Provider:服务提供者,例如`user-service`
     - 注册自己的信息到EurekaServer
     - 每隔30秒向EurekaServer发送心跳
@@ -36,9 +44,9 @@
     - 根据服务名称从EurekaServer拉去服务列表
     - 基于服务列表做负载均衡,选中一个微服务后发起远程调用
 
-## Eureka服务端
+## Eureka服务
 
-#### 1.开启服务端
+### 1.Eureka Service服务端,注册中心
 
 #### 依赖:
 
@@ -86,7 +94,9 @@ eureka:
 
 ![image-20221124153631992](C:\Users\admin\Desktop\git本地仓库\Java_Important_Notes-WQY\微服务技术\images\image-20221124153631992.png)
 
-#### 2.Eureka服务注册
+> ##### 在Instances currently registered with Eureka下可以观察到注册过来的服务端接口和信息
+
+### 2.Eureka Client客户端
 
 #### 依赖:
 
@@ -116,7 +126,13 @@ eureka:
 
 ![image-20221124154914329](C:\Users\admin\Desktop\git本地仓库\Java_Important_Notes-WQY\微服务技术\images\image-20221124154914329.png)
 
-#### 3.服务发现----拉取和负载均衡
+>在Environment下的VM options中配置:-Dserver.port=8082  更改启动实例的端口号,防止冲突
+
+#### ★客户端缓存机制
+
+即使所有的Eureka Server都挂掉，客户端依然可以利用缓存中的信息消费其他服务的API。
+
+### 3.服务发现----拉取和负载均衡
 
 服务拉取是基于服务名称获取服务列表,然后在对服务列表做负载均衡
 
@@ -136,7 +152,7 @@ public RestTemplate restTemplate() {
 }
 ```
 
-#### 4.Ribbon负载均衡
+### 4.Ribbon负载均衡
 
 - ##### 负载均衡的原理流程
 
@@ -150,7 +166,7 @@ public RestTemplate restTemplate() {
 
 ![image-20221124161714894](C:\Users\admin\Desktop\git本地仓库\Java_Important_Notes-WQY\微服务技术\images\image-20221124161714894.png)
 
-#### 5.IRule接口处理负载均衡规则
+### 5.IRule接口处理负载均衡规则
 
 Ribbon的负载均衡规则是一个叫做IRule的接口来定义的,每一个子接口都是一种规则:
 
@@ -195,4 +211,3 @@ ribbon:
     clients: # List集合类型---可指定饥饿加载的微服务名称
       - userservice
 ```
-
