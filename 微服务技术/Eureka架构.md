@@ -90,7 +90,7 @@ eureka:
       defaultZone: http://127.0.0.1:10086/eureka
 ```
 
-最后访问:http://localhost:10086/ 即可开启Eureka服务
+##### 最后访问:http://localhost:10086/ 即可开启Eureka服务
 
 ![image-20221124153631992](C:\Users\admin\Desktop\git本地仓库\Java_Important_Notes-WQY\微服务技术\images\image-20221124153631992.png)
 

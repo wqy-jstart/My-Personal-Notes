@@ -42,7 +42,7 @@ Nacos是阿里巴巴的产品,现在是SpringCloud中的一个组件,相比Eurek
 
 > ##### 不出错就说明完成了启动!
 
-5.启动后可访问网址:http://localhost:8848/nacos/  
+##### 5.启动后可访问网址:http://localhost:8848/nacos/  
 
 6.进入后输入用户名和密码即可
 
