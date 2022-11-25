@@ -60,6 +60,11 @@ Nacos是阿里巴巴的产品,现在是SpringCloud中的一个组件,相比Eurek
 
 > ##### 服务列表中就列举了注册的服务接口和各种信息
 
+实际Nacos的服务类型还有分类:
+
+1. 临时实例(默认)
+2. 持久化实例(永久实例)
+
 #### 2.将服务接口注册到Nacos
 
 1.在cloud-demo父工程中添加spring-cloud-alibaba的管理依赖
@@ -89,6 +94,16 @@ Nacos是阿里巴巴的产品,现在是SpringCloud中的一个组件,相比Eurek
 
 4.启动项目即可到Nacos注册中心查看微服务的信息
 
+> #### 注意:
+
+默认情况下,服务启动后每隔5秒回向Nacos发送一个"心跳包",这个心跳包中包含了当前服务的基本信息
+
+---Nacos接收到这个心跳包,首先检查当前服务在不在注册列表中,如果不在按新服务的业务进行注册,如果在,表示当前这个服务是健康状态
+
+---如果一个服务连续3次心跳(默认15秒)没有和Nacos进行信息的交互,就会将当前服务标记为非健康状态
+
+---如果一个服务连续6次心跳(默认30秒)没有和Nacos进行信息的交互,Nacos会将这个服务从注册列表中剔除
+
 ## Nacos服务分级存储模型(地域概念)
 
 ![image-20221124202739229](images/image-20221124202739229.png)
@@ -103,7 +118,7 @@ Nacos是阿里巴巴的产品,现在是SpringCloud中的一个组件,相比Eurek
 
 > 若是在局域网内进行调用和访问,距离近,速度快,如果是跨域跨集群访问又会如何?
 
-##### 1.服务集群属性
+#### 1.服务集群属性
 
 - 修改application.yml,添加如下内容
 
@@ -120,8 +135,24 @@ Nacos是阿里巴巴的产品,现在是SpringCloud中的一个组件,相比Eurek
 
   ![image-20221124204635894](images/image-20221124204635894.png)
 
-##### 2.当再次刷新Nacos服务页面时,点击userservice微服务详情即可看到多个集群的接口服务状态
+#### 2.当再次刷新Nacos服务页面时,点击userservice微服务详情即可看到多个集群的接口服务状态
 
 >这里的四个服务接口分别处于两个集群(SH,HZ)
 
 ![image-20221124204924548](images/image-20221124204924548.png)
+
+#### 3.优先访问本地集群
+
+在服务消费者中添加Nacos负载均衡规则配置
+
+```yaml
+userservice:
+  ribbon:
+    NFLoadBalancerRuleClassName: com.alibaba.cloud.nacos.ribbon.NacosRule  # 负载均衡规则
+```
+
+测试开启userservice的3个服务,集群分别是default,SH,HZ-------orderservice是HZ集群
+
+连续访问,发现所有访问都在HZ集群的userservice中
+
+证明了NacosRule优先选择本地集群的特点.

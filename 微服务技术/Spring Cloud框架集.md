@@ -76,7 +76,7 @@ public Order queryOrderById(Long orderId) {
     // 1.查询订单
     Order order = orderMapper.findById(orderId);
     // 2.利用RestTemplate发起http请求，查询用户
-    // 2.1.url路径
+    // 2.1.url路径      ↓使用微服务的name做端口↓
     String url = "http://userservice/user/" + order.getUserId();
     // 2.2.发送http请求，实现远程调用
     User user = restTemplate.getForObject(url, User.class);
@@ -87,3 +87,6 @@ public Order queryOrderById(Long orderId) {
 }
 ```
 
+最后通过浏览器搜索即可获得远程微服务的信息:
+
+![image-20221125091624384](images/image-20221125091624384.png)
