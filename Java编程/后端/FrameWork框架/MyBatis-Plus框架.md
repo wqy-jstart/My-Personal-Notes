@@ -35,33 +35,33 @@
 
 ```xml
 <dependencies>
-        <!--1.数据库驱动-->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <!--2.lombok-->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-        <!--3.mybatis-plus  版本很重要3.0.5-->
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.0.5</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+    <!--1.数据库驱动-->
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <scope>runtime</scope>
+    </dependency>
+    <!--2.lombok-->
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+    </dependency>
+    <!--3.mybatis-plus  版本很重要3.0.5-->
+    <dependency>
+        <groupId>com.baomidou</groupId>
+        <artifactId>mybatis-plus-boot-starter</artifactId>
+        <version>3.0.5</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
 ```
 
 ### 连接数据库配置
@@ -795,4 +795,125 @@ public void testWrapper6(){
 ##### 其余查询方法可寻官网:https://baomidou.com/pages/10c804/
 
 ### 代码自动生成器
+
+`AutoGenerator`是MyBatis-Plus的代码生成器,通过`AutoGenerator`可以快速生成Entity、Mapper、MapperXML、Service、Controller等各个模块的代码,极大的提升了开发效率!
+
+```java
+package cn.tedu.mybatisplus.wsk;
+
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.generator.AutoGenerator;
+import com.baomidou.mybatisplus.generator.config.DataSourceConfig;
+import com.baomidou.mybatisplus.generator.config.GlobalConfig;
+import com.baomidou.mybatisplus.generator.config.PackageConfig;
+import com.baomidou.mybatisplus.generator.config.StrategyConfig;
+import com.baomidou.mybatisplus.generator.config.po.TableFill;
+import com.baomidou.mybatisplus.generator.config.rules.DateType;
+import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
+
+import java.util.ArrayList;
+
+/**
+ * 代码生成器
+ *
+ * @Author java@Wqy
+ * @Version 0.0.1
+ */
+public class WskCode {
+    public static void main(String[] args) {
+
+        //我们需要构建一个代码生成器对象
+        AutoGenerator mpg = new AutoGenerator();
+        // 怎么样去执行?需要书写配置策略
+
+        // 1.全局配置
+        GlobalConfig gc = new GlobalConfig();
+        String projectPath = System.getProperty("user.dir");// user.dir获取当前项目的目录
+        gc.setOutputDir(projectPath+"/src/main/java");// 输出到哪个目录
+        gc.setAuthor("java@Wqy");// 配置作者
+        gc.setOpen(false); // 是否开启
+        gc.setFileOverride(false); // 是否重写文件
+        gc.setServiceName("%sService");// 去掉Service的I前缀
+        gc.setIdType(IdType.ID_WORKER); // 设置id的类型
+        gc.setDateType(DateType.ONLY_DATE); // 设置时间
+        gc.setSwagger2(true);
+
+        mpg.setGlobalConfig(gc);
+
+        // 2.设置数据源
+        DataSourceConfig dsc = new DataSourceConfig();
+        dsc.setUsername("root");// 数据库用户名
+        dsc.setPassword("root");// 数据库密码
+        dsc.setUrl("jdbc:mysql://localhost:3306/mybatis_plus?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai");
+        dsc.setDriverName("com.mysql.cj.jdbc.Driver"); // 数据库驱动地址
+        mpg.setDataSource(dsc); // 添加到数据库源
+
+        // 3.包的配置
+        PackageConfig pc = new PackageConfig();
+        pc.setParent("cn.tedu.mybatisplus"); // 项目的父包
+        pc.setEntity("pojo"); // 设置实体类的名字
+        pc.setMapper("mapper");// 设置Mapper层的名字
+        pc.setService("service");// 设置Service层的名字
+        pc.setController("controller");// 设置Controller层的名字
+
+        mpg.setPackageInfo(pc); // 添加到包配置中
+
+        // 4.策略配置
+        StrategyConfig strategy = new StrategyConfig();
+        strategy.setInclude("user"); // 配置要操作的数据库表名
+        strategy.setNaming(NamingStrategy.underline_to_camel);// Name驼峰命名
+        strategy.setColumnNaming(NamingStrategy.underline_to_camel);// Column驼峰命名
+        strategy.setEntityLombokModel(true);// 是否使用LomBok
+        strategy.setLogicDeleteFieldName("deleted");// 设置逻辑删除字段
+
+        // 自动填充配置
+        TableFill gmtCreate = new TableFill("gmt_create", FieldFill.INSERT); // 设置插入时自动填充创建时间
+        TableFill gmtModified = new TableFill("gmt_modified", FieldFill.INSERT_UPDATE);// 设置插入和修改时自动填充修改时间
+        ArrayList<TableFill> tableFills = new ArrayList<>(); // New一个ArrayList集合
+        tableFills.add(gmtCreate); // 添加创建时间
+        tableFills.add(gmtModified);// 添加修改时间
+        strategy.setTableFillList(tableFills); // 设置到填充配置中
+
+        // 乐观锁配置
+        strategy.setVersionFieldName("version"); // 设置乐观锁字段
+        strategy.setRestControllerStyle(true);// 开启驼峰命名
+        strategy.setControllerMappingHyphenStyle(true);// 开启请求路径RestFul风格
+        mpg.setStrategy(strategy);
+
+        mpg.execute();// 执行
+    }
+}
+```
+
+#### 额外配置:
+
+```xml
+<!--模板引擎 依赖:mybatis-plus代码生成的时候报异常-->
+<dependency>
+    <groupId>org.apache.velocity</groupId>
+    <artifactId>velocity-engine-core</artifactId>
+    <version>2.0</version>
+</dependency>
+<!--配置ApiModel在实体类中不生效-->
+<dependency>
+    <groupId>com.spring4all</groupId>
+    <artifactId>spring-boot-starter-swagger</artifactId>
+    <version>1.5.1.RELEASE</version>
+</dependency>
+<!--freemarker-->
+<dependency>
+    <groupId>org.freemarker</groupId>
+    <artifactId>freemarker</artifactId>
+    <version>2.3.30</version>
+</dependency>
+<!--beetl-->
+<dependency>
+    <groupId>com.ibeetl</groupId>
+    <artifactId>beetl</artifactId>
+    <version>3.3.2.RELEASE</version>
+</dependency>
+```
+
+
 
