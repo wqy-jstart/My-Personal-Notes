@@ -1,0 +1,50 @@
+Linux:
+    |-不同的发行版本：ubuntu centos ... redhat   麒麟Linux  龙蜥
+    |-文件系统：ext3 ext4 xfs
+    |-目录结构：/ 
+                       |-boot
+                       |-etc
+                       |-bin
+                       |-usr
+                       |-tmp
+                       |-sbin
+                       |-dev
+                       |-proc
+                       |-opt
+                       |-data
+                       |-app
+    |-磁盘管理：常用工具 lvm fdisk
+    |-Shell（bash sh zsh....）
+    |    |-一系列的软件命令集合：ls(一种目录显示工具，软件)
+    |-第三方软件（非系统核心软件，在最小化安装系统之后，很多命令不存在，比如：mysql,java,telnet,docker）
+    |-帮助文档 man\xxx --help,在线文档
+    |-软件管理工具 yum\rpm(centos)\apt\dpkg(ubuntu)
+    |-软件上传下载 lrzsz  (配合终端工具，xshell,crt,用CMD不行)
+ _____________________________________________________________________________________________________________________
+
+  运行程序，1。显示运行（手动运行，关窗口结束进程）2.后台运行（通过第三方软件进行管理，或直接在后台 nohup xxxx &有可能会自动退出），3.以系统服务运行
+
+
+Java -jar 一般用第三方软件比较合适，可以进行管理，否则要手动清理进程（杀死进程 kill `pid`）
+
+
+1.第三方软件以supervisor为例，比较容易管理
+
+
+
+2.最好是用docker这种容器化工具进行运行，目前比较流行的程序管理方式
+百度：docker 部署Mysql
+百度：docker 部署SpringBoot程序
+
+
+Nginx: 一定要会
+
+
+--> 更高级的 k8s  不用看，知识复杂，涉及到很多关于网络 ，Linux 磁盘 内存，CPU ，路由，tcp ip
+
+
+
+
+
+  
+
