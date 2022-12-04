@@ -155,3 +155,227 @@ ls是『list』的意思，重点在显示文件的文件名与相关属性。�
   - 第一组为『文件拥有者的权限』，以『install.log』那个文件为例， 该文件的拥有者可以读写，但不可执行；
   - 第二组为『同群组的权限』；
   - 第三组为『其他非本群组的权限』。
+
+## Linux对文件和目录的常用命令:
+
+#### 1.`yum`仓库,安装,检查
+
+> yum软件包管理命令,可以自动从软件仓库下载软件
+
+搜索yum仓库 `search`:搜索
+
+```sh
+yum search java
+```
+
+安装JDK 8 `install`安装
+
+```sh
+yum install -y java-1.8.0-openjdk-devel
+```
+
+> 需使用root管理员用户来安装,否则报错!
+>
+> ```sh
+> [admin@iZ2zebjmyftm9yp868oy0aZ ~]$ yum install -y mariadb-server mariadb
+> Error: This command has to be run with superuser privileges (under the root user on most systems).
+> # 此命令必须以超级用户权限运行（在大多数系统中，以root用户身份运行）。
+> ```
+
+Complete! 完成
+
+检查java
+
+```sh
+java -version
+javac -version
+```
+
+#### 2.创建文件夹 `mkdir`
+
+```sh
+mkdir 文件夹名  # 在当前目录中创建一个文件夹
+mkdir demo
+```
+
+#### 3.罗列当前目录下的文件列表 `ls`
+
+```sh
+ls        # 列出当前文件夹的内容
+ll        # 等价于   ls -l
+ls -l     # 使用长格式显示文件列表
+ls 文件夹  # 显示文件夹中的内容
+ls -a     # 显示全部的文件 包含隐藏文件
+```
+
+#### 4.清理屏幕 
+
+Linux/Mac/Windows11
+
+```sh
+clear
+```
+
+Windows
+
+```sh
+cls
+```
+
+#### 5.创建文件命令和修改文件的访问时间 `touch`:触摸
+
+```sh
+touch 不存在的文件名       # 创建新文件
+touch 已存在的文件名/文件夹 # 修改文件的时间
+```
+
+#### 6.查看文件内容 `cat`
+
+```sh
+[admin@iZ2zebjmyftm9yp868oy0aZ ~]$ cat helloword.java
+public class Demo{
+        public static void main(String[] args){
+                System.out.println("Hello World!");
+        }
+}
+```
+
+#### 7.改名和移动文件/文件夹命令 Linux: `mv`移动
+
+```sh
+mv 已经存在的文件/文件夹  不存在的文件/文件夹   #改名
+mv 已经存在的文件/文件夹  已经存在的文件夹      # 移动到目标文件夹
+```
+
+如果第一个参数是不存在的,则报错 `No such file or directory`
+
+主目录（自己的家）： 每个可以登录的Linux用户都有自己的 “家” Home 目录。
+
+#### 8.打印当前工作目录 `pwd`
+
+```sh
+[root@iZ2zebjmyftm9yp868oy0aZ ~]# pwd
+/root
+```
+
+#### 9.删除文件/文件夹 `rm`
+
+```sh
+rm 文件名1 文件名2 文件名3   # 删除系列文件
+rm 文件名                  # 删除一个文件
+rm -rf 文件夹              # 递归强制删除文件夹
+```
+
+-r 递归删除，删除文件夹和其子孙文件夹
+
+-f 强力、强制，强制删除，不经过确认直接删除
+
+如果文件名不存在，会报错误：`No such file or directory`
+
+```sh
+[root@iZ2zebjmyftm9yp868oy0aZ ~]# rm dem
+rm: cannot remove 'dem': No such file or directory
+```
+
+**不要使用的命令！！！！！**
+
+```sh
+rm -rf .          # 删除当前目录中全部的内容，.表示当前的目录
+rm -rf /          # 删除根目录(若非测试,则后果很严重!!!)
+```
+
+为了避免意外 很多Linux默认不用root用户登录
+
+- `#` 提示符号表示当前用户是root
+- `$` 提示符号表示普通用户
+  - 可以使用 sudo su 切换的root用户
+
+#### 10.Linux的目录结构
+
+![OIP](images/OIP.jpeg)
+
+## Linux对用户的操作命令:
+
+#### 1.添加用户
+
+```sh
+useradd 用户名     # 添加一个普通用户
+passwd 用户名      # 为用户修改密码
+useradd tom       # 添加了一个用户tom，同时会创建Tom的Home： /home/tom
+passwd tom        # 设置tom的密码，简单密码会警告，但是可以使用
+```
+
+可以忽略密码规则警告：
+
+![image-20221130210333604](images/image-20221130210333604.png)
+
+添加用户以后，就可以使用新用户远程登录了：
+
+```sh
+ssh admin@公网IP
+```
+
+##### 普通用户和root用户
+
+普通用户: 大部分访问权限都是Home文件夹,安全,不容易犯错误
+
+root用户是管理员,具有全部的目录访问权限,权限大,容易犯错误,可以进行系统管理
+
+Linux(Mac)使用建议
+
+- 使用普通用户操作,必要时可切换到root用户
+- 用户有两个命令: `sudo`和`su`
+
+#### 2.以管理员身份运行 `sudo`
+
+`su`: super user 超级管理员
+
+`do`: 做
+
+#### 3.离开 `exit`
+
+可以退出当前的shell
+
+- `su` 命令以后,使用exit就是退出当前切换的用户
+
+  ```sh
+  [admin@iZ2zebjmyftm9yp868oy0aZ ~]$ su
+  Password:
+  [root@iZ2zebjmyftm9yp868oy0aZ admin]# exit
+  exit
+  ```
+
+- `ssh`登录,使用exit就是退出当前的登录
+
+  ```sh
+  [admin@iZ2zebjmyftm9yp868oy0aZ ~]$ exit
+  logout
+  Connection to 39.105.215.87 closed.
+  
+  C:\Users\Administrator>
+  ```
+
+#### 3.切换用户命令 `su`
+
+切换用户命令,不写参数,则切换到管理员
+
+```sh
+[admin@iZ2zebjmyftm9yp868oy0aZ ~]$ su
+Password:
+[root@iZ2zebjmyftm9yp868oy0aZ admin]#
+```
+
+#### 4.vim编辑文本文件
+
+vi 是经典的全屏幕可视化编辑软件， vi是商业软件。作者：Bram Moolenaar
+
+Gun开源社区仿写一个版本 vim， vim比vi使用更加便利。
+
+程序员： 使用vi的程序员，一种是不会使用vi的程序员
+
+![image-20221201201653253](images/image-20221201201653253.png)
+
+关于vim
+
+- 如果意外退出，或者其他进行正在编辑，会有隐藏文件： .xxxx.swp, 如果确定不是其他人正在编辑文件，则可以使用rm命令删除
+- 如果使用了 :help 进入帮助模式，可以使用:q 退出帮助
