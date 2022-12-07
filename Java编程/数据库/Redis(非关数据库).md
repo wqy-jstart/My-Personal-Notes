@@ -127,7 +127,7 @@ OK
 
 更多命令，可查阅资料，例如：https://blog.csdn.net/weixin_46742102/article/details/109483603
 
-Redis中的传统数据类型有：string、list、hash、set、zset。
+##### Redis中的传统数据类型有：string、list、hash、set、zset。
 
 # 2. Redis编程
 
