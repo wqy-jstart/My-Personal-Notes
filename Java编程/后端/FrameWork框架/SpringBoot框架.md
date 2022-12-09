@@ -8,6 +8,8 @@ Spring Boot框架主要解决了统一管理依赖项与简化配置相关的问
 
 **简化配置**：Spring Boot默认完成了各项目中最可预测的配置，它是一种**“约定大于配置”**的思想，当然，这些配置也都是可以修改的，例如通过在`application.properties`中添加指定属性名的配置。
 
+**集成框架**:嵌入式Servlet容器,应用是不需要打成War包的。
+
 ## 2. Spring Boot框架的依赖项
 
 当项目中需要使用Spring Boot框架时，需要添加的基础依赖项是：`spring-boot-starter`。
