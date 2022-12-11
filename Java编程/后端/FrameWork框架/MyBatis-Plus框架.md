@@ -794,6 +794,32 @@ public void testWrapper6(){
 
 ##### 其余查询方法可寻官网:https://baomidou.com/pages/10c804/
 
+## 自定义查询
+
+虽然MyBatis-Plus在有关数据库的CRUD操作功能中表现显著,但该框架也有缺点!!
+
+该缺点表现在多表及复杂查询中
+
+解决办法:
+
+使用传统的MyBatis编程方式,配置Xml文件,将关联或复杂SQL写入其中进行映射查询
+
+步骤:
+
+1. 在引入了MyBatis-Plus框架的依赖后,不能再引入MyBatis框架的依赖,故在配置方面有些差异
+
+   ```yaml
+   # 以.yml配置文件为例
+   1. MyBatis:
+   mybatis: 
+     mapper-locations: classpath:mapper/*xml # 注意resources下的mapper包名不要写错!!!
+   2. MyBatis-Plus:
+   mybatis-plus:
+     mapper-locations: classpath:mapper/*xml
+   ```
+
+2. 在Mapper层书写自定义查询的接口,此后实现和传统实现方式相同.
+
 ### 代码自动生成器
 
 `AutoGenerator`是MyBatis-Plus的代码生成器,通过`AutoGenerator`可以快速生成Entity、Mapper、MapperXML、Service、Controller等各个模块的代码,极大的提升了开发效率!
@@ -914,6 +940,3 @@ public class WskCode {
     <version>3.3.2.RELEASE</version>
 </dependency>
 ```
-
-
-
