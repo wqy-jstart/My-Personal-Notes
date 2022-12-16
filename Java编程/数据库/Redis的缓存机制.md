@@ -33,7 +33,7 @@
 
 ### 3.缓存穿透
 
-![image-20221214195922343](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20221214195922343.png)
+![image-20221214195922343](images/image-20221214195922343.png)
 
 正常情况下Redis缓存中没有查询到自己想要的数据,就会去mysql数据库中查询.如果mysql数据库中也没有,在没有任何措施下,用户一定会不断的去mysql数据库中查询,随着时间的推移,用户越来越多,越来越多的用户在redis缓存中没有查询到自己想要的数据,越来越多的用户会去mysql数据库中查询,这就造成了缓存穿透.
 
