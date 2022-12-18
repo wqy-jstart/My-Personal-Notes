@@ -1,4 +1,4 @@
-# 数据库五大约束
+# 数据库六大约束
 
 ## 1.主键约束----Primary Key
 
@@ -70,3 +70,24 @@ CREATE TABLE emp(
   ```
 
 > #### 注意点:between..and..中的2个边界值都包括(双闭区间)
+
+## 6.默认约束----DEFLUAT
+
+- 作用于表或字段上
+- 字段上可以设置默认值
+- 表中可以设置默认的存储引擎和字符集
+
+```mysql
+# 物流配送表
+DROP TABLE IF EXISTS ups_logistics;
+CREATE TABLE ups_logistics
+(
+    id           bigint(20) unsigned DEFAULT NULL AUTO_INCREMENT COMMENT '数据id',
+    name         varchar(50)         DEFAULT NULL COMMENT '物流名称',
+    note         varchar(255)        DEFAULT NULL COMMENT '物流备注',
+    gmt_create   datetime            DEFAULT NULL COMMENT '数据创建时间',
+    gmt_modified datetime            DEFAULT NULL COMMENT '数据最后修改时间',
+    PRIMARY KEY (id)
+) DEFAULT CHARSET = utf8mb4 COMMENT ='物流配送';
+```
+
