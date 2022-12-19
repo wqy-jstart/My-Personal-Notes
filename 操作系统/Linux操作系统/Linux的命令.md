@@ -365,7 +365,7 @@ Password:
 [root@iZ2zebjmyftm9yp868oy0aZ admin]#
 ```
 
-#### 4.vim编辑文本文件
+#### 4.`vim`编辑文本文件
 
 vi 是经典的全屏幕可视化编辑软件， vi是商业软件。作者：Bram Moolenaar
 
@@ -379,3 +379,127 @@ Gun开源社区仿写一个版本 vim， vim比vi使用更加便利。
 
 - 如果意外退出，或者其他进行正在编辑，会有隐藏文件： .xxxx.swp, 如果确定不是其他人正在编辑文件，则可以使用rm命令删除
 - 如果使用了 :help 进入帮助模式，可以使用:q 退出帮助
+
+#### 5.上传文件`scp`
+
+1. 可在Linux环境下使用`rz`命令,上传本地文件
+
+2. 在本地找到需要上传的文件使用`scp`命令在命令行上传
+
+   ```sh
+   Administrator@DESKTOP-BT9P60R MINGW64 ~/Desktop/jar包/CoolShark后台管理
+   $ scp csmall-passport-0.0.1.jar root@39.105.215.87:.
+   root@39.105.215.87's password:
+   csmall-passport-0.0.1.jar                     100%   45MB   1.1MB/s   00:39
+   Administrator@DESKTOP-BT9P60R MINGW64 ~/Desktop/jar包/CoolShark后台管理
+   $
+   ```
+
+#### 6.查看树形结构`tree`命令
+
+#### 7.Linux解决端口被占用的方式
+
+在Linux使用过程中，需要了解当前系统开放了哪些端口，并且要查看开放这些端口的具体进程和用户，可以通过netstat命令进行简单查询。
+
+1、netstat命令各个参数说明如下：
+
+　　-t : 指明显示TCP端口
+
+　　-u : 指明显示UDP端口
+
+　　-l : 仅显示监听套接字(所谓套接字就是使应用程序能够读写与收发通讯协议(protocol)与资料的程序)
+
+　　-p : 显示进程标识符和程序名称，每一个套接字/端口都属于一个程序。
+
+　　-n : 不进行DNS轮询，显示IP(可以加速操作)
+
+2、netstat配合蚕食即可显示当前服务器上所有端口及进程服务，与grep结合可查看某个具体端口及服务情况：
+
+　　netstat -ntlp  //查看当前所有tcp端口·
+
+　　netstat -ntulp |grep 80  //查看所有80端口使用情况·
+
+　　netstat -an | grep 3306  //查看所有3306端口使用情况·
+
+**解决端口占用**:
+
+在终端窗口输入 netstat -tln | grep + 被占用的端口命令
+
+```sh
+netstat -tln
+netstat -tln | grep 9090 # 获取PID
+```
+
+输入[lsof](https://so.csdn.net/so/search?q=lsof&spm=1001.2101.3001.7020) -i:+被占端口命令，回车后可查看端口被哪个进程占用
+
+```sh
+lsof -i:9090 
+```
+
+输入kill -9 + 进程id命令，回车后即可杀死占用端口的进程
+
+```sh
+kill -9 进程id # 结束当前的进程
+```
+
+#### 8.关于Linux启动SpringBoot项目后,无法在浏览器访问的问题------firewall防火墙拦截
+
+**查看防火墙的状态**:
+
+```sh
+systemctl status firewalld.service  #查看防火墙的状态
+```
+
+![image-20221218203330938](images/image-20221218203330938.png)
+
+> 显示active说明防火墙已开启
+
+**开启防火墙**:
+
+```sh
+systemctl start firewalld.service #开启防火墙
+```
+
+**关闭防火墙**:
+
+```sh
+systemctl stop firewalld.service # 关闭防火墙
+```
+
+![image-20221218203654178](images/image-20221218203654178.png)
+
+> 显示loaded说明防火墙已关闭
+
+> 注意只能root用户权限可以关闭防火墙!!!
+
+**重启防火墙**:
+
+```sh
+systemctl reload firewalld # 重启防火墙
+```
+
+**永久关闭防火墙**:
+
+```sh
+systemctl disable firewalld.service # 永久关闭防火墙
+```
+
+#### 9.在Linux后台启动SpringBoot项目
+
+```sh
+//后台启动
+nohup java -jar test.jar > test.text & # 后面为用于输出日志的文件
+```
+
+#### 10.查看端口开放情况
+
+```sh
+firewall-cmd --list-ports
+```
+
+开放某个端口:
+
+```sh
+firewall-cmd --zone=public --add-port=8080/tcp --permanent
+```
+
