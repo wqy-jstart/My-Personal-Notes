@@ -94,21 +94,23 @@ unlock tables;
 * 当前线程对表添加了表读锁,当前线程可以执行的操作?
 
 1. 读
-2. 不可以写,会出错
+2. 不可以写,会出错:  `ERROR 1317 (70100): Query execution was interrupted`
 
-* 当前线程对表添加了表读锁,其它线程可以执行的操作?
+* 当前线程对表添加了表写锁,其它线程可以执行的操作?
 
-1. 读
-2. 写会阻塞,直到解锁或超时
+1. 读和写都会阻塞,直到解锁`unlock table`或超时
+
+**总结**:
 
 * 当前线程对表添加了读锁,当前线程可以执行的操作?
 
-1.可以读
-2.可以写
+  1.可以读
+
+  2.不可以写
 
 * 当前线程对表添加了写锁,其他线程可以执行的操作?
 
-1.不可以读写,会被阻塞.(直到解锁或超时)
+  1.不可以读写,都会被阻塞.(直到解锁或超时)
 
 ## 行锁应用
 
@@ -120,16 +122,25 @@ select 操作不加锁.
 * 如何理解行锁上的共享锁与排它锁.
 
 1. 共享锁(S锁):允许当前事务读取一行,阻止其它事务对相同记录添加排它锁.
-2. 排它锁(X锁):允许当前事务更新数据,阻止其它事务获取相同数据集的共享锁,排它锁.
+
+   $添加共享锁后再添加排它锁会报错: `ERROR 1317 (70100): Query execution was interrupted`**直到事务提交**
+
+2. 排它锁(X锁):允许当前事务获取和更新数据,阻止其它事务获取相同数据集的共享锁,排它锁.
+
+   $当一个事务的某一行添加了排它锁,其他事务再添加共享或排它锁时会报错: `ERROR 1317 (70100): Query execution was interrupted`
 
 * 查询时如何添加共享锁和排它锁?
 
-1. 共享锁:select * from regions where id=12 lock in share mode
-2. 排它锁:select * from regions where id=12 for update
+1. 共享锁:select * from user where id=1 lock in share mode
+2. 排它锁:select * from user where id=1 for update
 
 * 如何保证多个并发事务对同一记录进行操作时数据的一致性?
 
-可以对这条记录添加排它锁,但是这样可能会降低系统并发性能.
+  $可以对这条记录添加排它锁,但是这样可能会降低系统并发性能.
+
+
+
+------
 
 ## MyISAM表锁
 
@@ -140,9 +151,9 @@ MyISAM存储引擎只支持表锁
 MyISAM存储引擎会在查询语句SELECT前，自动给涉及的所有表加读锁，在执行更新操作UPDATE、DELETE、INSERT前，会自动给涉及的表加写锁，这个过程并不需要用户干预，因此，用户一般不需直接用Lock Table 命令给MyISAM表显式加锁。
 
 ```mysql
-加读锁： lock table table_name read；
+手动加表读锁： lock table table_name read；
 
-加写锁： lock table table_name write；
+手动加表写锁： lock table table_name write；
 ```
 
 #### 表锁特点
@@ -222,3 +233,85 @@ create index idx_test_innodb_lock_id on test_innodb_lock(id);
 create index idx_test_innodb_lock_name on test_innodb_lock(name);
 ```
 
+## MVCC(多版本并发控制)
+
+* MVCC 是什么?
+
+MVCC(Multi Version Concurrent Control)多版本并发控制,它可以通过历史版本
+保证读数据的一致性,但是这样方式相对于添加排它锁,并发性能要好.
+
+* 你是否还记得事务的四个特性,底层是如何保证这些特性成功的?
+
+1. 原子性(通过undolog实现-执行回滚)
+2. 隔离性(通过锁,MVCC-版本控制)
+3. 一致性(通过undolog,redolog,隔离性)
+4. 持久性(通过redolog日志实现)
+
+* MVCC的底层逻辑是如何实现的呢?
+
+  MVCC的实现原理主要依赖于记录中的三个隐藏字段，undolog，ReadView来实现的.
+
+* MVCC中的隐藏字段指的是哪些？(了解)
+
+1. DB_TRX_ID：记录创建这条记录或者最后一次修改该记录的事务id
+2. DB_ROLL_PTR：回滚指针，指向这条记录的上一个版本,用于配合undolog实现数据的回滚.
+3. DB_ROW_ID：隐藏的主键，如果数据表没有主键，那么innodb会自动生成一个row_id，
+
+![img_1321321](images/img_1321321.png)
+
+
+* 什么是ReadView？
+
+对于Read Committed和Repeatable Read的隔离级别,都要读取已经提交的事务数据,也就
+是说如果版本链中的事务没有提交,该版本的记录是不能被读取的,那哪个版本的事务是可以读取
+的,此时就引入了ReadView.
+
+事务执行操作时,会生成当前事务的ReadView,保存当前事务之前活跃的所有事务id。
+
+* ReadView中包含什么？
+
+![img-3213123](images/img-3213123.png)
+
+1. m_ids: 截止到当前事务id之前,所有活跃的事务id。
+2. min_trx_id: 记录以上活跃事务id中的最小值。
+3. max_trx_id: 保存当前事务结束后应分配的下一个id值。
+4. creator_trx_id: 保存创建ReadView的当前事务id。
+
+* 事务隔离(RC,RR)特性的实现？
+
+1. 如果db_trx_id与Readview中的creator_trx_id相等，则说明当前事务在访问自己的操作数据，此时可以访问。
+2. 如果db_trx_id小于ReadView中的min_trx_id值,表明生成的该版本的事务在当前事务生成readview之前已经提交,所以可以直接读取.
+3. 如果被访问版本的db_trx_id大于ReadView中的max_trx_id值,表明该版本的事务在当前事务生成ReadView后才开启的,所以该版本不可以被当前事务访问.
+4. 如果访问的版本的db_trx_id属性值在min_trx_id和max_trx_id之间 ,就需要判断一下db_trx_id的值是不是在m_ids列表中,如果在,说明创建 ReadView时,生成的该版本的事务还是活跃的,该版本不可以访问,如果不存在,则说明创建ReadView时,生成该版本的事务已经提交则可以读取.
+
+# 总结(Summary)
+
+## FAQ分析
+
+* 如何创建用户？(mysql5.7)
+
+```
+create user 'tmooc'@'%' identified by 'tmooc';
+```
+
+* 如何为用户授权?
+
+```
+grant all on 你的数据库.* to 'tmooc'@'%';
+
+grant reload on *.* to 'tmooc'@'%';
+```
+
+* 如何撤销用户权限
+
+```
+revoke all on 你的数据库.* from 'tmooc'@'%';
+```
+
+* 为什么使用锁？(实现事务与事务之间的隔离)
+* MySql中的锁式如何分类的？(从粒度上划分，可分为全局锁，表锁，行锁。)
+* 如何理解MySQL的全局锁、表锁、行锁？
+* 如何理解MySQL中的共享锁、排它锁？
+* 如何理解MVCC(多版本并发控制)？
+* 为什么使用MVCC呢？(在保证性能的基础上实现事务的隔离性)  
+* 如何理解MVCC中的ReadView(一致性快照读视图)？

@@ -1,5 +1,7 @@
 # Redis
 
+**下载地址**:https://github.com/microsoftarchive/redis/releases
+
 Redis是一款基于内存的、使用K-V结构来实现读写数据的NoSQL非关系型数据库
 
 - 基于内存的：Redis访问的数据都在内存中

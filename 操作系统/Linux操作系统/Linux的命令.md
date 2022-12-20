@@ -384,6 +384,10 @@ Gun开源社区仿写一个版本 vim， vim比vi使用更加便利。
 
 1. 可在Linux环境下使用`rz`命令,上传本地文件
 
+   ```sh
+   yum install lrzsz -y # 引入
+   ```
+
 2. 在本地找到需要上传的文件使用`scp`命令在命令行上传
 
    ```sh
@@ -397,9 +401,17 @@ Gun开源社区仿写一个版本 vim， vim比vi使用更加便利。
 
 #### 6.查看树形结构`tree`命令
 
+```sh
+yum install tree #引入tree
+```
+
 #### 7.Linux解决端口被占用的方式
 
 在Linux使用过程中，需要了解当前系统开放了哪些端口，并且要查看开放这些端口的具体进程和用户，可以通过netstat命令进行简单查询。
+
+```sh
+yum install net-tools #引入
+```
 
 1、netstat命令各个参数说明如下：
 
@@ -431,6 +443,10 @@ netstat -tln | grep 9090 # 获取PID
 ```
 
 输入[lsof](https://so.csdn.net/so/search?q=lsof&spm=1001.2101.3001.7020) -i:+被占端口命令，回车后可查看端口被哪个进程占用
+
+```sh
+yum install lsof # 引入lsof命令
+```
 
 ```sh
 lsof -i:9090 
@@ -476,6 +492,7 @@ systemctl stop firewalld.service # 关闭防火墙
 
 ```sh
 systemctl reload firewalld # 重启防火墙
+service firewalld restart  # 也行
 ```
 
 **永久关闭防火墙**:
@@ -501,5 +518,57 @@ firewall-cmd --list-ports
 
 ```sh
 firewall-cmd --zone=public --add-port=8080/tcp --permanent
+```
+
+查看端口是否开启:
+
+```sh
+firewall-cmd --zone=public --query-port=8080/tcp
+```
+
+删除端口号:
+
+```sh
+firewall-cmd --zone=public --remove-port=8080/tcp --permanent
+```
+
+#### 11.操作数据库
+
+启动数据库:
+
+```sh
+systemctl start mariadb #启动数据库
+```
+
+查看数据库状态:
+
+```sh
+systemctl status mariadb
+```
+
+关闭数据库:
+
+```sh
+systemctl stop mariad
+```
+
+查看系统用户表的数据:
+
+```sh
+use mysql # 使用mysql
+select host,user,password from user; # 查询数据
+update user set user='root' where host='localhost'; # 修改数据
+```
+
+分配访问数据库的权限:
+
+```sh
+grant all on *.* to 用户名@'%' identified by '密码' with grant option;
+```
+
+刷新权限:
+
+```sh
+flush privileges;
 ```
 
