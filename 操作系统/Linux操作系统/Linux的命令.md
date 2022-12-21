@@ -399,6 +399,14 @@ Gun开源社区仿写一个版本 vim， vim比vi使用更加便利。
    $
    ```
 
+3. 本地cmd窗口
+
+   ```sh
+   sftp root@ip地址
+   ```
+
+   连接成功后使用put上传文件
+
 #### 6.查看树形结构`tree`命令
 
 ```sh
@@ -505,8 +513,26 @@ systemctl disable firewalld.service # 永久关闭防火墙
 
 ```sh
 //后台启动
-nohup java -jar test.jar > test.text & # 后面为用于输出日志的文件
+nohup java -jar test.jar > test.text 2>&1 & # test.text后面为用于输出日志的文件
 ```
+
+- nohup (no hang up)当账户退出或终端关闭时,程序仍然运行。
+- &：指如果客户端关闭，程序就会停止运行。
+
+- log/lts.txt:指程序运行生成日志文件的存储位置，如果不指定，默认该项目所有输出被重定向到nohup.out的文件中。
+- dev/null 表示空设备文件
+- 0 表示stdin标准输入
+- 1 表示stdout标准输出
+- 2 表示stderr标准错误
+- 2>&1 就是表示将错误重定向输出到标准输出上。
+
+>##### &：是指在后台运行，但是当用户退出（挂起）的时候，命令会自动跟着结束。
+>
+>##### nohup：是指不挂断运行，可以使命令永久的执行下去，和用户终端没有关系。
+>
+>##### 将 nohup 和 & 结合使用，就可以实现使命令永久地在后台执行了。
+>
+>##### 可以通过kill -9 端口的方式停止
 
 #### 10.查看端口开放情况
 
@@ -570,5 +596,43 @@ grant all on *.* to 用户名@'%' identified by '密码' with grant option;
 
 ```sh
 flush privileges;
+```
+
+#### 12.解压缩文件
+
+**解压**
+
+zip格式：
+
+```sh
+unzip test.zip -d /tmp/ #这里/tmp/是指定目录
+```
+
+tar格式：
+
+```sh
+tar –xvf file.tar #解压 tar包
+tar -xzvf file.tar.gz #解压tar.gz
+tar -xjvf file.tar.bz2 #解压 tar.bz2
+tar –xZvf file.tar.Z #解压tar.Z
+```
+
+**压缩**
+
+```sh
+zip -r ./files.zip ./* -r表示递归
+```
+
+#### 13.查看运行的程序
+
+```sh
+ps -ef | grep java
+```
+
+#### 14.复制文件`cp`
+
+```sh
+cp -r 源文件 目标文件
+cp -r dist /usr/local/webapp
 ```
 
