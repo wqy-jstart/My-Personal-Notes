@@ -111,6 +111,8 @@ whereis nginx
 
 ```sh
 ./nginx
+nginx -s reload          # nginx 热启动
+systemctl restart nginx  # nginx 冷启动
 ```
 
 ##### 3.停止nginx
