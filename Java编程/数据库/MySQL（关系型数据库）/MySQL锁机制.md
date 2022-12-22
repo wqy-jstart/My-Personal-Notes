@@ -1,6 +1,6 @@
 # MySQL锁机制
 
-## 什么是锁？
+## 一、什么是锁？
 
 ##### 锁是计算机协调多个进程或线程并发访问某一资源的机制（避免抢夺）。
 
@@ -33,6 +33,8 @@ unlock tables; # 关闭全局锁
 | unlock tables                                                |                                              |
 | ....                                                         | 阻塞结束开始执行.                            |
 
+添加了全局锁后，多个回话可以读，但当前回话更新会报错，其他回话更新会阻塞，直到当前回话unlock table解锁或自行超时，停止阻塞。
+
 2）表锁：操作时，会锁定整个表
 
 > 表锁是对整张表进行锁定的一种锁的设计,可以分为表读锁,表写锁.
@@ -60,7 +62,7 @@ unlock tables; # 关闭全局锁
 | MeMory   | 支持   | 不支持 |
 | BDB      | 支持   | 不支持 |
 
-## 锁的特性
+## 二、锁的特性
 
 MySQL锁的特性大致归纳如下：
 
@@ -74,7 +76,7 @@ MySQL锁的特性大致归纳如下：
 >
 > 行级锁更适合有大量索引条件并发更新少量不同数据
 
-## 表锁的应用
+## 三、表锁的应用
 
 * 什么是表锁?
 
@@ -87,7 +89,7 @@ MySQL锁的特性大致归纳如下：
 
 * 如何对mysql中的表进行解锁?
 
-```
+```mysql
 unlock tables;
 ```
 
@@ -112,12 +114,11 @@ unlock tables;
 
   1.不可以读写,都会被阻塞.(直到解锁或超时)
 
-## 行锁应用
+## 四、行锁应用
 
 * 什么是行锁?
 
-行锁是mysql中InnoDB存储引擎的一种针对行记录进行加锁的一种实现方式,默认所有的
-select 操作不加锁.
+行锁是mysql中InnoDB存储引擎的一种针对行记录进行加锁的一种实现方式,默认所有的select 操作不加锁.
 
 * 如何理解行锁上的共享锁与排它锁.
 
@@ -138,11 +139,17 @@ select 操作不加锁.
 
   $可以对这条记录添加排它锁,但是这样可能会降低系统并发性能.
 
+## 五、死锁案例
 
+当两个事务在事务未提交的情况下相互添加排他锁时，会出现死锁
+
+或者当一个事务添加了排他间隙锁时，其他事务添加排它锁会发生死锁
+
+![image-20221222092415489](images/image-20221222092415489.png)
 
 ------
 
-## MyISAM表锁
+## 六、MyISAM表锁
 
 MyISAM存储引擎只支持表锁
 
@@ -186,7 +193,7 @@ insert into tb_book (id, name, publish_time, status) values(null,'java编程思�
 insert into tb_book (id, name, publish_time, status) values(null,'solr编程思想','2088-08-08','0');
 ```
 
-## InnoDB行锁
+## 七、InnoDB行锁
 
 #### 行锁特点
 
@@ -233,12 +240,11 @@ create index idx_test_innodb_lock_id on test_innodb_lock(id);
 create index idx_test_innodb_lock_name on test_innodb_lock(name);
 ```
 
-## MVCC(多版本并发控制)
+## 八、MVCC(多版本并发控制)
 
 * MVCC 是什么?
 
-MVCC(Multi Version Concurrent Control)多版本并发控制,它可以通过历史版本
-保证读数据的一致性,但是这样方式相对于添加排它锁,并发性能要好.
+MVCC(Multi Version Concurrent Control)多版本并发控制,它可以**通过历史版本保证读数据的一致性**,但是这样方式相对于添加排它锁,并发性能要好.
 
 * 你是否还记得事务的四个特性,底层是如何保证这些特性成功的?
 
@@ -253,20 +259,18 @@ MVCC(Multi Version Concurrent Control)多版本并发控制,它可以通过历�
 
 * MVCC中的隐藏字段指的是哪些？(了解)
 
-1. DB_TRX_ID：记录创建这条记录或者最后一次修改该记录的事务id
-2. DB_ROLL_PTR：回滚指针，指向这条记录的上一个版本,用于配合undolog实现数据的回滚.
-3. DB_ROW_ID：隐藏的主键，如果数据表没有主键，那么innodb会自动生成一个row_id，
+1. **DB_TRX_ID**：**记录创建这条记录或者最后一次修改该记录的事务id**
+2. **DB_ROLL_PTR**：回滚指针，指向这条记录的上一个版本,用于配合undolog实现数据的**回滚（回滚到上一版本）**.
+3. **DB_ROW_ID**：隐藏的主键，**如果数据表没有主键**，那么innodb会自动生成一个row_id，
 
 ![img_1321321](images/img_1321321.png)
 
 
-* 什么是ReadView？
+* 什么是ReadView？**当前事务的一个读一致性视图（内存事务的快照）**
 
-对于Read Committed和Repeatable Read的隔离级别,都要读取已经提交的事务数据,也就
-是说如果版本链中的事务没有提交,该版本的记录是不能被读取的,那哪个版本的事务是可以读取
-的,此时就引入了ReadView.
+对于Read Committed和Repeatable Read的隔离级别,都要读取已经提交的事务数据,也就是说如果版本链中的事务没有提交,该版本的记录是不能被读取的,那哪个版本的事务是可以读取的,此时就引入了ReadView.
 
-事务执行操作时,会生成当前事务的ReadView,保存当前事务之前活跃的所有事务id。
+**在事务启动或执行操作时,会生成当前事务的ReadView**,保存当前事务之前活跃的所有事务id。
 
 * ReadView中包含什么？
 
@@ -290,13 +294,13 @@ MVCC(Multi Version Concurrent Control)多版本并发控制,它可以通过历�
 
 * 如何创建用户？(mysql5.7)
 
-```
+```mysql
 create user 'tmooc'@'%' identified by 'tmooc';
 ```
 
 * 如何为用户授权?
 
-```
+```mysql
 grant all on 你的数据库.* to 'tmooc'@'%';
 
 grant reload on *.* to 'tmooc'@'%';
@@ -304,14 +308,21 @@ grant reload on *.* to 'tmooc'@'%';
 
 * 如何撤销用户权限
 
-```
+```mysql
 revoke all on 你的数据库.* from 'tmooc'@'%';
 ```
 
-* 为什么使用锁？(实现事务与事务之间的隔离)
-* MySql中的锁式如何分类的？(从粒度上划分，可分为全局锁，表锁，行锁。)
-* 如何理解MySQL的全局锁、表锁、行锁？
-* 如何理解MySQL中的共享锁、排它锁？
-* 如何理解MVCC(多版本并发控制)？
-* 为什么使用MVCC呢？(在保证性能的基础上实现事务的隔离性)  
-* 如何理解MVCC中的ReadView(一致性快照读视图)？
+* 如何保证事务的四大特性落地？(回滚日志，重做日志，binlog，锁和MVCC)
+* 为什么使用锁？(保证事务并发执行时数据的正确性,实现事务与事务之间的隔离)
+* MySQL中常用的锁的类型？(全局锁，表锁、行锁、间隙锁、...)
+* 什么是共享锁(读共享、乐观锁)、排它锁(悲观锁)？
+* 如何理解全局锁以及如何添加全局锁?(对所有库的一种加锁方式)
+* 如何理解表锁以及如何添加表锁？(表读锁、表写锁)
+* 如何添加行读锁(共享锁)？select xx from xx where xx  lock in share mode
+* 如何添加行写锁(排它锁)？ select xx from xx where xxx lock for update
+* 如何理解mysql中的死锁？(并发事务处于相互等待的一种状态)
+* 如何理解MVCC？(多版本并发控制，用于更好实现事务隔离,例如RC、RR)
+* MVCC底层逻辑是如何实现的？(依赖于回滚日志链、ReadView，记录中的隐藏字段)
+* RR隔离级别下何时创建ReadView?(事务启动时)
+* RC隔离级别下何时创建ReadView?(每次执行查询时都会创建ReadView)  
+* 可重复读底层逻辑是如何实现的？(https://www.processon.com/view/link/63a1a5cb517570317d7bb536)

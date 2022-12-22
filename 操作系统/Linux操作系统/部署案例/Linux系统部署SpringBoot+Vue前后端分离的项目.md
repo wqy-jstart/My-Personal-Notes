@@ -12,7 +12,7 @@
 yum search java
 ```
 
-安装JDK 8  install: 安装
+#### 2.安装OpenJDK8
 
 ```sh
 yum install -y java-1.8.0-openjdk-devel
@@ -32,21 +32,6 @@ javac -version
 ```sh
 javac HelloWorld.java
 java HelloWorld
-```
-
-#### 2.安装OpenJDK8
-
-使用yum从软件仓库安装 jdk 8
-
-```sh
-yum install -y java-1.8.0-openjdk-devel
-```
-
-验证：
-
-```sh
-java -version
-javac -version
 ```
 
 #### 3.安装MySQL（MariaDB）
@@ -382,6 +367,8 @@ export NODE_HOME PATH
 ln -s /usr/local/node/node-v14.15.1-linux-x64/bin/node /usr/local/bin/
 ln -s /usr/local/node/node-v14.15.1-linux-x64/bin/npm /usr/local/bin/
 ```
+
+![image-20221222094747361](images/image-20221222094747361.png)
 
 6.查看版本信息
 
