@@ -519,6 +519,17 @@ systemctl disable firewalld.service # 永久关闭防火墙
 
 #### 7.在Linux后台启动SpringBoot项目
 
+**`nohup`命令**:
+
+```sh
+which nohup # 查看是否已经安装/usr/bin/nohup
+yum install coreutils # 下载
+vi ~/.bash_profile  # 配置nohup全局使用
+在PATH= $PATH: $HOME/bin后面添加:/usr/bin
+```
+
+**后台启动**:
+
 ```sh
 //后台启动
 nohup java -jar test.jar > test.text 2>&1 & # test.text后面为用于输出日志的文件

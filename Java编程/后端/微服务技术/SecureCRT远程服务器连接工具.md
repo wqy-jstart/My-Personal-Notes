@@ -1,10 +1,20 @@
 # SecureCRT远程服务器连接
 
-## 百科概念:
+## 1.百科概念:
 
 SecureCRT是一款支持SSH（SSH1和SSH2）的[终端仿真](https://baike.baidu.com/item/终端仿真/3441931?fromModule=lemma_inlink)程序，简单地说是Windows下登录UNIX或Linux服务器主机的软件。
 
 SecureCRT支持SSH，同时支持[Telnet](https://baike.baidu.com/item/Telnet?fromModule=lemma_inlink)和rlogin协议。SecureCRT是一款用于连接运行包括Windows、[UNIX](https://baike.baidu.com/item/UNIX?fromModule=lemma_inlink)和VMS的理想工具。通过使用内含的VCP命令行程序可以进行[加密](https://baike.baidu.com/item/加密?fromModule=lemma_inlink)文件的传输。
+
+## 2.使用
+
+在服务器配置完操作系统后即可使用该工具进行连接
+
+![image-20221225182652492](C:\Users\Administrator\Desktop\远程文件\每日文件\Java_Important_Notes-WQY\Java编程\后端\微服务技术\images\image-20221225182652492.png)
+
+##### 1.如果设置了证书,就在PublicKey中配置证书文件
+
+##### 2.如果设置的密码,就在服务器安全组开放22端口(默认)的前提下直接连接并输入密码
 
 ### Linux常用命令:
 

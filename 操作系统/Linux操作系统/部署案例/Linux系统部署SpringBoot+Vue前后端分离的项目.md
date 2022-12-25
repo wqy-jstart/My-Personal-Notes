@@ -269,7 +269,74 @@ grant all on *.* to 用户名@'%' identified by '密码' with grant option;
 flush privileges;
 ```
 
-#### 4.启动SpringBoot项目
+#### 4.安装配置Redis
+
+Redis 是Key-Value数据库。
+
+利用yum仓库安装Redis
+
+使用yum命令搜索仓库中是否包含 redis:
+
+```sh
+yum search redis
+```
+
+搜索结果如下，组件名称 redis，redis-doc 是帮助手册：
+
+```text
+Last metadata expiration check: 1:32:06 ago on Sat 03 Dec 2022 02:25:54 PM CST.
+==================== Name Exactly Matched: redis =====================
+redis.x86_64 : A persistent key-value database
+=================== Name & Summary Matched: redis ====================
+pcp-pmda-redis.x86_64 : Performance Co-Pilot (PCP) metrics for Redis
+redis-devel.x86_64 : Development header for Redis module development
+redis-doc.noarch : Documentation for Redis including man pages
+```
+
+安装:
+
+```sh
+yum install -y redis
+```
+
+redis systemd 服务管理：
+
+```sh
+systemctl start redis.service    # 启动redis 
+systemctl stop redis.service     # 停止 redis
+systemctl restart redis.service  # 重新启动
+systemctl enable redis.service   # 设置开机启动
+systemctl disable redis.service  # 取消开机启动
+systemctl status redis.service   # 检查状态，按下q退出
+```
+
+> .service  可以省略
+
+使用redis-cli 客户端连接测试：
+
+```sh
+redis-cli
+```
+
+使用redis命令：
+
+```sh
+ping
+```
+
+反馈结果：
+
+```sh
+PONG
+```
+
+使用Redis退出命令离开：
+
+```sh
+exit
+```
+
+#### 5.启动SpringBoot项目
 
 ##### 1.启动项目：`java -jar`命令
 
