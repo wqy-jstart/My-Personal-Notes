@@ -93,6 +93,8 @@ service firewalld restart # 重启防火墙
 
 #### 9.访问服务器IP+80进行测试
 
+> 如果云服务器80端口需要备案，则在nginx的nginx.conf配置文件中更改端口！！
+
 ![image-20221221173046827](images/image-20221221173046827.png)
 
 ------

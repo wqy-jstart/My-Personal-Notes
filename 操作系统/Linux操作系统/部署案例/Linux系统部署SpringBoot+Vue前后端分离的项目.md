@@ -315,7 +315,7 @@ systemctl status redis.service   # 检查状态，按下q退出
 使用redis-cli 客户端连接测试：
 
 ```sh
-redis-cli
+redis-cli # 先启动redis服务
 ```
 
 使用redis命令：
