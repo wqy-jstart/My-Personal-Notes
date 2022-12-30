@@ -1,5 +1,11 @@
 # Redis
 
+![image-20221230191557372](images/image-20221230191557372.png)
+
+官网：https://redis.io/
+
+中文官网：https://www.redis.net.cn/
+
 **下载地址**:https://github.com/microsoftarchive/redis/releases
 
 Redis是一款基于内存的、使用K-V结构来实现读写数据的NoSQL非关系型数据库
