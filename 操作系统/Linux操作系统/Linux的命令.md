@@ -268,6 +268,12 @@ rm -rf /          # 删除根目录(若非测试,则后果很严重!!!)
 
 ![OIP](images/OIP.jpeg)
 
+#### 11.寻找某个文件的位置
+
+```sh
+find / -name '文件名'
+```
+
 ## Linux对用户的操作命令:
 
 #### 1.添加用户
@@ -341,7 +347,7 @@ Password:
 
 ## Linux部署常用命名
 
-#### 1.`yum`软件包管理命令
+#### 1.`yum`软件包管理命令与`wget`协议下载命令
 
 > yum软件包管理命令,可以自动从软件仓库下载软件
 
@@ -372,6 +378,54 @@ Password:
 12.yum clean packages 清除缓存目录(/var/cache/yum)下的软件包
 
 13.yum clean all 清除缓存目录(/var/cache/yum)下的软件包及旧的headers
+
+**wget命令**：
+
+wget命令是Linux系统用于从Web下载文件的命令行工具，支持 HTTP、HTTPS及FTP协议下载文件，而且wget还提供了很多选项，例如下载多个文件、后台下载，使用代理等等，使用非常方便。
+
+语法：
+
+```sh
+wget [options] [url]
+```
+
+参数介绍：
+
+```sh
+1. 无参
+wget https://download.redis.io/releases/redis-6.0.8.tar.gz # 以下载redis为例
+
+2. -O 选项以其他名称保存下载的文件，-O后跟指定文件名称即可！
+wget -O redis.tar.gz https://download.redis.io/releases/redis-6.0.8.tar.gz
+
+3. -P 将文件保存到指定目录下，参数后跟保存的文件名
+wget -P /usr/software https://download.redis.io/releases/redis-6.0.8.tar.gz
+
+4. -c 断点续传
+wget -c https://download.redis.io/releases/redis-6.0.8.tar.gz
+
+5. -b 后台下载，下载过程日志重定向到当前目录中的wget-log文件中 (tail -f wget-log查看)
+wget -b https://download.redis.io/releases/redis-6.0.8.tar.gz
+
+6. -i 选择下载多个文件
+首先创建一个文件，vim进行编辑，在其中添加需要添加的应用程序的url链接
+vim download_list.txt
+使用-i 指定文件进行批量下载
+wget -i download_list.txt
+
+7. --limit-rate 限制下载速度，默认情况下，wget命令会以全速下载，资源过大时，全速下载影响带宽，故可限制下载速度
+wget --limit-rate=1m https://download.redis.io/releases/redis-6.0.8.tar.gz
+
+8. -U 选项设定模拟下载
+如果远程服务器阻止wget下载资源，我们可以通过-U选项模拟浏览器进行下载，例如下面模拟谷歌浏览器下载。
+wget -U 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.43 Safari/537.36' https://download.redis.io/releases/redis-6.0.8.tar.gz
+
+9. --tries 选项增加重试次数，如果网络有问题或下载一个大文件有可能会下载失败，wget默认重试20次，我们可以使用-tries选项来增加重试次数。
+wget --tries=40 https://download.redis.io/releases/redis-6.0.8.tar.gz
+
+10. --ftp 如果要从受密码保护的FTP服务器下载文件，需要指定用户名和密码
+wget --ftp-user=<username> --ftp-password=<password> url
+```
 
 #### 2.`vim`编辑文本文件
 

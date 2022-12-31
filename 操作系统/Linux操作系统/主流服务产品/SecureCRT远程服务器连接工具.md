@@ -10,7 +10,7 @@ SecureCRT支持SSH，同时支持[Telnet](https://baike.baidu.com/item/Telnet?fr
 
 在服务器配置完操作系统后即可使用该工具进行连接
 
-![image-20221225182652492](C:\Users\Administrator\Desktop\远程文件\每日文件\Java_Important_Notes-WQY\Java编程\后端\微服务技术\images\image-20221225182652492.png)
+![image-20221225182652492](images/image-20221225182652492.png)
 
 ##### 1.如果设置了证书,就在PublicKey中配置证书文件
 
