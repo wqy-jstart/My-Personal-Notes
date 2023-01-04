@@ -422,9 +422,13 @@ mv /usr/local/node-v14.15.1-linux-x64 /usr/local/node
 4.配置环境变量
 
 ```sh
+vim /etc/proflies # 进入文本编辑模式
+```
+
+```sh
 NODE_HOME=/usr/local/node/node-v14.15.1-linux-x64
 PATH=$NODE_HOME/bin:$PATH
-export NODE_HOME PATH
+export NODE_HOME PATHsh
 ```
 
 5.全局配置npm和node(软链接)
