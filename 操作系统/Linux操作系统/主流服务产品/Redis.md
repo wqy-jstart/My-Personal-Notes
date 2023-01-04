@@ -16,7 +16,7 @@
 
 > 解压后的目录如下:
 
-![image-20221231161422697](C:\Users\Administrator\Desktop\远程文件\每日文件\Java_Important_Notes-WQY\操作系统\Linux操作系统\主流服务产品\images\image-20221231161422697.png)
+![image-20221231161422697](images/image-20221231161422697.png)
 
 > 文件介绍：
 
@@ -32,25 +32,25 @@
 
 >双击 **redis-server.exe**，会弹出窗口一闪而过，如果不想窗口消失，可以在 **cmd** 中打开。
 
-![image-20221231161546311](C:\Users\Administrator\Desktop\远程文件\每日文件\Java_Important_Notes-WQY\操作系统\Linux操作系统\主流服务产品\images\image-20221231161546311.png)
+![image-20221231161546311](images/image-20221231161546311.png)
 
 这里启动的是 Redis 的服务端，用于提供服务。
 
 > 双击 **redis-cli.exe**
 
-![image-20221231161619870](C:\Users\Administrator\Desktop\远程文件\每日文件\Java_Important_Notes-WQY\操作系统\Linux操作系统\主流服务产品\images\image-20221231161619870.png)
+![image-20221231161619870](images/image-20221231161619870.png)
 
 这里启动的是 Redis 的客户端，用于连接服务。
 
 >测试使用
 
-![image-20221231161650428](C:\Users\Administrator\Desktop\远程文件\每日文件\Java_Important_Notes-WQY\操作系统\Linux操作系统\主流服务产品\images\image-20221231161650428.png)
+![image-20221231161650428](images/image-20221231161650428.png)
 
 如此即说明 Redis 可以正常使用。
 
 >Windows 下安装和使用 Redis 都非常简单，但官方并不推荐
 
-![image-20221231161726292](C:\Users\Administrator\Desktop\远程文件\每日文件\Java_Important_Notes-WQY\操作系统\Linux操作系统\主流服务产品\images\image-20221231161726292.png)
+![image-20221231161726292](images/image-20221231161726292.png)
 
 >官方建议使用 **Linux** 进行部署。
 
@@ -64,7 +64,7 @@ Redis 可以在其他操作系统中工作，但这种支持是尽力而为的�
 
 由于 Redis 由 **ANSI C** 编写，安装 Redis 前需要先安装 C 语言环境。
 
-```
+```sh
 yum install gcc-c++
 ```
 
@@ -154,8 +154,15 @@ redis-benchmark -h localhost -p 6379 -c 100 -n 100000
 
 配置好环境变量后任意目录下输入 `redis-cli` 即可进入。
 
-```
-[root@sail etc]# redis-cli127.0.0.1:6379> pingPONG127.0.0.1:6379> set hello Hello World(error) ERR syntax error127.0.0.1:6379> set hello "Hello World"OK127.0.0.1:6379> get hello"Hello World"
+```sh
+[root@sail etc]# redis-cli127.0.0.1:6379> ping
+PONG
+127.0.0.1:6379> set hello Hello World
+(error) ERR syntax error
+127.0.0.1:6379> set hello "Hello World"
+OK
+127.0.0.1:6379> get hello
+"Hello World"
 ```
 
 > 这样 Redis 在 Linux 上就安装完毕了。
