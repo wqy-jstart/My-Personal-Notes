@@ -18,4 +18,58 @@ https://nodejs.org/en/download/
 
 在Path变量中添加nodejs文件夹的路径
 
-例如：D:\nodejs   即可！
+例如：D:\nodejs\   即可！
+
+### 4.测试
+
+打开Dos窗口
+
+```sh
+npm -v
+node -v
+```
+
+### 5.配置npm源
+
+nmp源（即npm仓库，称之为：registry）默认是境外服务器，在国内使用时，访问速度较慢，通常，
+
+在初次使用时，应该将npm源更换为国内的服务器地址，例如使用 https://registry.npmmirror.com
+
+作为npm源。
+
+配置npm源的命令如下：
+
+```sh
+npm config set registry https://registry.npmmirror.com
+```
+
+当配置成功后，可通过`get`命令查看npm源：
+
+```sh
+npm config get registry
+```
+
+### 6.`install`加载依赖
+
+首先以管理员身份打开windows终端
+
+输入命令：
+
+```sh
+C:\Windows\System32>npm install
+```
+
+不出错即加载完毕！
+
+### 7.安装Vue/cli
+
+```sh
+npm install -g @vue/cli
+```
+
+安装完成后，输出命令：
+
+```sh
+vue -V  # 检查是否安装成功
+```
+

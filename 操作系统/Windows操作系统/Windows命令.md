@@ -21,7 +21,7 @@ systeminfo
 ##### 3.查看本机应用服务状态
 
 ```sh
-service.msc
+services.msc
 ```
 
 ##### 4.打开资源管理器
