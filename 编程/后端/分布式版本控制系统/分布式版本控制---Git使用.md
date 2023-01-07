@@ -206,6 +206,16 @@ git config --global user.email "自已的邮箱地址"
 1. 使用分支意味着你可以把你的工作从开发主线上分离开来，以免影响开发主线
 2. 几乎所有的版本控制系统都以某种形式支持分支。
 
+![image-20230107165624761](images/image-20230107165624761.png)
+
+版本控制的体现：
+
+![image-20230107165744749](images/image-20230107165744749.png)
+
+有关分支的操作：
+
+![d533d4b19742a6e574394e9e33f3a40](images/image-20230107172402178.png)
+
 ##### 1.创建分支: `git branch 分支名称`
 
 ![image-20221205104544489](images/image-20221205104544489.png)
@@ -224,7 +234,11 @@ git config --global user.email "自已的邮箱地址"
 
 ![image-20221205105111655](images/image-20221205105111655.png)
 
-##### 4.在新分支修改原来分支中的文件,并查看状态
+##### 4.组合命令-创建并切换分支: `git checkout -b <新的分支名>`
+
+![image-20230107172402179](images/image-20230107172402179.png)
+
+##### 5.在新分支修改原来分支中的文件,并查看状态
 
 ![image-20221205105214562](images/image-20221205105214562.png)
 
@@ -236,11 +250,38 @@ git config --global user.email "自已的邮箱地址"
 
 ![image-20221205105600223](images/image-20221205105600223.png)
 
-##### 5.合并分支: `git merge 分支名称`
+##### 6.修改分支名称: `git branch -m 原 现`
+
+![image-20230107172402198](images/image-20230107172402198.png)
+
+##### 7.合并分支: `git merge 分支名称`
 
 ![image-20221205105750549](images/image-20221205105750549.png)
 
-##### 6.删除分支: `git branch -d 分支名称`
+> 合并过程中会提示输入合并理由，之后即可合并成功！
+
+```sh
+Please enter a commit message to explain why this merge is necessary,
+# especially if it merges an updated upstream into a topic branch.
+#
+# Lines starting with '#' will be ignored, and an empty message aborts
+# the commit.
+翻译：
+请输入一条提交消息，解释为什么需要合并，
+#特别是如果它将更新的上游合并到主题分支中。
+#
+#将忽略以“#”开头的行，并中止一条空消息
+#承诺。
+```
+
+##### 8.删除分支: `git branch -d 分支名称`
+
+```sh
+# 删除分支
+git branch -d <分支名称>
+1.-d 用于删除已经合并过的分支
+2.-D 用于强制删除分支(不管是否合并)
+```
 
 ![image-20221205105910818](images/image-20221205105910818.png)
 

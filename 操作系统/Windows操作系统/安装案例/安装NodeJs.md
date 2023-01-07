@@ -51,7 +51,7 @@ npm config get registry
 
 ### 6.`install`加载依赖
 
-首先以管理员身份打开windows终端
+首先**以管理员身份**打开windows终端
 
 输入命令：
 
@@ -61,11 +61,30 @@ C:\Windows\System32>npm install
 
 不出错即加载完毕！
 
+**如果出错找不到文件**：
+
+1.初始化项目：
+
+```sh
+npm init -f
+# -f表示force
+# 直接-f，npm帮你初始化package.json，并填充各种默认值，省事。
+```
+
+2.安装依赖：
+
+```sh
+npm install formidable --save
+# --save表示将安装的包加入依赖列表的意思，可以看下package.json 里的dependencies字段。后面再运行 npm install，就会把所有依赖安装下来。如果不加--save，什么都不会安装。
+```
+
 ### 7.安装Vue/cli
 
 ```sh
 npm install -g @vue/cli
 ```
+
+> 如果遇到network timeout 网络超时，可以再执行一次！
 
 安装完成后，输出命令：
 
@@ -73,3 +92,24 @@ npm install -g @vue/cli
 vue -V  # 检查是否安装成功
 ```
 
+## $卸载NodeJs
+
+如果因为版本不兼容的问题想要卸载当前版本的NodeJs时：
+
+1. 先卸载对应的安装包以及环境变量
+
+2. 如果安装时出现：
+
+   ```sh
+   a later version of Node.js already installed Setup will now exit
+   ```
+
+3. 进入目录：
+
+   ```sh
+   C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Node.js
+   ```
+
+   ![image-20230107155832721](images/image-20230107155832721.png)
+
+4. 点击Uninstall Node.js确认卸载即可！
