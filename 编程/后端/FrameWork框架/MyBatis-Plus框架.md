@@ -535,18 +535,69 @@ public PaginationInterceptor paginationInterceptor(){
 2、直接使用page对象即可
 
 ```java
-@Test//测试分页查询
-public void testPage(){
-    //参数一current：当前页   参数二size：页面大小
-    //使用了分页插件之后，所有的分页操作都变得简单了
-    Page<User> page = new Page<>(2,5);
-    userMapper.selectPage(page,null);
-    page.getRecords().forEach(System.out::println);
-    System.out.println("总页数==>"+page.getTotal());
+/**
+ * 测试分页查询
+ */
+@Test
+public void page(){
+    // 1:current当前页  2:size页面大小
+    Page<Brand> page = new Page<>(2,4);// 创建分页对象
+    IPage<Brand> page1 = brandMapper.selectPage(page, null);// 接口
+    page1.getRecords().forEach(System.out::println);
+    System.out.println("总页数为："+page1.getTotal());
 }
 ```
 
 ![image-20221125200820322](images/image-20221125200820322.png)
+
+前端代码(以Element-UI框架为例)：
+
+1、样式代码：
+
+```css
+<el-pagination
+    background
+    @size-change="handleSizeChange" # 更换页面大小时触发，回调当前页大小
+    @current-change="handleCurrentChange" # 切换页面时触发，回调当前页号
+    :current-page="currentPage" # 监听切换页面
+    :page-sizes="[5, 10, 15, 20]" # 页面大小的候选值
+    :page-size="size" # 当前页面大小
+    layout="total,sizes,prev, pager, next, jumper" # 分页结构
+    :total="total"> # 数据总数
+</el-pagination>
+```
+
+2、js代码：
+
+```js
+<script>
+export default {
+  data() {
+    return {
+      currentPage: 1, // 当前页
+      total: '', // 数据总数
+      size: 10, // 每页的数据量(可选择)
+      tableData: [],
+    }
+  },
+  methods: {
+    handleSizeChange(val) { // 该方法配合page-size属性，由其监控，方法回调
+      this.size = val;
+    },
+    handleCurrentChange(val) { // 该方法配合current-page属性，由属性监控，方法回调
+      this.currentPage = val; // 将当前页赋值给变量
+      // 向后端发送请求
+      let url = this.GLOBAL.productUrl+'brands/'+this.currentPage+'/'+this.size+'/selectToPage';
+      this.axios.get(url).then((response)=>{
+        let responseBody = response.data;
+        if (responseBody.state == 20000){
+          this.tableData = responseBody.data;
+        }
+      })
+    },
+  }
+</script>
+```
 
 ### Delete删除
 
