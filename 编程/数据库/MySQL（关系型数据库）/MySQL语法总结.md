@@ -60,13 +60,19 @@ DCL(数据控制语言)
 
 ![image-20221009110739052](images/image-20221009110739052.png)
 
+- ##### 创建数据库
+
+  ```mysql
+  create database [if not exists] 数据库名
+  ```
+
 - ##### 使用某一个数据库
 
   ```mysql
   USE mydb;
   ```
 
-- ##### 查看某一张表的结构
+- ##### 查看某一张表的字段结构
 
   ```mysql
   DESC userinfo;
@@ -74,7 +80,7 @@ DCL(数据控制语言)
 
 ![image-20221009111024894](images/image-20221009111024894.png)
 
-- ##### 查看创建后某一张表的详细信息
+- ##### 查看已创建的数据库创建时的语句
 
   ```mysql
   SHOW CREATE TABLE userinfo;
@@ -82,13 +88,21 @@ DCL(数据控制语言)
 
 ![image-20221009111121830](images/image-20221009111121830.png)
 
-- #### 查看当前数据库创建的所有表(固定)
+- ##### 查看当前数据库创建的所有表(固定)
 
   ```mysql
   SHOW TABLES;
   ```
 
 ![image-20221009111209238](images/image-20221009111209238.png)
+
+- ##### 查看数据库支持的引擎和默认引擎
+
+  ```mysql
+  show engines
+  ```
+
+![image-20230108153117948](images/image-20230108153117948.png)
 
 ### 二. 表相关的操作
 
@@ -100,36 +114,126 @@ DDL语句:数据定义语言,用来操作数据库对象的.
 
 #### DDL语言:数据定义语言,操作数据库对象
 
-##### 关键字:CREATE,ALTER,DROP,ADD,CHANGE
+关键字:CREATE,ALTER,DROP,ADD,CHANGE
 
-1. 创建表:CREATE TABLE 表名();
+1. 创建表:
 
-2. 添加表中结构: ALTER TABLE 表名 ADD 要添加的列名 类型[长度] AFTER 字段名(在...之后);
+   ```mysql
+   create table [if not exists] test(
+       id int auto_increment DEFAULT NULL COMMENT '主键ID',
+       name VARCHAR(50) DEFAULT NULL COMMENT '姓名',
+       age int unsigned DEFAULT NULL COMMENT '年龄',
+       PRIMARY KEY (id)
+   ) engine InnoDB DEFAULT CHARSET = utf8mb4 COMMENT '测试表';
+   ```
 
-3. 删除表中结构: ALTER TABLE 表名 DROP 要删除的列名;
+2. 添加表中字段以及结构: 
 
-4. 修改表字段: ALTER TABLE 表名 CHANGE 原字段名 新字段名 新类型;
-5. 直接修改表字段: ALTER TABLE 表名 MODIFY 字段 类型
-6. 删除表: DROP TABLE;
-7. 修改表名: ALTER TABLE 表 RENAME 新表名;
+   ```mysql
+   ALTER TABLE test ADD gender VARCHAR(50) DEFAULT NULL COMMENT '性别' AFTER name;
+   ```
+
+3. 删除表中结构:
+
+   ```mysql
+   ALTER TABLE test DROP age;
+   ```
+
+4. 修改表字段: 
+
+   ```mysql
+   ALTER TABLE test CHANGE gender gender VARCHAR(25) DEFAULT NULL COMMENT '修改后的性别字段' AFTER name;
+   ```
+
+5. 直接修改表字段:
+
+   ```mysql
+   ALTER TABLE test MODIFY gender VARCHAR(255) DEFAULT NULL COMMENT '直接修改后的性别字段' AFTER name;
+   ```
+
+6. 删除表: 
+
+   ```mysql
+   DROP TABLE test;
+   ```
+
+7. 修改表名: 
+
+   ```mysql
+   ALTER TABLE test RENAME test1;
+   ```
+
+8. 查看表创建时的语句
+
+   ```mysql
+   SHOW CREATE DATABASE test;
+   ```
+
+9. 查看表的结构
+
+   ```mysql
+   DESC test;
+   ```
+
+##### 补充：DBA常用命令：
+
+```mysql
+SHOW WARNINGS：显示最后一个执行语句所产生的警告信息
+
+SHOW ERRORS：显示最后一个执行语句所产生的错误信息
+
+SHOW GRANTS：显示一个用户所拥有的权限
+
+SHOW GRANTS;
+
+SHOW GRANTS FOR CURRENT_USER();
+
+SHOW GRANTS FOR 'root'@'localhost';
+
+SHOW PROCESSLIST：显示系统中正在运行的所有进程，普通用户只能查看自己的进行信息
+
+SHOW PRIVILEGES：显示MySQL所支持的所有权限，及权限可操作的对象
+
+SHOW PLUGINS：显示MySQL插件信息
+
+SHOW TABLE STATUS：显示表属性信息(需要use db_name打开数据库)
+
+SHOW INDEX：显示表索引信息(需要先创建索引)
+
+SHOW PROFILE and SHOW PROFILES：显示执行语句的资源使用情况
+
+SHOW GLOBAL|SESSION VARIABLES：显示MySQL系统变量信息
+
+SHOW STATUS：查看MySQL各种运行状态
+```
 
 ### ★总结：
 
 #### DML语言:数据操作语言,是对表中的数据进行操作的语言,包含:增,删,改操作
 
-##### 关键字:[INSERT语句 INTO VALUES] [DELETE语句 FROM] [UPDATE语句 SET WHERE]
+关键字:[INSERT语句 INTO VALUES] [DELETE语句 FROM] [UPDATE语句 SET WHERE]
 
-(1). 表中插入数据: INSERT INTO 表名(列名) VALUES(传参)
+(1). 表中插入数据: 
+
+```mysql
+INSERT INTO test(id, name, age) VALUES (1,'小明',18);
+```
 
 > 表数据复制: INSERT INTO 表名 SELECT * FROM 目标表名
 
-(2). 
+(2). 删除表数据: DELETE FROM 表名 [WHERE 过滤条件]---若不加条件就会删除整张表及所有数据
 
-删除表数据: DELETE FROM 表名 [WHERE 过滤条件]---若不加条件就会删除整张表及所有数据
+```mysql
+DELETE FROM test WHERE name='小明';
+```
 
 > 删除表所有数据: TRUNCATE 表名;
 
 (3). 修改表数据: UPDATE 表名 SET 字段值=？ [WHERE 过滤条件]---若不加条件可能引起范围修改
+
+```mysql
+UPDATE test SET name = '小华' WHERE name = '小明';
+```
 
 #### 1. 数据类型
 
