@@ -4,7 +4,7 @@
 
   ```java
   //★源码如下:
-  public static <T> List<T> asList(T... a) {
+  public static <T> List<T> asList(T... a) {// 需要包装类型的数组
           return new ArrayList<>(a);
   }
   ```
