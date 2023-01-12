@@ -253,3 +253,40 @@ osk
 cls
 ```
 
+##### 42.切换目录
+
+1. 切换盘`D:`：
+
+   ```sh
+   C:\Users\21681>D:
+   
+   D:\>
+   ```
+
+2. 切换当前盘的目录`cd`：
+
+   ```sh
+   D:\>cd devtools
+   
+   D:\devtools>
+   ```
+
+3. 查看当前目录的文件`dir`：
+
+   ```sh
+   D:\devtools\java_install>dir
+    驱动器 D 中的卷是 Data
+    卷的序列号是 245B-DA8D
+   
+    D:\devtools\java_install 的目录
+   
+   2023/01/12  15:25    <DIR>          .
+   2023/01/12  15:25    <DIR>          ..
+   2023/01/12  15:25    <DIR>          apache-tomcat-8.5.84
+   2023/01/12  15:24        11,860,862 apache-tomcat-8.5.84-windows-x64.zip
+                  1 个文件     11,860,862 字节
+                  3 个目录 224,151,785,472 可用字节
+   
+   D:\devtools\java_install>
+   ```
+
