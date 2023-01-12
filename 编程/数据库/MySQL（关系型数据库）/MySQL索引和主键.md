@@ -1,4 +1,4 @@
-# 数据库索引和主键
+# MySQL索引和主键
 
 ## 1.索引的定义:
 
@@ -144,7 +144,7 @@ drop index index_first_last on student;
 2. 树中的叶子节点存储索引和数据
 3. 树中的叶子节点处于相同层，并且之间会使用双向链表连接,可以更好的支持范围查询.
 
-![img_3.png](images/img_3.png)
+![img_3.png](images/image-20221222143547277.png)
 
 * **MySQL中B+树相对于B树有什么优点**?
 
@@ -156,7 +156,7 @@ drop index index_first_last on student;
 
   hash索引查询效率比较高（等值查询）,但是不支持范围查询.
 
-![img_2.png](images/img_2.png)
+![img_2.png](images/image-20221222143547276.png)
 
 > 将Keys名字进行散列求值，对应值在数组中的位置，进而寻找数据
 
@@ -167,7 +167,7 @@ drop index index_first_last on student;
 聚簇索引也叫聚集索引，**索引和数据存储在一起，也就是索引与数据是不分离**。
 InnoDB存储引擎就是聚簇索引。
 
-![img_4.png](images/img_4.png)
+![img_4.png](images/image-20221222143547278.png)
 
 * 聚簇索引都有哪些类型？
 
@@ -180,7 +180,7 @@ from employees
 where employee_id=206
 ```
 
-![img_6.png](images/img_6.png)
+![img_6.png](images/image-20221222143547279.png)
 
 > 二级索引叶子节点存储的是主键，需要基于主键寻找一级索引，进而找到数据。
 
@@ -193,7 +193,7 @@ where hire_date='1987-07-09'
 ```
 
 
-![img_8.png](images/img_8.png)
+![img_8.png](images/image-20221222143547281.png)
 
 ```mysql
 create index index_hire_date_salary on employees(hire_date,salary);
@@ -207,7 +207,7 @@ where hire_date='1987-07-09' and salary<8000
 * 什么是非聚簇索引？
   非聚簇索引是索引与数据是分离的，索引和数据是单独存储的。MyISAM存储引擎是非聚簇索引。
 
-![img_7.png](images/img_7.png)
+![img_7.png](images/image-20221222143547280.png)
 
 例如：
 

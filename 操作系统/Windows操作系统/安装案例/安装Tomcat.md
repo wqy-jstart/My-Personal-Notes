@@ -12,7 +12,7 @@
 
 ### 2.下载到指定目录，解压缩
 
-#
+![image-20230112152703426](images/image-20230112152703426.png)
 
 ### 3.启动Tomcat服务
 
@@ -105,13 +105,32 @@
 D:\devtools\java_install\apache-tomcat-8.5.84\conf\Catalina\localhost
 ```
 
-添加xml文件(可以访问任意目录的项目)：
+添加xml文件(可以访问任意目录的项目,通常一个项目一个)：
 
 ```sh
 <--Context是工程的上下文 
    path是访问路径
    docBase是工程的目录
 -->
-<Context path="/abc" docBase="E:\book" /> # 内容
+<Context path="/abc" docBase="D:\book" /> # 标签内容
 ```
 
+![image-20230112182727799](images/image-20230112182727799.png)
+
+### 3.在IDEA中整合Tomcat服务器
+
+添加配置：
+
+![image-20230112183244909](images/image-20230112183244909.png)
+
+项目使用：
+
+![image-20230112184104482](images/image-20230112184104482.png)
+
+下一步（选择JavaEE8的规范）：
+
+![image-20230112184140844](images/image-20230112184140844.png)
+
+目录介绍（演示版本较低但内容相近）：
+
+![image-20230112185040179](images/image-20230112185040179.png)
