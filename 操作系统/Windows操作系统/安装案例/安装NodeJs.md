@@ -98,7 +98,7 @@ vue -V  # 检查是否安装成功
 
 1. 先卸载对应的安装包以及环境变量
 
-2. 如果安装时出现：
+2. 如果安装时的图形界面出现：
 
    ```sh
    a later version of Node.js already installed Setup will now exit
