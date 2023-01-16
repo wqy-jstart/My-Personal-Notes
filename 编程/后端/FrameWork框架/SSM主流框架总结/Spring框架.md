@@ -214,3 +214,7 @@ DI是IOC实现的实现方式,由于IOC这个词汇比较抽象,很多时候我�
 | `@Resource`                    | Spring   | 此注解是`javax`包中的注解，<br />添加在属性上，使得Spring自动装配此属性的值， <br />通常不推荐使用此注解 |
 | `@EnableScheduling`            | Spring   | 只能添加在类上 <br/>作用在配置类上,用来开启计划任务,例如定时向Redis中加载缓存 |
 | `@EnableTransactionManagement` | Spring   | 只能添加在类上<br/>用来开启事务管理                          |
+
+## 7.总结资料:
+
+**地址**:https://www.processon.com/view/link/60ec02b9f346fb6bcd28ae80
