@@ -128,3 +128,32 @@ mongosh
 ![image-20230112214253681](images/image-20230112214253681.png)
 
 连接成功！
+
+##### 检查:
+
+```sh
+test> show dbs
+admin   40.00 KiB
+config  72.00 KiB
+local   72.00 KiB
+```
+
+#### 方式二：通过参数连接
+
+> 需要指定主机和端口
+
+```sh
+mongosh --host=localhost --port=27017
+```
+
+#### 方式三：Compass-图形化界面客户端
+
+到MongoDB官网下载MongoDB Compass，
+
+地址：https://www.mongodb.com/try/download/compass
+
+![image-20230118111808144](images/image-20230118111808144.png)
+
+如果是下载安装版，则按照步骤安装；如果是下载加压缩版，直接解压，执行里面的 MongoDBCompassCommunity.exe 文件即可
+
+在打开的界面中，输入**主机地址（hostname）**、**端口（port）**等相关信息，点击连接即可！

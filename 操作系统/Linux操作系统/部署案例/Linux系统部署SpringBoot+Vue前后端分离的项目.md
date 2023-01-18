@@ -554,6 +554,3 @@ location / {
             #index  index.html index.html;
         }
 ```
-
-
-

@@ -66,7 +66,7 @@ MongoDB中的记录是一个文档，它是一个由字段和值对（field:valu
 
 MySQL和MongoDB对比：
 
-![image-20230112234019533](C:\Users\21681\AppData\Roaming\Typora\typora-user-images\image-20230112234019533.png)
+![image-20230112234019533](images/image-20230112234019533.png)
 
 | SQL术语/概念 | MongoDB术语/概念 | 解释/说明                           |
 | ------------ | ---------------- | ----------------------------------- |
@@ -91,7 +91,7 @@ Bson中，除了基本的JSON类型：string,integer,boolean,double,null,array�
 
 ##### BSON数据类型参考列表：
 
-![image-20230112235345713](C:\Users\21681\AppData\Roaming\Typora\typora-user-images\image-20230112235345713.png)
+![image-20230112235345713](images/image-20230112235345713.png)
 
 ### 5.MongoDB的特点
 
