@@ -467,7 +467,17 @@ Gun开源社区仿写一个版本 vim， vim比vi使用更加便利。
    sftp root@ip地址
    ```
 
-   连接成功后使用put上传文件
+   连接成功后使用put上传文件:
+   
+   ```sh
+   C:\Users\21681>sftp root@125.74.199.190
+   root@125.74.199.190's password:
+   Connected to 125.74.199.190.
+   sftp> put C:\Users\21681\IdeaProjects\JSD2207-03\coolshark\target\coolshark-0.0.1-SNAPSHOT.jar
+   Uploading C:/Users/21681/IdeaProjects/JSD2207-03/coolshark/target/coolshark-0.0.1-SNAPSHOT.jar to /root/coolshark-0.0.1-SNAPSHOT.jar
+   C:/Users/21681/IdeaProjects/JSD2207-03/coolshark/target/coolshark-0.0.1-SNAPSHOT.jar  100%   22MB 784.5KB/s   00:28
+   sftp>
+   ```
 
 #### 4.查看树形结构`tree`命令
 
