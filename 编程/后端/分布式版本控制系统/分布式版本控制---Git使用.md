@@ -201,6 +201,20 @@ git config --global user.email "自已的邮箱地址"
 
 ##### 13.查看配置：`git config -l`
 
+##### 14.设置提交缓存
+
+```sh
+git config --global http.postBuffer 524288000
+git config --global https.postBuffer 524288000
+```
+
+##### 15.设置提交超时条件
+
+```sh
+git config --global http.lowSpeedLimit 1000 #单位字节
+git config --global http.lowSpeedTime 600 # 单位毫秒
+```
+
 ## 分支
 
 #### 分支概念:

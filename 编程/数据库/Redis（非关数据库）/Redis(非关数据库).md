@@ -371,11 +371,13 @@ public void rightPush(){
 
 - #### 9.取出List集合
 
-##### 想要取出Redis中的List集合,需要借用工具,例如Another Redis Desktop Manager可视化软件
+**想要取出Redis中的List集合,需要借用工具,例如Another Redis Desktop Manager可视化软件**
 
 在Another Redis Desktop Manager中可以对Redis进行各种操作,并可以查询不同类型的value值
 
-##### 下载地址:http://doc.canglaoshi.org/
+**下载地址**: http://doc.canglaoshi.org/ （windows必备）
+
+**或者Gitee**：https://gitee.com/qishibo/AnotherRedisDesktopManager/releases
 
 ![image-20221112214402729](images/image-20221112214402729.png)
 
