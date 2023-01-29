@@ -199,6 +199,8 @@ git config --global user.email "自已的邮箱地址"
 
 ##### 12.克隆远程仓库的文件: `git clone 远程仓库地址`
 
+##### 13.查看配置：`git config -l`
+
 ## 分支
 
 #### 分支概念:
