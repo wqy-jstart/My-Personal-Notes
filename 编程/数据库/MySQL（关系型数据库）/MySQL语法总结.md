@@ -36,7 +36,7 @@ SQL语句是我们操作数据库的语言，通过执行SQL可以完成对数�
 
 4:使用JDBC连接数据库
 
-##### 注：在MySQL中,我们可以为不同的项目创建不同的数据库,而每个数据库中都可以创建若干张表,每张表用来保存一组数据,比如我们为保存用户信息可以创建userinfo表,保存文章信息可以创建article表等
+> 注：在MySQL中,我们可以为不同的项目创建不同的数据库,而每个数据库中都可以创建若干张表,每张表用来保存一组数据,比如我们为保存用户信息可以创建userinfo表,保存文章信息可以创建article表等
 
 #### (4). SQL语句分类：
 
@@ -646,7 +646,7 @@ WHERE dept_id IN(2,3));
 
 4. <ANY(子查询)：小于子查询结果集中最大的
 
-##### 多行多列子查询(结果集是一个表),通常就当做一张表使用,可以跟在FROM字句中----AS关键字或者跟在DDL语句中基于一个查询结果集创建表.
+**多行多列子查询(结果集是一个表),通常就当做一张表使用,可以跟在FROM字句中----AS关键字或者跟在DDL语句中基于一个查询结果集创建表.**
 
 例：将1号部门员工信息单独定义一张表名为emp_dept1;
 
@@ -657,7 +657,7 @@ AS
 SELECT * FROM emp WHERE dept_id=1;
 ```
 
-##### 注意：如果创建表基于的子查询中某个字段是一个表达式或函数时,要给该字段取别名,那么创建出来的表的该字段会以别名作为字段名.
+> 注意：如果创建表基于的子查询中某个字段是一个表达式或函数时,要给该字段取别名,那么创建出来的表的该字段会以别名作为字段名.
 
 例：创建一张表emp_dept_sal.该表记录了每个部门的薪资情况
 
@@ -675,7 +675,7 @@ SELECT * FROM emp_dept_sal;
 
 ### 18.★关联查询
 
-##### 查询结果集中的数据来自多张表,而表与表中数据之间的对应关系就是关联关系
+**查询结果集中的数据来自多张表,而表与表中数据之间的对应关系就是关联关系**
 
 两张表就可以产生关联关系了,关联关系分为三类
 
@@ -685,13 +685,13 @@ SELECT * FROM emp_dept_sal;
 
 3：多对多 A表与B表双向都是一对多时,就是多对多关系.
 
-##### A. 关联查询就是基于多张表联合查询数据而形成一个结果集的过程,在关联查询中一个至关重要的点就是关联条件
+**A**. 关联查询就是基于多张表联合查询数据而形成一个结果集的过程,在关联查询中一个至关重要的点就是关联条件
 
-##### B. N张表关联查询至少要有N-1个连接条件.
+**B**. N张表关联查询至少要有N-1个连接条件.
 
-##### C. 缺失连接条件会产生笛卡尔积,该查询结果集的记录数是关联表中所有记录数乘积的结果,它通常是一个无意义的结果集，要尽量避免产生.
+**C**. 缺失连接条件会产生笛卡尔积,该查询结果集的记录数是关联表中所有记录数乘积的结果,它通常是一个无意义的结果集，要尽量避免产生.
 
-##### D. ★关联查询语法:
+**D**. ★**关联查询语法**:
 
 SELECT 字段 FROM 表A，表B[，表C，表D...]
 
@@ -710,7 +710,7 @@ SELECT *
 FROM emp,dept;
 ```
 
-##### E.实际关联查询要"添加连接条件"：连接条件最常见的就是等值连接。
+**E**.实际关联查询要"添加连接条件"：连接条件最常见的就是等值连接。
 
 例：查看每个员工的名字，工资，部门编号以及所在的部门名称和所在地区
 
@@ -720,9 +720,9 @@ FROM emp e,dept d
 WHERE e.dept_id=d.id;
 ```
 
-##### 注:emp表上的dept_id保存的值是dept表中主键字段的值，因此emp表中dept_id与dept表id值一样的记录才会被查询出来作为一条记录显示在结果集中。
+> 注:emp表上的dept_id保存的值是dept表中主键字段的值，因此emp表中dept_id与dept表id值一样的记录才会被查询出来作为一条记录显示在结果集中。
 
-##### F. ★当一张表上的某个字段保存的是另一张表中的主键字段值时，这个字段就被称为"外键"
+**F**. ★当一张表上的某个字段保存的是另一张表中的主键字段值时，这个字段就被称为"外键"
 
 关联关系中经常用A.主键=B.外键作为连接条件。
 
@@ -819,7 +819,13 @@ JOIN dept d
 ON e.dept_id = d.id;
 ```
 
-### 20.外连接：如果需要在结果集中列出不满足连接条件的记录时我们需要使用外连接
+**图解**：
+
+![image-20230130175000048](images/image-20230130175000048.png)
+
+### 20.外连接：
+
+**如果需要在结果集中列出不满足连接条件的记录时我们需要使用外连接**
 
 ##### ★外连接有:
 
@@ -1056,7 +1062,7 @@ try (   //与SQL建立连接
 
 #### 4.指定DQL语句(数据查询语言)
 
-##### Statement中有专门用来执行查询语句DQL的方法:
+**Statement中有专门用来执行查询语句DQL的方法**:
 
 ★ResultSet executeQuery(String sql)
 
@@ -1066,7 +1072,7 @@ try (   //与SQL建立连接
 
 该方法是结果集核心方法之一,由于让结果集游标向下一条记录,返回值表示是否有下一条。
 
-##### 注：游标默认是在结果集第一条记录上
+> 注：游标默认是在结果集第一条记录上
 
 *例：查看6岁的学生都有谁？*
 
@@ -1106,7 +1112,7 @@ try(
 
 #### 5.预编译SQL语句
 
-##### 预编译SQL语句是将在SQL中会变化的值(原来拼接SQL语句的部分)先以"?"进行占位
+**预编译SQL语句是将在SQL中会变化的值(原来拼接SQL语句的部分)先以"?"进行占位**
 
 解决拼接SQL语句会存在两个明显问题:
 
@@ -1180,60 +1186,60 @@ try(
 
 ### ★总结
 
-##### (1).Statement每次执行SQL语句时，都会将该SQL语句发送给数据库，而数据库接收到SQL语句后会解析SQL语句并生成执行计划(该操作是一个耗时的操作)。然后再执行该计划。当SQL语义相同，但是数据不同时，如果我们执行这些SQL，那么每次数据库接收SQL都要生成执行计划。
+**(1).Statement每次执行SQL语句时，都会将该SQL语句发送给数据库，而数据库接收到SQL语句后会解析SQL语句并生成执行计划(该操作是一个耗时的操作)。然后再执行该计划。当SQL语义相同，但是数据不同时，如果我们执行这些SQL，那么每次数据库接收SQL都要生成执行计划。**
 
 ![img_7](images/img_7.png)
 
-##### (2).PreparedStatement会在创建时先将预编译SQL语句发送给数据库来生成执行计划(仅1次)，并且"?"内容会在生成的执行计划中当作"参数".在多次执行时，每次仅需要将"?"对应的数据发送给数据库，来重用预编译SQL对应的执行计划，这样效率会高很多。
+**(2).PreparedStatement会在创建时先将预编译SQL语句发送给数据库来生成执行计划(仅1次)，并且"?"内容会在生成的执行计划中当作"参数".在多次执行时，每次仅需要将"?"对应的数据发送给数据库，来重用预编译SQL对应的执行计划，这样效率会高很多。Statement执行SQL语句时，数据是需要拼接SQL来完成，这存在SQL注入攻击，但是PreparedStatement会先将预编译SQL发送给数据库生成执行计划，那么所有数据都会被当作参数。因此就算传入的是注入攻击的内容，它也仅会当这部分内容为参数值，语义已经不会发生改变了(因为执行计划已经生成。)**
+
+**拼接SQL注入攻击内容后，语义发生了改变，因此数据库接收到该SQL是就错误的执行了内容SELECT * FROM userinfo WHERE username='xxx' AND password='1' OR '1'='1'**
+
+**预编译SQL先行发送给数据，生成执行计划后，数据库就理解了操作，并等待你发送过来用户名和密码的值了SELECT * FROM userinfo WHERE username=? AND password=?当我们发送SQL注入攻击内容时参数1(第一个?的内容):xxx, 参数2(第二个?的内容):1' OR '1'='1此时数据库会理解为你要查询的人的密码是"1' OR '1'='1",并不会将其当作SQL语句的一部分了。**
+
+
 
 ![img_2](images/img_2.png)
-
-##### Statement执行SQL语句时，数据是需要拼接SQL来完成，这存在SQL注入攻击，但是PreparedStatement会先将预编译SQL发送给数据库生成执行计划，那么所有数据都会被当作参数。因此就算传入的是注入攻击的内容，它也仅会当这部分内容为参数值，语义已经不会发生改变了(因为执行计划已经生成。)
-
-##### 拼接SQL注入攻击内容后，语义发生了改变，因此数据库接收到该SQL是就错误的执行了内容SELECT * FROM userinfo WHERE username='xxx' AND password='1' OR '1'='1'
-
-##### 预编译SQL先行发送给数据，生成执行计划后，数据库就理解了操作，并等待你发送过来用户名和密码的值了SELECT * FROM userinfo WHERE username=? AND password=?当我们发送SQL注入攻击内容时参数1(第一个?的内容):xxx, 参数2(第二个?的内容):1' OR '1'='1此时数据库会理解为你要查询的人的密码是"1' OR '1'='1",并不会将其当作SQL语句的一部分了。
 
 *例：向student1表中插入1000条数据:*
 
 ```java
-    try (
+try (
 //事先创建了DBUtil类,在静态块加载SQL路径,getConnection()方法连接数据库
-            Connection conn = DBUtil.getConnection()
-    ) {
-        /*
-        Statement statement = conn.createStatement();
-        Random random = new Random();
-        long start = System.currentTimeMillis();
-        for(int i=0;i<1000;i++) {
-            int age = random.nextInt(7) + 6;//年龄6-12岁
-            int c = age == 6 ? 1 : (age - 7) * 4 + random.nextInt(4) + 2;//+2是因为1年级的ID从2开始
-            String name = NameCreator.createName();
-            //拼写：
-            String sql = "INSERT INTO student1 (name,age,class_id) VALUES ('" + name + "'," + age + "," + c + ")";
-            statement.executeUpdate(sql);
-        }
-        long end = System.currentTimeMillis();
-        System.out.println("插入完毕，耗时:"+(end-start)+"ms");//2098ms
-        */
-        
-        //预编译写法：
-        String sql = "INSERT INTO student1 (name,age,class_id) VALUES (?,?,?)";
-        PreparedStatement statement = conn.prepareStatement(sql);
-        Random random = new Random();
-        long start = System.currentTimeMillis();
-        for(int i=0;i<1000;i++) {
-            int age = random.nextInt(7) + 6;//年龄6-12岁
-            int c = age == 6 ? 1 : (age - 7) * 4 + random.nextInt(4) + 2;//+2是因为1年级的ID从2开始
-            String name = NameCreator.createName();
-            statement.setString(1,name);
-            statement.setInt(2,age);
-            statement.setInt(3,c);
-            statement.executeUpdate();
-        }
-        long end = System.currentTimeMillis();
-        System.out.println("插入完毕，耗时:"+(end-start)+"ms");//498ms
+        Connection conn = DBUtil.getConnection()
+) {
+    /*
+    Statement statement = conn.createStatement();
+    Random random = new Random();
+    long start = System.currentTimeMillis();
+    for(int i=0;i<1000;i++) {
+        int age = random.nextInt(7) + 6;//年龄6-12岁
+        int c = age == 6 ? 1 : (age - 7) * 4 + random.nextInt(4) + 2;//+2是因为1年级的ID从2开始
+        String name = NameCreator.createName();
+        //拼写：
+        String sql = "INSERT INTO student1 (name,age,class_id) VALUES ('" + name + "'," + age + "," + c + ")";
+        statement.executeUpdate(sql);
+    }
+    long end = System.currentTimeMillis();
+    System.out.println("插入完毕，耗时:"+(end-start)+"ms");//2098ms
+    */
 
-    }catch (Exception e){
-            e.printStackTrace();
+    //预编译写法：
+    String sql = "INSERT INTO student1 (name,age,class_id) VALUES (?,?,?)";
+    PreparedStatement statement = conn.prepareStatement(sql);
+    Random random = new Random();
+    long start = System.currentTimeMillis();
+    for(int i=0;i<1000;i++) {
+        int age = random.nextInt(7) + 6;//年龄6-12岁
+        int c = age == 6 ? 1 : (age - 7) * 4 + random.nextInt(4) + 2;//+2是因为1年级的ID从2开始
+        String name = NameCreator.createName();
+        statement.setString(1,name);
+        statement.setInt(2,age);
+        statement.setInt(3,c);
+        statement.executeUpdate();
+    }
+    long end = System.currentTimeMillis();
+    System.out.println("插入完毕，耗时:"+(end-start)+"ms");//498ms
+
+}catch (Exception e){
+        e.printStackTrace();
 ```
