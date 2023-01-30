@@ -38,3 +38,47 @@ Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
 
 MariaDB [(none)]>
 ```
+
+## 维护：
+
+#### 1.关于Linux服务器访问mysql时出现数据包过大的问题：
+
+报错信息：
+
+```sh
+Packet for query is too large (1,068 > 1,024). You can change this value on the server by setting the 'max_allowed_packet' variable.
+```
+
+解决办法：
+
+向mysql数据库发送查询命令时，默认性况下，一个包的大小是1024，实际一条语句的长度，就大小这个，所以执行语句报错。解决的方式，就是调整mysql中该参数的大小。
+
+##### 1.查询默认查询数据包大小：
+
+```sh
+show variables like '%max_allowed_packet%';
+```
+
+```sh
+MariaDB [(none)]> show variables like '%max_allowed_packet%';
++--------------------------+------------+
+| Variable_name            | Value      |
++--------------------------+------------+
+| max_allowed_packet       | 1024       |
+| slave_max_allowed_packet | 1073741824 |
++--------------------------+------------+
+2 rows in set (0.00 sec)
+```
+
+##### 2.修改查询数据包大小：
+
+```sh
+set global max_allowed_packet = 100*1024;
+```
+
+##### 3.重新启动数据库服务：
+
+```sh
+systemctl restart mariadb    # 重新启动服务
+systemctl stop mariadb       # 停止服务 
+```
