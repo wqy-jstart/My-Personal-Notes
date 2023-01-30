@@ -89,7 +89,7 @@ root@1-2:~#
 logout
 ```
 
-### 7.`who`、`netstat -a`、`ps-aux`命令
+#### 7.`who`、`netstat -a`、`ps-aux`命令
 
 `who`：查看目前有谁在线?
 
@@ -97,7 +97,7 @@ logout
 
 `ps -aux`查看背景运行的程序
 
-### 8.`sync`、`shutdown`、`reboot`
+#### 8.`sync`、`shutdown`、`reboot`
 
 将数据同步写入硬盘中的命令:`sync`
 
@@ -107,7 +107,7 @@ logout
 
 >由于Linux系统的关机/重新启动是很重大的系统运行，因此只有root才能够进行例如shutdown, reboot等命令。
 
-### 9.`ls`命令
+#### 9.`ls`命令
 
 ```shell
 [root@www ~]# ls -al
@@ -155,6 +155,13 @@ ls是『list』的意思，重点在显示文件的文件名与相关属性。�
   - 第一组为『文件拥有者的权限』，以『install.log』那个文件为例， 该文件的拥有者可以读写，但不可执行；
   - 第二组为『同群组的权限』；
   - 第三组为『其他非本群组的权限』。
+
+#### 10.查看系统的版本：`uname -a`
+
+```sh
+[root@am8nlontcnkhzmpb ~]# uname -a
+Linux am8nlontcnkhzmpb 3.10.0-862.el7.x86_64 #1 SMP Fri Apr 20 16:44:24 UTC 2018 x86_64 x86_64 x86_64 GNU/Linux
+```
 
 ## Linux对文件和目录的常用命令:
 
