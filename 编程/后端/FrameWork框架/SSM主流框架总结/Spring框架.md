@@ -193,6 +193,28 @@ DI是IOC实现的实现方式,由于IOC这个词汇比较抽象,很多时候我�
 
 **关系:** Spring框架通过 DI 实现/完善 了IoC。
 
+## 7.Spring框架的核心模块
+
+Spring Core：核心类库，提供IOC服务；
+
+Spring Context：提供框架级别的Bean访问方式以及企业级功能（定时任务）；
+
+Spring AOP：面向切面编程思想，提供面向切面的服务；
+
+Spring DAO：对JDBC的抽象封装简化数据访问的操作（以类型或对象的形式传递数据）；
+
+Spring ORM：对现有ORM框架的支持；
+
+> ORM全称对象关系映射（Object/Relation Mapping），指**将Java对象状态自动映射到关系数据库中的数据上**，从而提供透明化的持久化支持，即把一种形式转化为另一种形式。
+
+Spring Web：提供基本面向Web的综合特征（多文件上传）；
+
+Spring MVC：提供面向Web应用的Model-View-Controller实现；
+
+Spring Test：提供了对JUnit和TestNG测试的支持；
+
+Spring Aspect：该模块位于AspectJ的集成提供支持；
+
 ------
 
 # 注解:
@@ -215,6 +237,6 @@ DI是IOC实现的实现方式,由于IOC这个词汇比较抽象,很多时候我�
 | `@EnableScheduling`            | Spring   | 只能添加在类上 <br/>作用在配置类上,用来开启计划任务,例如定时向Redis中加载缓存 |
 | `@EnableTransactionManagement` | Spring   | 只能添加在类上<br/>用来开启事务管理                          |
 
-## 7.总结资料:
+## 8.总结资料:
 
 **地址**:https://www.processon.com/view/link/60ec02b9f346fb6bcd28ae80
