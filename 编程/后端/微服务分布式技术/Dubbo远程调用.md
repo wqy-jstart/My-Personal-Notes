@@ -328,38 +328,20 @@ No provider available from registry localhost:8848 for service cn.tedu.csmall.st
 * 检查被调用的目标服务SpringBoot启动类是否编写的@EnableDubbo注解
 * 检查被调用的模块的业务逻辑层实现类是否编写了@DubboService注解
 
-# 负载均衡
+## Dubbo生产者消费者配置小结:
 
-## 什么是负载均衡？
+Dubbo生产者消费者相同的配置
 
-在实际项目中,一个服务基本都是集群模式的,也就是多个功能相同的项目在运行,这样才能承受更高的并发
+pom文件添加dubbo依赖,yml文件配置dubbo信息
 
-这时一个请求到这个服务,就需要确定访问哪一个服务器
+**生产者**
 
-在Dubbo实现远程调用的过程中,调用的关系可能如下图
+* 要有service接口项目
 
-![1655891169062](images/1655891169062.png)
+* 提供服务的业务逻辑层实现类要添加@DubboService注解
+* SpringBoot启动类要添加@EnableDubbo注解
 
-Dubbo框架内部支持负载均衡算法,能够尽可能的让请求在相对空闲的服务器上运行
+**消费者**
 
-在不同的项目中,可能选用不同的负载均衡策略,以达到最好效果
-
-Loadbalance:就是负载均衡的意思
-
-## Dubbo内置负载均衡策略算法
-
-- **random loadbalance:随机分配策略(默认)**
-- round Robin Loadbalance:权重平均分配
-- leastactive Loadbalance:活跃度自动感知分配
-- consistanthash Loadbalance:一致性hash算法分配
-
-实际运行过程中,每个服务器性能不同
-
-在负载均衡时,都会有性能权重,这些策略算法都考虑权重问题
-
-
-
-
-
-
-
+* pom文件添加消费模块的service依赖
+* 业务逻辑层远程调用前,模块使用@DubboReference注解获取业务逻辑层实现类对象
