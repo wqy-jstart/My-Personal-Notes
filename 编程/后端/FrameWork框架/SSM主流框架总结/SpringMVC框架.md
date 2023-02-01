@@ -87,6 +87,38 @@ Spring MVC框架主要解决了接收请求、响应结果的相关问题。
 
 ![image-20221019114229471](images/image-20221019114229471.png)
 
+#### 组件解析:
+
+1. **DispatcherServlet**
+
+   是一种前端控制器,由框架提供。
+
+   作用: 统一处理请求和响应,除此之外还是整个流程控制的中心,调用其他组件处理用户的请求
+
+2. **HandlerMapping**
+
+   处理器映射器,由框架提供。
+
+   作用: 根据请求的url、method等信息查找具体的Handler（一般是Controller）
+
+3. **Controller**
+
+   处理器，由工程师开发。
+
+   作用：在DispatcherServlet的控制下，Controller对具体的用户请求进行处理，将处理结果及要跳转的视图封装到一个对象 ModelAndView 中并将其返回给处理器适配器 (HandlerAdaptor)
+
+4. **HandlerAdapter**
+
+   处理器适配器，由框架提供。
+
+   作用：根据映射器找到处理器Handler信息，按照特定的规则去执行相关的处理器
+
+5. **ViewResolver**
+
+   视图解析器，由框架提供。
+
+   作用：负责将处理结果 ModelAndView中的视图名称封装成视图对象（首先根据逻辑视图名解析成物理图名，即具体的页面地址，再生成 View 视图对象）最后对DispatcherServlet调用视图对象让 View 进行渲染并通过页面展示给用户。
+
 #### 服务器集群:
 
 ![image-20221113194529726](images/image-20221113194529726.png)
