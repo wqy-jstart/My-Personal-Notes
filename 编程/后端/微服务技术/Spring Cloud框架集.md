@@ -6,13 +6,19 @@
 
 ```xml
 <!-- springCloud -->
-<dependency>
+<properties>
+    <java.version>1.8</java.version>
+    <spring-cloud.version>2020.0.3</spring-cloud.version>
+</properties>
+<dependencies>
+    <dependency>
     <groupId>org.springframework.cloud</groupId>
     <artifactId>spring-cloud-dependencies</artifactId>
     <version>${spring-cloud.version}</version>
     <type>pom</type>
     <scope>import</scope>
-</dependency>
+    </dependency>
+</dependencies>
 ```
 
 ## 什么是SpringCloud
@@ -52,7 +58,7 @@ SpringCloud集成了各种微服务功能组件,并基于SpringBoot实现了这�
 
 ![image-20221124140034979](images/image-20221124140034979.png)
 
-### 跨服务的远程调用
+### 跨服务的远程调用控制器
 
 先在启动类中创建`RestTemplate`并添加`@Bean`注解
 
@@ -84,6 +90,39 @@ public Order queryOrderById(Long orderId) {
     order.setUser(user);
     // 4.返回
     return order;
+}
+```
+
+**远程调用控制器示例**：
+
+```java
+// 装配RestTemplate调用远程方法
+@Autowired
+private RestTemplate restTemplate;
+
+@PostMapping("/delete")
+@ApiOperation("删除购物车中的商品")
+@ApiImplicitParams({
+        @ApiImplicitParam(value = "用户Id",name="userId",example = "UU100"),
+        @ApiImplicitParam(value = "商品编号",name="commodityCode",example = "PC100")
+})
+public JsonResult deleteUserCart(String userId,String commodityCode){
+    cartService.deleteUserCart(userId,commodityCode);
+    // RestTemplate调用减少库存数的方法
+    // 我们设计删除购物车之后减少库存,要调用RestTemplate首先确定url
+    String url="http://localhost:20003/base/stock/reduce/count?" +
+            "commodityCode={1}&reduceCount={2}";
+    // 发起调用
+    // getForObject方法参数和返回值的解释
+    // 参数有3个部分
+    // 1.第一个参数:请求的url,就是指定要访问的路径
+    // 2.第二个参数:是返回值类型的反射,根据要求编写在参数位置即可
+    // 3.从第三个参数开始,往后的每一个参数都是在给url中{x}的占位符赋值
+    //    赋值规则:第三个参数赋值给{1}.第四个参数赋值给{2} ...以此类推
+    JsonResult jsonResult = restTemplate
+            .getForObject(url, JsonResult.class, commodityCode, 5);
+    System.out.println(jsonResult);
+    return JsonResult.ok("删除购物车完成!");
 }
 ```
 
