@@ -24,7 +24,7 @@ https://www.vmware.com/cn/products/workstation-pro.html
 
 #### 下载Linux的发行版之一CentOS系统（使用较多）
 
-https://www.centos.org/centos-linux/#download
+https://www.centos.org/download/#centos-linux
 
 ![image-20230130140738103](images/image-20230130140738103.png)
 
@@ -32,6 +32,14 @@ https://www.centos.org/centos-linux/#download
 
 #### 配置：
 
-选择下载的操作系统
+##### 1.选择下载的操作系统
 
 ![image-20221217095907449](images/image-20221217095907449.png)
+
+##### 2.选择自定义硬件设备（够用即可！）
+
+##### 3.网络适配器改为NAT（默认）
+
+##### 4.启动等待加载即可！
+
+更多可参考：https://blog.csdn.net/SoulNone/article/details/126681722
