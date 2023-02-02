@@ -1196,7 +1196,13 @@ try(
 
 **预编译SQL先行发送给数据，生成执行计划后，数据库就理解了操作，并等待你发送过来用户名和密码的值了SELECT * FROM userinfo WHERE username=? AND password=?当我们发送SQL注入攻击内容时参数1(第一个?的内容):xxx, 参数2(第二个?的内容):1' OR '1'='1此时数据库会理解为你要查询的人的密码是"1' OR '1'='1",并不会将其当作SQL语句的一部分了。**
 
+**补充**：
 
+<u>避免SQL注入也可以将接受的账号和密码中的单引号进行替换成双引号</u>
+
+```java
+String username = username.replaceAll("'","''")
+```
 
 ![img_2](images/img_2.png)
 
