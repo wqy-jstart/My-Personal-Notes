@@ -19,6 +19,14 @@ Sun Nov 27 01:33:47 PM UTC 2022
   13:36
   ```
 
+**查看当前时区**：
+
+```sh
+date -R
+[root@localhost etc]# date -R
+Sat, 04 Feb 2023 11:24:18 +0800
+```
+
 #### 2.显示日历的命令: `cal`
 
 #### 3.显示计算器: `bc`
@@ -161,6 +169,25 @@ ls是『list』的意思，重点在显示文件的文件名与相关属性。�
 ```sh
 [root@am8nlontcnkhzmpb ~]# uname -a
 Linux am8nlontcnkhzmpb 3.10.0-862.el7.x86_64 #1 SMP Fri Apr 20 16:44:24 UTC 2018 x86_64 x86_64 x86_64 GNU/Linux
+```
+
+#### 11.修改Linux系统的时区
+
+```sh
+1. tzselect # 打开时区
+2. 根据序号选择时区 Asia --> china --> Beijing Time
+
+# 提示
+You can make this change permanent for yourself by appending the line
+	TZ='Asia/Shanghai'; export TZ
+to the file '.profile' in your home directory; then log out and log in again.
+
+Here is that TZ value again, this time on standard output so that you
+can use the /usr/bin/tzselect command in shell scripts:
+Asia/Shanghai
+
+3. TZ=‘Asia/Shanghai’ ; export  TZ
+4. vim /etc/profile  添加：TZ=‘Asia/Shanghai’ ; export  TZ
 ```
 
 ## Linux对文件和目录的常用命令:
