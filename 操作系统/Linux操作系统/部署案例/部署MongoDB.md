@@ -72,6 +72,16 @@ bindIp: localhost,192.168.0.2
 port: 27017
 ```
 
+添加配置用户级配置文件：
+
+```sh
+vim ~/.bash_profile # 编辑
+
+export PATH=/usr/local/mongodb/bin:$PATH # 添加
+
+source ~/.bash_profile # 刷新
+```
+
 ##### （6）启动MongoDB服务
 
 ```sh
