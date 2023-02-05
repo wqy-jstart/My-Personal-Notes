@@ -70,13 +70,25 @@ MariaDB [(none)]> show variables like '%max_allowed_packet%';
 2 rows in set (0.00 sec)
 ```
 
-##### 2.修改查询数据包大小：
+##### 2.临时修改查询数据包大小：
 
 ```sh
 set global max_allowed_packet = 100*1024;
 ```
 
-##### 3.重新启动数据库服务：
+##### 3.永久修改数据包大小：
+
+```sh
+# 1.Windows环境下
+在my.ini文件中, 修改或增加max_allowed_packet = 10M, 数字根据需要设定.
+
+# 2.Linux环境下
+vim /etc/my.cnf
+# 添加
+max_allowed_packet = 10M
+```
+
+##### 4.重新启动数据库服务：
 
 ```sh
 systemctl restart mariadb    # 重新启动服务
