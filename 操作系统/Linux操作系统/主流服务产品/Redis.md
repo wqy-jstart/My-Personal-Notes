@@ -2,7 +2,7 @@
 
 **Redis**（Remote Dictionary Server )，即**远程字典服务**。
 
-一个**开源**的使用 [ANSI C](https://baike.baidu.com/item/ANSI C/7657277?fr=aladdin) 语言编写、支持网络、可基于内存亦可持久化的日志型、Key - Value **数据库**，并提供多种语言的 API。
+一个**开源**的使用 [ANSIC](https://baike.baidu.com/item/ANSI C/7657277?fr=aladdin) 语言编写、支持网络、可基于内存亦可持久化的日志型、Key - Value **数据库**，并提供多种语言的 API。
 
 从 2010 年 3 月 15 日起，Redis 的开发工作由 VMware 主持。
 

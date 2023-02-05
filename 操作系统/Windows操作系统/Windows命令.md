@@ -290,3 +290,42 @@ cls
    D:\devtools\java_install>
    ```
 
+##### 43.连接远程服务器
+
+1.`sftp`
+
+```sh
+sftp root@ip地址
+```
+
+连接远程后打印命令帮助：
+
+```sh
+bye                                Quit sftp # 退出sftp
+chmod [-h] mode path               Change permissions of file 'path' to 'mode' # # 将文件“path”的权限更改为“mode”
+chown [-h] own path                Change owner of file 'path' to 'own' # 将文件“path”的所有者更改为“own”
+df [-hi] [path]                    Display statistics for current directory or
+                                   filesystem containing 'path' # 显示当前目录或包含“路径”的文件系统
+exit                               Quit sftp # 退出sftp
+get [-afpR] remote [local]         Download file # 下载文件
+help                               Display this help text # 查看帮助
+lls [ls-options [path]]            Display local directory listing # 显示本地目录列表
+lmkdir path                        Create local directory # 创建本地目录
+ln [-s] oldpath newpath            Link remote file (-s for symlink) # 链接远程文件（-s表示符号链接）
+lpwd                               Print local working directory # 打印本地工作目录
+ls [-1afhlnrSt] [path]             Display remote directory listing # 显示远程目录列表
+mkdir path                         Create remote directory # 创建远程目录
+progress                           Toggle display of progress meter # 进度表的显示
+put [-afpR] local [remote]         Upload file # 上载文件
+pwd                                Display remote working directory # 显示远程工作目录
+reget [-fpR] remote [local]        Resume download file # 恢复下载文件
+rename oldpath newpath             Rename remote file # 重命名远程文件
+reput [-fpR] local [remote]        Resume upload file # 恢复上载文件
+rm path                            Delete remote file # 删除远程文件
+rmdir path                         Remove remote directory # 删除远程目录
+version                            Show SFTP version # 显示SFTP版本
+!command                           Execute 'command' in local shell # 在本地shell中执行“command”
+!                                  Escape to local shell # 逃到本地外壳
+?                                  Synonym for help # 帮助
+```
+
