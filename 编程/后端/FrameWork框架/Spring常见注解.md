@@ -1,4 +1,4 @@
-# SpringMVC框架:
+# SSM常用注解:
 
 ### 1.@Controller注解
 
@@ -142,7 +142,7 @@ public class ParamController {
 }
 ```
 
-#### 浏览器400错误:传参时不符合对应数据类型导致
+**浏览器400错误:传参时不符合对应数据类型导致**
 
 ```html
 Whitelabel Error Page
@@ -154,7 +154,7 @@ There was an unexpected error (type=Bad Request, status=400).
 
 ### 4.@RequestMapping注解★
 
-- #### 在Spring MVC框架中，可以在处理请求的方法上添加`@RequestMapping`注解，以配置**请求路径**与**处理请求的方法**的映射关系。
+- 在Spring MVC框架中，可以在处理请求的方法上添加`@RequestMapping`注解，以配置**请求路径**与**处理请求的方法**的映射关系。
 
   - ```java
     @RequestMapping("/testRequest")
@@ -164,7 +164,7 @@ There was an unexpected error (type=Bad Request, status=400).
     }
     ```
 
-- #### 此注解还可以添加在控制器类上，作为当前类中每个请求路径的统一前缀！
+- 此注解还可以添加在控制器类上，作为当前类中每个请求路径的统一前缀！
 
   - ```java
     @Controller
@@ -172,11 +172,19 @@ There was an unexpected error (type=Bad Request, status=400).
     public class RequestMappingController{}
     ```
 
-- #### 在开发实践中，强烈建议在类上配置`@RequestMapping`！
+- 必要时可以指定返回数据的格式
 
-  - ##### 当在类上和方法上都使用`@RequestMapping`配置了路径后，实践使用的路径应该是这2个路径值结合起来的路径值，而`@RequestMapping`在处理时，会自动处理两端必要的、多余的`/`符号。
+  - ```java
+    @Controller
+    @RequestMapping(value="/hello",produces="application/json;charset=utf-8")
+    public class RequestMappingController{}
+    ```
 
-  - #### 例如：
+- ##### 在开发实践中，强烈建议在类上配置`@RequestMapping`！
+
+  - 当在类上和方法上都使用`@RequestMapping`配置了路径后，实践使用的路径应该是这2个路径值结合起来的路径值，而`@RequestMapping`在处理时，会自动处理两端必要的、多余的`/`符号。
+
+  - ##### 例如：
 
 - - | 类上的配置值 | 方法上的配置值 |
     | ------------ | -------------- |
@@ -323,7 +331,7 @@ public @interface GetMapping {
 }
 ```
 
-### 备注:封装对象时要注意的细节
+> ##### 备注:封装对象时要注意的细节
 
 - ##### getter,setter方法,重写toString,有参和全参构造器(行业标准)
 

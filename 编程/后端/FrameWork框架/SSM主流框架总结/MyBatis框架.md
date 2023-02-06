@@ -1,8 +1,8 @@
-# MyBatis框架:
+# MyBatis框架
 
 ![image-20221026105111962](images/image-20221026105111962.png)
 
-## 简介:
+## <u>简介</u>
 
 ### 什么是 MyBatis？
 
@@ -14,11 +14,15 @@
 
 - ##### MyBatis 可以通过简单的 XML 或注解来配置和映射原始类型、接口和 Java POJO（Plain Old Java Objects，普通老式 Java 对象）为数据库中的记录。
 
-## 文档地址:
+文档地址:https://mybatis.net.cn/getting-started.html
 
-- #### https://mybatis.net.cn/getting-started.html
+## <u>核心价值</u>
 
-## XML 映射器:
+**简化了关系型数据库编程**
+
+## <u>突出功能</u>
+
+### XML 映射器:
 
 **MyBatis 的真正强大在于它的语句映射，这是它的魔力所在**。由于它的异常强大，映射器的 XML 文件就显得相对简单。如果拿它跟具有相同功能的 JDBC 代码进行对比，你会立即发现省掉了将近 95% 的代码。MyBatis 致力于减少使用成本，让用户能更专注于 SQL 代码。
 
@@ -34,7 +38,7 @@ SQL 映射文件只有很少的几个顶级元素（按照应被定义的顺序�
 - `@delete` – 映射删除语句。
 - `@select` – 映射查询语句。
 
-## 动态 SQL:
+### 动态 SQL:
 
 **动态 SQL 是 MyBatis 的强大特性之一**。如果你使用过 JDBC 或其它类似的框架，你应该能理解根据不同条件拼接 SQL 语句有多痛苦，例如拼接时要确保不能忘记添加必要的空格，还要注意去掉列表最后一个列名的逗号。利用动态 SQL，可以彻底摆脱这种痛苦。
 
@@ -47,7 +51,7 @@ SQL 映射文件只有很少的几个顶级元素（按照应被定义的顺序�
 - trim (where, set)
 - foreach
 
-## 日志:
+### 日志:
 
 Mybatis 通过使用内置的日志工厂提供日志功能。内置日志工厂将会把日志工作委托给下面的实现之一：
 
@@ -57,7 +61,7 @@ Mybatis 通过使用内置的日志工厂提供日志功能。内置日志工厂
 - Log4j
 - JDK logging
 
-##### 在添加了`Lombok`依赖项后，可以在类上添加`@Slf4j`注解，则Lombok框架会在编译期生成名为`log`的变量，可调用此变量的方法来输出日志。
+在添加了`Lombok`依赖项后，可以在类上添加`@Slf4j`注解，则Lombok框架会在编译期生成名为`log`的变量，可调用此变量的方法来输出日志。
 
 日志是有显示级别的，根据日志内容的重要程度，从不重要到重要，依次为：
 
@@ -71,7 +75,72 @@ Mybatis 通过使用内置的日志工厂提供日志功能。内置日志工厂
 
 ------
 
-# 相关注解:
+## <u>基础依赖项</u>
+
+1. **mybatis-spring**：整合Spring与Mybatis，使得编程更加简单
+
+   ```xml
+   <dependency>
+       <groupId>org.mybatis.spring.boot</groupId>
+       <artifactId>mybatis-spring-boot-starter</artifactId>
+       <version>2.1.4</version>
+   </dependency>
+   ```
+
+2. **spring-jdbc**：整合Spring JDBC（依赖被mybatis-spring整合）
+
+3. **mysql-connector-java**：Mysql和MariaDB的依赖项
+
+   ```xml
+   <dependency>
+       <groupId>mysql</groupId>
+       <artifactId>mysql-connector-java</artifactId>
+       <scope>runtime</scope>
+   </dependency>
+   ```
+
+4. **commons-dbcp2**：数据库连接池的依赖项，是经典的commons-dbcp的升级款，可替换Hikari、Druid等其他数据库连接池
+
+5. **spring-test**：Spring测试的依赖项，用于及时监测环境配置与实现的数据访问功能
+
+   ```xml
+   <dependency>
+       <groupId>org.springframework.boot</groupId>
+       <artifactId>spring-boot-starter-test</artifactId>
+       <scope>test</scope>
+   </dependency>
+   ```
+
+## <u>基本配置</u>
+
+1.在`.properties`配置文件中配置连接数据库的参数
+
+```properties
+spring.datasource.username=root # 用户名
+spring.datasource.password=root # 密码
+spring.datasource.url=jdbc:mysql://localhost:3306/cs?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true # url
+```
+
+2.读取连接数据库的配置，在配置类中使用@Bean方法创建DataSource对象
+
+>在SpringBoot项目中不需要，已经被mybatis-spring-boot-starter自动处理
+
+3.在`.properties`配置文件中配置使用的MyBatis时的XML文件位置
+
+```properties
+mybatis.mapper-locations=classpath:mappers/*xml
+```
+
+4.读取配置中的XML文件位置，在配置类中使用`@Bean`方法创建`SqlSessionFactoryBean`对象
+
+> 在SpringBoot项目中不需要，已经被mybatis-spring-boot-starter自动处理
+
+5.在配置类上使用`@MapperScan`指定Mapper接口所在的包
+
+- 要保证此包下不会有其他接口，MyBatis会自动生成此包下所有接口的代理对象
+- 可以不配置此注解，但需要在所有的Mapper接口上添加`@Mapper`注解（不推荐）
+
+## <u>相关注解</u>
 
 ### 1.@Param注解
 
