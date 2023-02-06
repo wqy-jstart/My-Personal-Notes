@@ -16,7 +16,7 @@ Mybatis框架的一级缓存也称之为“会话（Session）缓存”，默认
 
 **一级缓存必须保证多次的查询操作满足：同一个SqlSession、同一个Mapper、执行相同的SQL查询、使用相同的参数。**
 
-##### 关于一级缓存的典型表现可以通过测试以下代码进行观察：
+关于一级缓存的典型表现可以通过测试以下代码进行观察：
 
 ```java
 @Slf4j
@@ -76,11 +76,13 @@ public class MybatisCacheTests {
 }
 ```
 
-##### 一级缓存会因为以下任意一种原因而消失：
+#### 一级缓存的失效：
+
+一级缓存会因为以下任意一种原因而消失：
 
 1. 不是同一个SqlSession
 2. 同一个SqlSession但是查询条件不同
-3. 调用SqlSession对象的clearCache()方法，将清除当前会话中此前产生的所有一级缓存数据
+3. 调用SqlSession对象的`clearCache()`方法，将清除当前会话中此前产生的所有一级缓存数据
 4. 当前执行了任何写操作（增 / 删 / 改），无论任何数据有没有发生变化，都会清空此前产生的缓存数据
 
 ## 二级缓存：
@@ -88,7 +90,7 @@ public class MybatisCacheTests {
 1. Mybatis框架的二级缓存也称之为“namespace缓存”，是作用于某个namespace的，具体 表现为：**无论是否为同一个SqlSession，只要执行的是相同的Mapper的查询，且查询参数相同，就可以应用二级缓存。**
 2. 二级缓存也是SqlSessionFactory级别，通过同一个SqlSessionFactory创建的SqlSession查询结果会被缓存；此后若再次执行相同的查询语句，结果就会从缓存中获取
 
-在使用Spring Boot与Mybatis的项目中，二级缓存默认是全局开启的，但各namespace默认并未开启，如果需要在namespace中开启二级缓存，需要：
+在使用Spring Boot与Mybatis的项目中，二级缓存默认是全局开启的，但**各namespace默认并未开启**，如果需要在namespace中开启二级缓存，需要：
 
 1. 在XML文件中添加`<cache/>`标签，则表示当前XML中所有查询都开启了二级缓存！
 
@@ -107,7 +109,7 @@ public class MybatisCacheTests {
 
 ![image-20221115150747766](images/image-20221115150747766.png)
 
-##### 当应用二级缓存后，在日志上会提示`[Cache Hit Ratio]`，表示“当前namespace缓存命中率”。
+当应用二级缓存后，在日志上会提示`[Cache Hit Ratio]`，表示“当前namespace缓存命中率”。
 
 #### 二级缓存的失效：
 
@@ -120,7 +122,7 @@ public class MybatisCacheTests {
 
 Mybatis在查询数据时，会优先尝试从二级缓存中查询是否存在缓存数据，如果命中，将直接返回，如果未命中，则尝试从一级缓存中查询是否存在缓存数据，如果命中，将返回，如果仍未命中，将执行数据库查询。
 
-##### 二级缓存的示例代码：
+**二级缓存的示例代码**：
 
 ```java
 @Autowired

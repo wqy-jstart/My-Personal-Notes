@@ -140,6 +140,148 @@ mybatis.mapper-locations=classpath:mappers/*xml
 - 要保证此包下不会有其他接口，MyBatis会自动生成此包下所有接口的代理对象
 - 可以不配置此注解，但需要在所有的Mapper接口上添加`@Mapper`注解（不推荐）
 
+## <u>编码逻辑</u>
+
+基本配置完成之后即可进行基于MyBatis框架的数据库编程！
+
+**编程分两步**：
+
+一、Mapper接口和抽象方法
+
+二、XML文件的动态SQL和关系映射
+
+### 1.声明Mapper接口与抽象方法
+
+> 建议每张数据表都应当有对应的Mapper接口
+
+#### 声明接口：
+
+> 位置要在配置类MapperScan扫描的包下
+
+```java
+public interface UserMapper {
+
+    UserVo selectByUsername(String username);
+
+}
+```
+
+#### 关于抽象方法：
+
+1. **返回值类型**：
+   - 插入数据：int 表示受影响的行数
+   - 删除数据：int 表示受影响的行数
+   - 修改数据：int 表示受影响的行数
+   - 查询数据：足以封装查询结果的类型对象（如上面的UserVO）
+     - 统计查询：int/long 
+     - 查询一条结果：自定义类型
+     - 查询多条结果：使用List集合
+2. **方法名称**：
+   - 自定义
+   - 阿里巴巴规范
+     - 获取单个对象：get做前缀
+     - 获取多个对象：用list做前缀
+     - 获取统计值：count做前缀
+     - 插入的方法：save/insert做前缀
+     - 删除的方法：remove/delete做前缀
+     - 修改的方法：update做前缀
+3. **参数列表**：
+   - 根据需要执行的SQL语句where条件来设计
+   - 如果多个参数可以使用对象封装
+   - 如果参数超过1个，可添加@Param配置参数名与XML文件的标签id属性对应
+
+### 2.配置抽象方法映射的SQL
+
+#### 注解配置：
+
+> 篇幅较长的SQL不易与阅读、不易于实现复杂的配置、不易于与DBA合作
+
+```java
+@Insert()  // 配置插入
+@Delete()  // 配置删除
+@Update()  // 配置修改
+@Select()  // 配置查询
+```
+
+#### XML配置：
+
+> 首先XML文件必须有特定的文档声明（固定代码）
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="对应的Mapper接口完全限定名">
+</mapper>
+```
+
+1. 使用`<insert>`子节点配置插入语句，建议配置`useGeneratedKeys`和`keyProperty`获取自动编号的主键值，如果主键不是自动编号，可以不配置。
+
+2. 使用`<delete>`子节点配置删除语句
+
+3. 使用`<update>`子节点配置修改语句
+
+4. 使用`<select>`子节点配置查询语句，必须配置`resultType`或`resultMap`
+
+5. 使用`<sql>`封装SQL语句片段，使用`<include>`引入，通常封装查询字段
+
+6. 使用`<resultMap>`配置结果集到抽象方法的返回值对象中
+
+   - 使用`<id>`配置主键，一般结果使用`<result>`配置，搭配`column`和`property`属性
+
+   - List类型的属性，使用`<collection>`
+
+     - 如果List的元素是基本值，使用`<constructor>`配置
+
+     - 如果List的元素是其他引用类型，使用id和result配置
+
+       ```xml
+       <resultMap id="deptRM" type="cn.tedu.boot10.pojo.vo.TeamVO">
+           <id column="tid" property="id"></id>
+           <result column="tname" property="name"></result>
+           <result column="loc" property="loc"></result>
+           <!--关联集合集合用collection标签-->
+           <collection property="playerList" ofType="cn.tedu.boot10.pojo.entity.Player">
+               <id column="pid" property="id"></id>
+               <result column="pname" property="name"></result>
+           </collection>
+       </resultMap>
+       ```
+
+   - 对象类型的属性，使用`<association>`
+
+     ```xml
+     <resultMap id="playerRM" type="cn.tedu.boot10.pojo.vo.PlayerVO">
+         <id column="pid" property="id"></id>
+         <result column="pname" property="name"></result>
+         <association property="team" javaType="cn.tedu.boot10.pojo.entity.Team">
+             <id column="tid" property="id"></id>
+             <result column="tname" property="name"></result>
+             <result column="loc" property="loc"></result>
+         </association>
+     </resultMap>
+     ```
+
+7. 动态SQL
+
+   - 使用`<foreach>`对参数遍历
+   - 使用`<set>`结合`<if>`实现动态修改数据
+
+#### 占位符：
+
+1. `#{}`格式的占位符：
+
+   <u>推荐</u>
+
+   预编译，表示某一个值，不存在SQL注入，不需考虑数据类型（例如：字符串不需要引号括住）
+
+2. `${}`格式的占位符：
+
+   <u>不推荐</u>
+
+   非预编译，可以表示SQL语句的片段，存在SQL注入，需要考虑数据类型（例如：字符串需要引号括住）
+
 ## <u>相关注解</u>
 
 ### 1.@Param注解

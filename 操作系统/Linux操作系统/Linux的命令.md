@@ -190,6 +190,20 @@ Asia/Shanghai
 4. vim /etc/profile  添加：TZ=‘Asia/Shanghai’ ; export  TZ
 ```
 
+#### 12.清空文件中的内容`echo` ：
+
+可以使用echo命令将空字符串重定向到指定文件，来清空文件内容
+
+```sh
+echo "" > system.log
+或
+echo > system.log
+```
+
+> 注意：该方法虽然清空了文件的内容，但是文件会包含一个空字符串，使用cat命令查看时，将看到一个空白行
+>
+> 因为空字符串不等于null，空字符串只能说明它的内容为空，而null则表示该事物不存在！
+
 ## Linux对文件和目录的常用命令:
 
 #### 1.查看文件或目录大小`du`
