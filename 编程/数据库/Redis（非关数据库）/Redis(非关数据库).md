@@ -146,7 +146,11 @@ OK
 
 ##### Redis的传统数据类型有：
 
-string、list、hash、set、zset。
+1. string：计数、缓存验证码、存储Token
+2. list：栈结构、队列
+3. hash：存储对象
+4. set：点赞、收藏
+5. zset：排行榜
 
 ##### Redis的扩展数据类型：
 
