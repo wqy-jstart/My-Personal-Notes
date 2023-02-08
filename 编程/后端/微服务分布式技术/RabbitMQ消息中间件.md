@@ -478,7 +478,7 @@ public class Task01 {
 
 ![image-20230204113306113](images/image-20230204113306113.png)
 
-### <u>3.消息应答</u>
+### 3.消息应答
 
 #### 1.概念
 
@@ -592,7 +592,7 @@ public class Worker01 {
 
 ![image-20230207170408524](images/image-20230207170408524.png)
 
-### <u>4.RabbitMQ的持久化</u>
+### 4.RabbitMQ的持久化
 
 #### 1.概念
 
@@ -946,5 +946,167 @@ public static void main(String[] args) throws Exception {
 }
 ```
 
-### <u>5.交换机</u>
+### <u>5.交换机(发布/订阅)</u>
+
+之前我们利用工作队列将生产者生产的每条消息交付给一个消费者，现在我们将消息传达给多个消费者，此做法称为"发布/订阅"。
+
+![image-20230208115930778](images/image-20230208115930778.png)
+
+#### 1.Exchanges概念
+
+RabbitMQ消息传递模型的核心思想是：**生产者生产的消息从不会直接发送到队列**，通常生产者甚至都不知道这些消息传递到了哪个队列中。
+
+相反，**生产者只能将消息发送到交换机(exchange)**，交换机工作的内容非常简单，一方面它接收来自生产者的消息，另一方面将它们推入队列。交换机必须确切知道如何处理收到的消息。是应该把这些消息放到特定队列还是说把他们到许多队列中还是说应该丢弃它们。这就的由交换机的类型来决定。
+
+#### 2.Exchange的类型
+
+直接（direct）、主题（topic）、标题（headers）、扇出（fanout）
+
+![image-20230208114656928](images/image-20230208114656928.png)
+
+#### 3.默认Exchange
+
+前面部分我们对 exchange 一无所知，但仍然能够将消息发送到队列。之前能实现的原因是因为我们使用的是默认交换，我们**通过空字符串("")进行标识**。
+
+```java
+/*
+ * 发送一个消费
+ * 1.发送到哪个交换机
+ * 2.路由的Key值是哪一个 本次是队列的名称
+ * 3.表示其他参数信息
+ * 4.发送消息的消息体
+ */
+channel.basicPublish("", QUEUE_NAME, null, message.getBytes());
+```
+
+> 空字符串表示默认或无名交换机，消息能路由发送到队列中其实是由 routingKey(bindingkey)绑定 key 指定的
+
+#### 4.临时队列
+
+队列的名称决定我们的消费者取消费哪个队列的消息。
+
+每当我们连接到 Rabbit 时，我们都需要一个全新的空队列，为此我们可以创建一个具有**随机名称的队列**，或者能让服务器为我们选择一个随机队列名称那就更好了。其次**一旦我们断开了消费者的连接，队列将被自动删除。**
+
+**创建临时队列**：
+
+```java
+String queueName = channel.queueDeclare().getQueue();
+//名称：amq.gen-Gs4JTNmcpGg2qUariZynuQ
+```
+
+#### 5.绑定(Bindings)
+
+**binding 其实是 exchange 和 queue 之间的桥梁**，它告诉我们 exchange 和那个队列进行了绑定关系。比如说下面这张图告诉我们的就是 X 与 Q1 和 Q2 进行了绑定:
+
+![image-20230208121126573](images/image-20230208121126573.png)
+
+**操作**：
+
+![image-20230208121515466](images/image-20230208121515466.png)
+
+> 绑定操作可以控制消息发给任意队列
+
+#### 6.Fanout
+
+正如从名称中猜到的那样，它是将接收到的所有消息**广播**到它知道的所有队列中。系统中默认有些交换机`amq.fanout`类型就是Fanout。
+
+Logs 和临时队列的逻辑如下图:
+
+![image-20230208122306390](images/image-20230208122306390.png)
+
+Logs 和临时队列的绑定关系如下图:
+
+![image-20230208122444462](images/image-20230208122444462.png)
+
+> Routing Key并非为空，而是空字符串！
+
+**实验代码**：
+
+生产者将消息发送给指定的交换机logs
+
+```java
+public class EmitLog {
+
+    // 交换机的名称
+    public static final String EXCHANGE_NAME = "logs";
+
+    public static void main(String[] args) throws Exception {
+        Channel channel = RabbitMqUtils.getChannel();
+        Scanner scanner = new Scanner(System.in);
+        while (scanner.hasNext()) {
+            String message = scanner.nextLine();
+            channel.basicPublish(EXCHANGE_NAME, "", null, message.getBytes());
+            System.out.println("生产者发出消息" + message);
+        }
+    }
+}
+```
+
+消费者声明消费的交换机`logs`并指定类型`Fanout`进行等待消费
+
+```java
+public class ReceiveLogs1 {
+    // 交换机的名称
+    public static final String EXCHANGE_NAME = "logs";
+    
+    public static void main(String[] args) throws Exception{
+        Channel channel = RabbitMqUtils.getChannel();
+        /*
+          声明一个交换机
+          1.交换机名称
+          2.交换机类型
+         */
+        channel.exchangeDeclare(EXCHANGE_NAME,"fanout");
+        /*
+          声明一个临时队列,名称随机
+          当消费者断开与队列连接的时候，自动删除
+         */
+        String queueName = channel.queueDeclare().getQueue();
+        /*
+          绑定交换机与队列
+          1.队列名
+          2.交换机
+          3.Routing Key（决定路由哪个队列）
+         */
+        channel.queueBind(queueName,EXCHANGE_NAME,"");
+        System.out.println("等待接收消息,把接收到的消息打印在屏幕.....");
+
+        // 声明接收消息
+        DeliverCallback deliverCallback = (consumerTag, message)
+                -> System.out.println("01在控制台打印接收到的消息："+new String(message.getBody()));
+        // 取消消息时的回调
+        CancelCallback cancelCallback = consumerTag -> System.out.println("消息消费被中断");
+
+        /*
+         * 消费者消费消息
+         * 1.消费哪个队列
+         * 2.消费成功之后是否自动应答 true/false
+         * 3.消费者未成功消费的回调
+         * 4.消费者取消消费的回调
+         */
+        channel.basicConsume(queueName,true,deliverCallback,cancelCallback);
+    }
+}
+```
+
+**实验结果**：生产者者发送的每一个消息通过`fanout`类型的交换机`logs`转发给队列（随机的，作用后自动删除），每个消费者都能消费到相同的消息，类似于广播效果！
+
+```sh
+# 生产者：
+11
+生产者发出消息11
+22
+生产者发出消息22
+33
+# 消费者01：
+等待接收消息,把接收到的消息打印在屏幕.....
+01在控制台打印接收到的消息：11
+01在控制台打印接收到的消息：22
+01在控制台打印接收到的消息：33
+# 消费者02：
+等待接收消息,把接收到的消息打印在屏幕.....
+02在控制台打印接收到的消息：11
+02在控制台打印接收到的消息：22
+02在控制台打印接收到的消息：33
+```
 
