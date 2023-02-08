@@ -164,11 +164,41 @@ ls是『list』的意思，重点在显示文件的文件名与相关属性。�
   - 第二组为『同群组的权限』；
   - 第三组为『其他非本群组的权限』。
 
-#### 10.查看系统的版本：`uname -a`
+#### 10.查看系统信息：`uname`
+
+查看系统版本：
 
 ```sh
 [root@am8nlontcnkhzmpb ~]# uname -a
 Linux am8nlontcnkhzmpb 3.10.0-862.el7.x86_64 #1 SMP Fri Apr 20 16:44:24 UTC 2018 x86_64 x86_64 x86_64 GNU/Linux
+```
+
+查看系统内核：
+
+```sh
+[root@localhost wqy]# uname -r
+3.10.0-957.el7.x86_64
+```
+
+从配置文件查看当前系统所有信息：
+
+```sh
+[root@localhost wqy]# cat /etc/os-release
+NAME="CentOS Linux"
+VERSION="7 (Core)"
+ID="centos"
+ID_LIKE="rhel fedora"
+VERSION_ID="7"
+PRETTY_NAME="CentOS Linux 7 (Core)"
+ANSI_COLOR="0;31"
+CPE_NAME="cpe:/o:centos:centos:7"
+HOME_URL="https://www.centos.org/"
+BUG_REPORT_URL="https://bugs.centos.org/"
+
+CENTOS_MANTISBT_PROJECT="CentOS-7"
+CENTOS_MANTISBT_PROJECT_VERSION="7"
+REDHAT_SUPPORT_PRODUCT="centos"
+REDHAT_SUPPORT_PRODUCT_VERSION="7"
 ```
 
 #### 11.修改Linux系统的时区
