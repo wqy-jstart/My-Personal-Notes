@@ -1006,7 +1006,7 @@ String queueName = channel.queueDeclare().getQueue();
 
 > 绑定操作可以控制消息发给任意队列
 
-#### 6.Fanout
+#### 6.Fanout广播类型
 
 正如从名称中猜到的那样，它是将接收到的所有消息**广播**到它知道的所有队列中。系统中默认有些交换机`amq.fanout`类型就是Fanout。
 
@@ -1108,5 +1108,209 @@ public class ReceiveLogs1 {
 02在控制台打印接收到的消息：11
 02在控制台打印接收到的消息：22
 02在控制台打印接收到的消息：33
+```
+
+#### 7.Direct直接类型
+
+队列只对它绑定的交换机的消息感兴趣，绑定时的参数`routingKey`也可以叫`bindingKey`，绑定之后的队列消息由交换机决定。
+
+例如我们希望将日志消息写入磁盘的程序仅接收严重错误(errros)，而不存储那些警告(warning)或信息(info)日志消息避免浪费磁盘空间。Fanout 这种交换类型并不能给我们带来很大的灵活性-它只能进行无意识的广播，在这里我们将使用 direct 这种类型来进行替换，这种类型的工作方式是，**消息只去到它绑定的routingKey 队列中去**。
+
+![image-20230209185822605](images/image-20230209185822605.png)
+
+**实现多重绑定**：
+
+如果 exchange 的绑定类型是 direct，**但是它绑定的多个队列的** **key** **如果都相同**，在这种情况下虽然绑定类型是 direct **但是它表现的就和** **fanout** **有点类似了**，就跟广播差不多。
+
+**实验代码**：
+
+生产者：
+
+```java
+public class EmitLogDirect {
+
+    public static final String EXCHANGE_NAME = "direct_logs";
+
+    public static void main(String[] args) throws Exception {
+        Channel channel = RabbitMqUtils.getChannel();
+        // 创建一个HashMap，封装routingKey和输出信息
+        Map<String, String> bindingKeyMap = new HashMap<>();
+        bindingKeyMap.put("info", "普通的info信息");
+        bindingKeyMap.put("warning", "警告的warning信息");
+        bindingKeyMap.put("error", "错误的error信息");
+        bindingKeyMap.put("debug", "错误的debug信息");
+        for (Map.Entry<String, String> bindingKeyEntry : bindingKeyMap.entrySet()) {// 遍历HashMap
+            String bingingKey = bindingKeyEntry.getKey();
+            String message = bindingKeyEntry.getValue();
+            channel.basicPublish(EXCHANGE_NAME, bingingKey, null, message.getBytes("UTF-8"));
+            System.out.println("生产者发出的消息：" + message);
+        }
+    }
+}
+```
+
+消费者：
+
+```java
+public class ReceiveToDirectLogs1 {
+
+    public static final String EXCHANGE_NAME = "direct_logs";
+
+    public static void main(String[] args) throws Exception {
+        Channel channel = RabbitMqUtils.getChannel();
+        /*
+          声明一个交换机
+          1.交换机名称
+          2.交换机类型
+         */
+        channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.DIRECT);
+
+        // 声明接收消息
+        DeliverCallback deliverCallback = (consumerTag, message)
+                -> System.out.println("在控制台打印接收到的消息："+new String(message.getBody()));// 获取消息体(如果不用消息体会输出被处理的消息对象例如：com.rabbitmq.client.Delivery@4039c79e)
+        // 取消消息时的回调
+        CancelCallback cancelCallback = consumerTag -> System.out.println("消息消费被中断");
+
+        // 创建队列并与Direct交换机进行绑定，设置routingKey
+        channel.queueDeclare("console", true, false, false, null);
+        channel.queueBind("console", EXCHANGE_NAME, "info");
+        channel.queueBind("console", EXCHANGE_NAME, "warning");
+        channel.basicConsume("console",true,deliverCallback,cancelCallback);
+    }
+}
+```
+
+**实现结果**：消费者绑定指定的`Direct Exchange`交换机后，可以设置根据的`routingKey`来连接队列获取指定的消息进行消费！
+
+```sh
+# 生产者
+生产者发出的消息：错误的debug信息
+生产者发出的消息：警告的warning信息
+生产者发出的消息：错误的error信息
+生产者发出的消息：普通的info信息
+# 消费者1
+在控制台打印接收到的消息：警告的warning信息
+在控制台打印接收到的消息：普通的info信息
+# 消费者2
+在控制台打印接收到的消息：错误的error信息
+```
+
+#### 8.Topic主题类型
+
+尽管使用 direct 交换机改进了我们的系统，但是它仍然存在局限性-比方说我们想接收的日志类型有`info.base` 和 `info.advantage`，某个队列只想 `info.base` 的消息，那这个时候 direct 就办不到了。这个时候就只能使用 topic 类型。
+
+**要求**：
+
+发送到类型是 topic 交换机的消息的 routing_key 不能随意写，必须满足一定的要求，它**必须是一个单词列表，以点号分隔开**。这些单词可以是任意单词，比如说："stock.usd.nyse", "nyse.vmw", "quick.orange.rabbit".这种类型的。当然这个单词列表最多不能超过 255 个字节。
+
+在这个规则列表中，其中有两个替换符是大家需要注意的：
+
+1. **(*)可以代替1个单词**
+2. **(#)可以代替0个或多个单词**
+
+**示例**：
+
+1. Q1-->绑定的是：
+
+   - 中间带 orange 带 3 个单词的字符串(*.orange.*)
+
+2. Q2-->绑定的是：
+
+   - 最后一个单词是 rabbit 的 3 个单词(*.*.rabbit)
+
+   - 第一个单词是 lazy 的多个单词(lazy.#)
+
+![image-20230209195927383](images/image-20230209195927383.png)
+
+**特殊routingKey**：
+
+当队列绑定关系是下列这种情况时需要引起注意:
+
+1. 当一个队列绑定键是(#),那么这个队列将接收所有数据，就有点像 fanout 了
+2. 如果队列绑定键当中没有(*#)和出现，那么该队列绑定类型就是direct了
+
+**演示代码**：与`fanout`和`direct`类型的区别是`topic`绑定的`routingKey`匹配队列会更加的灵活可变！
+
+生产者：
+
+```java
+public class EmitLogTopic {
+
+    public static final String EXCHANGE_NAME = "topic_logs";
+
+    public static void main(String[] args) throws Exception {
+        Channel channel = RabbitMqUtils.getChannel();
+        // 创建一个HashMap，封装routingKey和输出信息
+        Map<String, String> bindingKeyMap = new HashMap<>();
+        bindingKeyMap.put("quick.orange.rabbit","被队列 Q1Q2 接收到");
+        bindingKeyMap.put("lazy.orange.elephant","被队列 Q1Q2 接收到");
+        bindingKeyMap.put("quick.orange.fox","被队列 Q1 接收到");
+        bindingKeyMap.put("lazy.brown.fox","被队列 Q2 接收到");
+        bindingKeyMap.put("lazy.pink.rabbit","虽然满足两个绑定但只被队列 Q2 接收一次");
+        bindingKeyMap.put("quick.brown.fox","不匹配任何绑定不会被任何队列接收到会被丢弃");
+        bindingKeyMap.put("quick.orange.male.rabbit","是四个单词不匹配任何绑定会被丢弃");
+        bindingKeyMap.put("lazy.orange.male.rabbit","是四个单词但匹配 Q2");
+        for (Map.Entry<String, String> bindingKeyEntry : bindingKeyMap.entrySet()) {// 遍历HashMap
+            String bingingKey = bindingKeyEntry.getKey();
+            String message = bindingKeyEntry.getValue();
+            channel.basicPublish(EXCHANGE_NAME, bingingKey, null, message.getBytes("UTF-8"));
+            System.out.println("生产者发出的消息：" + message);
+        }
+    }
+}
+```
+
+消费者：
+
+```java
+public class ReceiveToTopicLogs1 {
+
+    public static final String EXCHANGE_NAME = "topic_logs";
+
+    public static void main(String[] args) throws Exception {
+        Channel channel = RabbitMqUtils.getChannel();
+        /*
+          声明一个交换机
+          1.交换机名称
+          2.交换机类型
+         */
+        channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.TOPIC);
+
+        // 声明接收消息
+        DeliverCallback deliverCallback = (consumerTag, message)
+                -> System.out.println("在控制台打印接收到的消息："+new String(message.getBody()));// 获取消息体(如果不用消息体会输出被处理的消息对象例如：com.rabbitmq.client.Delivery@4039c79e)
+        // 取消消息时的回调
+        CancelCallback cancelCallback = consumerTag -> System.out.println("消息消费被中断");
+
+        // 创建队列并与Direct交换机进行绑定，设置routingKey
+        channel.queueDeclare("Q1", true, false, false, null);
+        channel.queueBind("Q1", EXCHANGE_NAME, "*.orange.*");// 中间一个单词是orange的三个单词
+        channel.basicConsume("Q1",true,deliverCallback,cancelCallback);
+    }
+}
+```
+
+**演示结果**：
+
+```sh
+# 生产者
+生产者发出的消息：是四个单词不匹配任何绑定会被丢弃
+生产者发出的消息：不匹配任何绑定不会被任何队列接收到会被丢弃
+生产者发出的消息：被队列 Q1Q2 接收到
+生产者发出的消息：被队列 Q2 接收到
+生产者发出的消息：被队列 Q1Q2 接收到
+生产者发出的消息：被队列 Q1 接收到
+生产者发出的消息：虽然满足两个绑定但只被队列 Q2 接收一次
+生产者发出的消息：是四个单词但匹配 Q2
+# 消费者Q1
+在控制台打印接收到的消息：被队列 Q1Q2 接收到
+在控制台打印接收到的消息：被队列 Q1Q2 接收到
+在控制台打印接收到的消息：被队列 Q1 接收到
+# 消费者Q2
+在控制台打印接收到的消息：被队列 Q1Q2 接收到
+在控制台打印接收到的消息：被队列 Q2 接收到
+在控制台打印接收到的消息：被队列 Q1Q2 接收到
+在控制台打印接收到的消息：虽然满足两个绑定但只被队列 Q2 接收一次
+在控制台打印接收到的消息：是四个单词但匹配 Q2
 ```
 

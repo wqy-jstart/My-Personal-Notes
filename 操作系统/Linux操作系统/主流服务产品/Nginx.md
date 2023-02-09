@@ -172,6 +172,12 @@ yum install -y openssl openssl-devel
 
 下载完毕上传到服务器上 /root
 
+或者直接联网下载：
+
+```sh
+wget http://nginx.org/download/nginx-1.18.0.tar.gz
+```
+
 #### 6、解压
 
 ```sh
@@ -189,7 +195,7 @@ cd nginx-1.18.0
 
 查找安装路径： `whereis nginx`
 
-启动成功访问 服务器ip:80
+关闭主机防火墙，启动成功访问 服务器ip:80
 
 ![image-20221227202549578](images/image-20221227202549578.png)
 
