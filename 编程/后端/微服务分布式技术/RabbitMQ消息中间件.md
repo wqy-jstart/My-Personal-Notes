@@ -884,12 +884,12 @@ ConcurrentSkipListMap<Long, Object> outstandingConfirms =
 
 ```java
 for (int i = 0; i < MESSAGE_COUNT; i++) {
-            String message = i + "";
-            // 消息持久化
-            channel.basicPublish("", queueName, MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes(StandardCharsets.UTF_8));
-            // 此处记录所有要发送的消息，消息的总和 ←←←←←←
-            outstandingConfirms.put(channel.getNextPublishSeqNo(), message);
-        }
+    String message = i + "";
+    // 消息持久化
+    channel.basicPublish("", queueName, MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes(StandardCharsets.UTF_8));
+    // 此处记录所有要发送的消息，消息的总和 ←←←←←←
+    outstandingConfirms.put(channel.getNextPublishSeqNo(), message);
+}
 ```
 
 3.在监听成功（已确认）的函数式接口中调用Map删除成功的消息：
@@ -1312,5 +1312,266 @@ public class ReceiveToTopicLogs1 {
 在控制台打印接收到的消息：被队列 Q1Q2 接收到
 在控制台打印接收到的消息：虽然满足两个绑定但只被队列 Q2 接收一次
 在控制台打印接收到的消息：是四个单词但匹配 Q2
+```
+
+### 6.死信队列
+
+#### 1.死信的概念
+
+死信，顾名思义就是无法被消费的消息，字面意思可以这样理解，一般来说，producer 将消息投递到 broker 或者直接到 queue 里了，consumer 从 queue 取出消息进行消费，但某些时候由于特定的**原因导致** **queue** **中的某些消息无法被消费**，这样的消息如果没有后续的处理，就变成了死信，有死信自然就有了死信队列。
+
+**应用场景**:
+
+为了保证订单业务的消息数据不丢失，需要使用到 RabbitMQ 的死信队列机制，当消息消费发生异常时，将消息投入死信队列中.还有比如说: 用户在商城下单成功并点击去支付后在指定时间未支付时自动失效
+
+#### 2.死信的来源
+
+1. 消息TTL过期
+2. 队列达到最大长度
+3. 消息被拒绝(basic.reject 或 basic.nack)并且 requeue=false(不放回队列)
+
+#### 3.死信架构图
+
+正常消息通过`direct`交换机分配给`zhangsan`队列给C1消费，因为**消息被拒**、**消息TTL过期**、**队列达到最大长度**导致该信息成为**死信**，使得另一个`direct`交换机交给了`lisi`死信队列处理。
+
+![image-20230210154432462](images/image-20230210154432462.png)
+
+#### 4.死信的实战
+
+##### 1.消息TTL过期
+
+> 重点：普通队列-->死信交换机-->死信队列
+
+生产者：
+
+```java
+public class Producer {
+
+    public static final String NORMAL_EXCHANGE = "normal_exchange";
+
+    public static void main(String[] args) throws Exception{
+        Channel channel = RabbitMqUtils.getChannel();
+        // 死信消息，设置TTL时间
+        AMQP.BasicProperties properties = new AMQP.BasicProperties()
+                .builder()
+                .expiration("10000").build(); // 构建一个TTL时间参数10s
+        for (int i = 0; i < 11; i++) {
+            String message = "info"+i;
+            channel.basicPublish(NORMAL_EXCHANGE,"zhangsan",null,message.getBytes());
+        }
+    }
+}
+```
+
+普通消费者(连接死信交换机和死信队列)：
+
+```java
+public class Consumer1 {
+    // 普通交换机的名称
+    public static final String NORMAL_EXCHANGE = "normal_exchange";
+    // 死信交换机
+    public static final String DEAD_EXCHANGE = "dead_exchange";
+    // 普通队列的名称
+    public static final String NORMAL_QUEUE = "normal_queue";
+    // 死信队列
+    public static final String DEAD_QUEUE = "dead_queue";
+
+    public static void main(String[] args) throws Exception{
+        Channel channel = RabbitMqUtils.getChannel();
+        // 声明普通和死信交换机，类型为driect
+        channel.exchangeDeclare(NORMAL_EXCHANGE, BuiltinExchangeType.DIRECT);
+        channel.exchangeDeclare(DEAD_EXCHANGE, BuiltinExchangeType.DIRECT);
+
+        // 声明死信和普通队列
+        Map<String, Object> arguments = new HashMap<>();
+        /*
+          过期时间
+          正常队列设置的死信交换机是谁？
+          正常队列设置的死信队列是谁？
+         */
+        arguments.put("x-message-ttl",100000);// 可以不指定(通常在生产者发送消息时就已经指定了过期时间--可以任意修改)
+        arguments.put("x-dead-letter-exchange",DEAD_EXCHANGE);// 死信交换机
+        arguments.put("x-dead-letter-routing-key","lisi");// 死信routingKey以及队列名
+        channel.queueDeclare(NORMAL_QUEUE,false,false,false,arguments);// 普通队列
+        channel.queueDeclare(DEAD_QUEUE,false,false,false,null);// 死信队列
+
+        // 绑定普通交换机和队列
+        channel.queueBind(NORMAL_QUEUE,NORMAL_EXCHANGE,"zhangsan");
+        // 绑定死信交换机和队列
+        channel.queueBind(DEAD_QUEUE,DEAD_EXCHANGE,"lisi");
+        System.out.println("等待接收消息.....");
+
+        // 声明接收消息
+        DeliverCallback deliverCallback = (consumerTag, message)
+                -> System.out.println("Consumer1接收到的消息："+new String(message.getBody()));
+        // 取消消息时的回调
+        CancelCallback cancelCallback = consumerTag -> System.out.println("消息消费被中断");
+
+     channel.basicConsume(NORMAL_QUEUE,true,deliverCallback,cancelCallback);
+    }
+}
+```
+
+死信消费者（消费死信队列的消息）：
+
+```java
+public class Consumer2 {
+    // 死信队列
+    public static final String DEAD_QUEUE = "dead_queue";
+
+    public static void main(String[] args) throws Exception {
+        Channel channel = RabbitMqUtils.getChannel();
+        System.out.println("等待接收消息.....");
+
+        // 声明接收消息
+        DeliverCallback deliverCallback = (consumerTag, message)
+                -> System.out.println("Consumer1接收到的消息：" + new String(message.getBody()));// 获取消息体(如果不用消息体会输出被处理的消息对象例如：com.rabbitmq.client.Delivery@4039c79e)
+        // 取消消息时的回调
+        CancelCallback cancelCallback = consumerTag -> System.out.println("消息消费被中断");
+
+        channel.basicConsume(DEAD_QUEUE, true, deliverCallback, cancelCallback);
+    }
+}
+```
+
+**演示结果**：
+
+1. 普通队列创建后，会**绑定与普通交换机**的关系，**连接死信交换机**，绑定死信交换机与死信队列的关系
+
+2. 生产者负责发送消息给普通队列，**设置消息的TTL**过期时间为10秒
+
+3. 消息过期后，普通队列将消息由连接的死信交换机进而发给死信队列
+
+   ![image-20230210164421366](images/image-20230210164421366.png)
+
+4. 死信消费者连接死信队列，消费里面的消息
+
+   ![image-20230210164438752](images/image-20230210164438752.png)
+
+##### 2.超出队列最大长度
+
+1. 删除生产者为消息设置的TTL过期时间
+
+2. 修改消费者绑定的队列
+
+   ```java
+   arguments.put("x-dead-letter-exchange",DEAD_EXCHANGE);// 死信交换机
+   arguments.put("x-dead-letter-routing-key","lisi");// 死信routingKey以及队列名
+   arguments.put("x-max-length",6);// 设置普通队列最多6条消息，多余为死信 ←←←←
+   channel.queueDeclare(NORMAL_QUEUE,false,false,false,arguments);// 普通队列
+   ```
+
+**演示结果**：
+
+![image-20230210165654589](images/image-20230210165654589.png)
+
+##### 3.拒绝消息
+
+1. 生产者正常发送消息（无TTL）
+
+2. 消费者不设置队列长度
+
+3. 消费者设置手动应答，并添加接收消息的条件
+
+   ```java
+   // 声明接收消息
+   DeliverCallback deliverCallback = (consumerTag, message)
+           -> {
+       String msg = new String(message.getBody());
+       if (msg.equals("info5")) {
+           System.out.println("Consumer1接收的消息是：" + msg + ";此消息被C1拒绝了！");
+           channel.basicReject(message.getEnvelope().getDeliveryTag(), false);
+       } else {
+           System.out.println("Consumer1接收到的消息是：" + msg);
+           channel.basicAck(message.getEnvelope().getDeliveryTag(), false);
+       }
+   };
+   CancelCallback cancelCallback = consumerTag -> System.out.println("消息消费被中断");
+   
+   // 开启手动应答
+   channel.basicConsume(NORMAL_QUEUE, false, deliverCallback, cancelCallback);
+   ```
+
+**演示结果**：
+
+![image-20230210170857874](images/image-20230210170857874.png)
+
+### 7.延迟队列
+
+#### 1.概念
+
+延时队列,队列内部是有序的，最重要的特性就体现在它的延时属性上，延时队列中的元素是希望在指定时间到了以后或之前取出和处理，简单来说，延时队列就是用来**存放需要在指定时间被处理的元素的队列**。
+
+#### 2.使用场景
+
+1. 订单在十分钟之内未支付则自动取消
+2. 新创建的店铺，如果在十天内都没有上传过商品，则自动发送消息提醒。
+3. 用户注册成功后，如果三天内没有登陆则进行短信提醒。
+4. 用户发起退款，如果三天内没有得到处理则通知相关运营人员。
+5. 预定会议后，需要在预定的时间点前十分钟通知各个与会人员参加会议
+
+**业务示例**：
+
+这些场景都有一个特点，**需要在某个事件发生之后或者之前的指定时间点完成某一项任务**，如：
+
+发生订单生成事件，在十分钟之后检查该订单支付状态，然后将未支付的订单进行关闭；看起来似乎使用定时任务，**一直轮询数据，每秒查一次**，取出需要被处理的数据，然后处理。如果数据量比较少，确实可以这样做，比如：对于“如果账单一周内未支付则进行自动结算”这样的需求，如果对于时间不是严格限制，而是宽松意义上的一周，那么每天晚上跑个定时任务检查一下所有未支付的账单，确实也是一个可行的方案。
+
+但对于数据量比较大，并且时效性较强的场景，如：“订单十分钟内未支付则关闭“，短期内未支付的订单数据可能会有很多，活动期间甚至会达到百万甚至千万级别，**对这么庞大的数据量仍旧使用轮询的方式显然是不可取的，很可能在一秒内无法完成所有订单的检查，同时会给数据库带来很大压力，无法满足业务要求而且性能低下**。
+
+**订单业务逻辑**：
+
+![image-20230210174853530](images/image-20230210174853530.png)
+
+#### 3.整合SpringBoot
+
+##### 1.依赖
+
+```xml
+<dependencies>
+    <!--RabbitMQ 依赖-->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-amqp</artifactId>
+    </dependency>
+    <!--Web基础框架-->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <!--SpringBoot测试框架-->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+    <!--转换JSON框架-->
+    <dependency>
+        <groupId>com.alibaba</groupId>
+        <artifactId>fastjson</artifactId>
+        <version>1.2.47</version>
+    </dependency>
+    <!--日志框架-->
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+    </dependency>
+    <!--swagger-->
+    <dependency>
+        <groupId>io.springfox</groupId>
+        <artifactId>springfox-swagger2</artifactId>
+        <version>2.9.2</version>
+    </dependency>
+    <dependency>
+        <groupId>io.springfox</groupId>
+        <artifactId>springfox-swagger-ui</artifactId>
+        <version>2.9.2</version>
+    </dependency>
+    <!--RabbitMQ 测试依赖-->
+    <dependency>
+        <groupId>org.springframework.amqp</groupId>
+        <artifactId>spring-rabbit-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
 ```
 

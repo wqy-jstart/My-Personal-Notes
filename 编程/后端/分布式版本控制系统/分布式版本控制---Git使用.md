@@ -193,22 +193,28 @@ git config --global user.email "自已的邮箱地址"
 
 ![image-20221205103041977](images/image-20221205103041977.png)
 
-##### 10.推送到远程仓库Remove: `git push `
+##### 10.关联到远程仓库Remote：
 
-##### 11.从远程仓库拉取文件: `git pull`
+```sh
+git remote add origin https://:..
+```
 
-##### 12.克隆远程仓库的文件: `git clone 远程仓库地址`
+##### 11.推送到远程仓库push: `git push `
 
-##### 13.查看配置：`git config -l`
+##### 12.从远程仓库拉取文件: `git pull`
 
-##### 14.设置提交缓存
+##### 13.克隆远程仓库的文件: `git clone 远程仓库地址`
+
+##### 14.查看配置：`git config -l`
+
+##### 15.设置提交缓存
 
 ```sh
 git config --global http.postBuffer 524288000
 git config --global https.postBuffer 524288000
 ```
 
-##### 15.设置提交超时条件
+##### 16.设置提交超时条件
 
 ```sh
 git config --global http.lowSpeedLimit 1000 #单位字节
