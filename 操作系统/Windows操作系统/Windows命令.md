@@ -1,5 +1,7 @@
 # Windows命令
 
+### 常用命令：
+
 ##### 1.查看电脑地址状态
 
 ```sh
@@ -18,242 +20,69 @@ netstat -ano
 systeminfo
 ```
 
-##### 3.查看本机应用服务状态
-
-```sh
-services.msc
-```
-
-##### 4.打开资源管理器
-
-```sh
-explorer
-```
-
-##### 5.注销命令
+##### 3.注销命令
 
 ```sh
 logoff
 ```
 
-##### 6.60秒倒计时关机命令
+##### 4.60秒倒计时关机命令
 
 ```sh
 shutdown
 ```
 
-##### 7.查看·本机用户和组
-
-```sh
-lusrmgr.msc
-```
-
-##### 8.打开记事本
-
-```sh
-notepad
-```
-
-##### 9.垃圾整理
-
-```sh
-cleanmgr
-```
-
-##### 10.开始信使服务
-
-```sh
-net start messenger # 开启
-net start messenger # 停止
-```
-
-##### 11.计算机管理
-
-```sh
-compmgmt.msc
-```
-
-##### 12.DVD播放器
-
-```sh
-dvdplay
-```
-
-##### 13.启动字符映射表
-
-```sh
-charmap
-```
-
-##### 14.磁盘管理实用程序
-
-```sh
-diskmgmt.msc
-```
-
-##### 15.启动计算器
-
-```sh
-calc
-```
-
-##### 16.磁盘碎片整理程序
-
-```sh
-dfrg.msc
-```
-
-##### 17.设备管理器
-
-```sh
-devmgmt.msc
-```
-
-##### 18.系统医生
-
-```sh
-drwtsn32
-```
-
-##### 19.15秒关机
+##### 5.15秒关机
 
 ```sh
 rononce -p
 ```
 
-##### 20.注册表编辑器
-
-```sh
-regedt32
-```
-
-##### 21.系统配置实用程序
-
-```sh
-Msconfig.exe
-```
-
-##### 22.显示内存使用情况
-
-```sh
-mem.exe
-```
-
-##### 23.程序管理器
+##### 6.程序管理器
 
 ```sh
 progman
 ```
 
-##### 24.系统信息
+##### 7.系统信息
 
 ```sh
 winmsd
 ```
 
-##### 25.计算机性能监测程序
-
-```sh
-perfmon.msc
-```
-
-##### 26.检查Windows版本
+##### 8.检查Windows版本
 
 ```sh
 winver
 ```
 
-##### 27.任务管理器
+##### 9.任务管理器
 
 ```sh
 taskmgr
 ```
 
-##### 28.打开windows管理体系结构
-
-```sh
-wmimgmt.msc
-```
-
-##### 29.windows更新程序
-
-```sh
-wupdmgr
-```
-
-##### 30.写字板
-
-```sh
-write
-```
-
-##### 31.扫描仪和照相机向导
-
-```sh
-wiaacmgr
-```
-
-##### 32.图画板
-
-```sh
-mspaint
-```
-
-##### 33.远程桌面连接
-
-```sh
-mstsc
-```
-
-##### 34.打开控制台
+##### 10.打开控制台
 
 ```sh
 mmc
 ```
 
-##### 35.同步命令
+### 文件资源命令：
+
+##### 1.打开资源管理器
 
 ```sh
-mobsync
+explorer
 ```
 
-##### 36.木马捆绑工具，系统自带
-
-```sh
-iexpress
-```
-
-##### 37.共享文件夹管理器
+##### 2.共享文件夹管理器
 
 ```sh
 fsmgmt.msc
 ```
 
-##### 38.辅助工具管理器
-
-```sh
-utilman
-```
-
-##### 39.打开系统组件服务
-
-```sh
-dcomcnfg
-```
-
-##### 40.打开屏幕键盘
-
-```sh
-osk
-```
-
-##### 41.清理命令行内容
-
-```sh
-cls
-```
-
-##### 42.切换目录
+##### 3.切换目录
 
 1. 切换盘`D:`：
 
@@ -290,7 +119,190 @@ cls
    D:\devtools\java_install>
    ```
 
-##### 43.连接远程服务器
+##### 4.打开文件命令
+
+```shell
+start D:\nginx\nginx-1.16.1\conf\nginx.conf
+```
+
+### 服务命令：
+
+##### 1.打开记事本
+
+```sh
+notepad
+```
+
+##### 2.查看本机应用服务状态
+
+```sh
+services.msc
+```
+
+##### 3.查看·本机用户和组
+
+```sh
+lusrmgr.msc
+```
+
+##### 4.垃圾整理
+
+```sh
+cleanmgr
+```
+
+##### 5.开始信使服务
+
+```sh
+net start messenger # 开启
+net start messenger # 停止
+```
+
+##### 6.计算机管理
+
+```sh
+compmgmt.msc
+```
+
+##### 7.DVD播放器
+
+```sh
+dvdplay
+```
+
+##### 8.启动字符映射表
+
+```sh
+charmap
+```
+
+##### 9.磁盘管理实用程序
+
+```sh
+diskmgmt.msc
+```
+
+##### 10.启动计算器
+
+```sh
+calc
+```
+
+##### 11.磁盘碎片整理程序
+
+```sh
+dfrg.msc
+```
+
+##### 12.设备管理器
+
+```sh
+devmgmt.msc
+```
+
+##### 13.系统医生
+
+```sh
+drwtsn32
+```
+
+##### 14.注册表编辑器
+
+```sh
+regedt32
+```
+
+##### 15.系统配置实用程序
+
+```sh
+Msconfig.exe
+```
+
+##### 16.显示内存使用情况
+
+```sh
+mem.exe
+```
+
+##### 17.计算机性能监测程序
+
+```sh
+perfmon.msc
+```
+
+##### 18.打开windows管理体系结构
+
+```sh
+wmimgmt.msc
+```
+
+##### 19.windows更新程序
+
+```sh
+wupdmgr
+```
+
+##### 20.写字板
+
+```sh
+write
+```
+
+##### 21.扫描仪和照相机向导
+
+```sh
+wiaacmgr
+```
+
+##### 22.图画板
+
+```sh
+mspaint
+```
+
+##### 23.远程桌面连接
+
+```sh
+mstsc
+```
+
+##### 24.同步命令
+
+```sh
+mobsync
+```
+
+##### 25.木马捆绑工具，系统自带
+
+```sh
+iexpress
+```
+
+##### 26.辅助工具管理器
+
+```sh
+utilman
+```
+
+##### 27.打开系统组件服务
+
+```sh
+dcomcnfg
+```
+
+##### 28.打开屏幕键盘
+
+```sh
+osk
+```
+
+##### 29.清理命令行内容
+
+```sh
+cls
+```
+
+##### 30.连接远程服务器
 
 1.`sftp`
 
@@ -327,5 +339,16 @@ version                            Show SFTP version # 显示SFTP版本
 !command                           Execute 'command' in local shell # 在本地shell中执行“command”
 !                                  Escape to local shell # 逃到本地外壳
 ?                                  Synonym for help # 帮助
+```
+
+##### 31.关闭指定名称的程序进程
+
+```sh
+taskkill /f /t /im nginx.exe
+
+# taskkill是用来终止进程的，
+# /f是强制终止 .
+# /t终止指定的进程和任何由此启动的子进程。
+# /im示指定的进程名称 .
 ```
 
