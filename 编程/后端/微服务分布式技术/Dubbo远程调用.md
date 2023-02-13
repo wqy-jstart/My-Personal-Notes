@@ -62,7 +62,7 @@ Dubbo是SpringCloudAlibaba提供的框架
 
 ## Dubbo的发展历程
 
-![image-20220505151527323](C:\Users\admin\IdeaProjects\csmall2207\note\day04\image-20220505151527323.png)
+![image-20220505151527323](images/image-20220505151527323.png)
 
 > Dubbo历程
 
