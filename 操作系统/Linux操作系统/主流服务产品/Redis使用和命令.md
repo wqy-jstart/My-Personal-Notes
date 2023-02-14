@@ -75,6 +75,17 @@ D:\Redis>redis-cli
 
 Redis 可以在其他操作系统中工作，但这种支持是尽力而为的。Windows 版本没有官方支持。
 
+#### 设置密码：
+
+```sh
+redis-cli # 1.连接redis服务
+127.0.0.1:6379> config set requirepass 123456 # 2.设置密码
+OK
+127.0.0.1:6379> config get requirepass # 3.查询密码
+1) "requirepass"
+2) "123456"
+```
+
 ## Linux下载
 
 >这里以 **CentOS 7.6** 系统为例
@@ -150,6 +161,29 @@ PONG
 exit
 ```
 
+### 设置密码：
+
+1.找到redis.conf文件，vim编辑：
+
+![image-20230214192907922](images/image-20230214192907922.png)
+
+2.进入redis客户端，输入命令：
+
+```sh
+config set requirepass *****
+```
+
+3.查询密码：
+
+```sh
+config get requirepass
+
+# 示例
+127.0.0.1:6379> config get requirepass
+1) "requirepass"
+2) "123456"
+```
+
 ### 性能测试：
 
 > `bin` 目录下的 **redis-benchmark** 可以进行性能测试
@@ -174,7 +208,8 @@ redis-benchmark -h localhost -p 6379 -c 100 -n 100000
 配置好环境变量后任意目录下输入 `redis-cli` 即可进入。
 
 ```sh
-[root@sail etc]# redis-cli127.0.0.1:6379> ping
+[root@sail etc]# redis-cli [-a 密码]
+127.0.0.1:6379> ping
 PONG
 127.0.0.1:6379> set hello Hello World
 (error) ERR syntax error
@@ -182,6 +217,10 @@ PONG
 OK
 127.0.0.1:6379> get hello
 "Hello World"
+
+# 如果设置了密码输入错误会报错！！！
+127.0.0.1:6379> ping
+(error) NOAUTH Authentication required.
 ```
 
 > 这样 Redis 在 Linux 上就安装完毕了。
