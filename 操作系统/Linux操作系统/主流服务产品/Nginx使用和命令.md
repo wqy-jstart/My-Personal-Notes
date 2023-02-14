@@ -1,4 +1,4 @@
-# Nginx
+# Nginx使用和命令
 
 ![image-20221227204232830](images/image-20221227204232830.png)
 

@@ -1,4 +1,4 @@
-#	Redis 基础面试
+#	Redis 面试题
 
 ##	说说你对Redis的了解?
 

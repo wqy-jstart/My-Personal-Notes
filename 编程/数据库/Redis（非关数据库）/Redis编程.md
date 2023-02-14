@@ -1,4 +1,4 @@
-# Redis
+# Redis编程
 
 ![image-20221230191557372](images/image-20221230191557372.png)
 
@@ -167,6 +167,8 @@ Geo（地理位置）、BitMap（位操作）、HyperLogLog（基数统计）
     <artifactId>spring-boot-starter-data-redis</artifactId>
 </dependency>
 ```
+
+> **注意**：该依赖整合了Jedis、Lettuce两种客户端
 
 在Spring系列框架中，Redis编程需要使用`RedisTemplate`工具类，此工具类应该事先创建、配置，并保存到Spring容器中，当需要使用时，自动装配此工具类的对象。
 

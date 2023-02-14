@@ -42,7 +42,7 @@
     }
     ```
 
-- foreach遍历
+- for遍历
 
   - entrySet
 
@@ -63,7 +63,7 @@
     }
     ```
 
-- Lambda遍历
+- Lambda+foreach遍历
 
   ```java
   hashMap.forEach((key,value)->{
