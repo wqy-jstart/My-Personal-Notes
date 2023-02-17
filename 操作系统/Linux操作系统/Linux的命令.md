@@ -234,7 +234,7 @@ echo > system.log
 >
 > 因为空字符串不等于null，空字符串只能说明它的内容为空，而null则表示该事物不存在！
 
-## Linux对文件和目录的常用命令:
+## 文件和目录的常用命令:
 
 #### 1.查看文件或目录大小`du`
 
@@ -342,17 +342,23 @@ rm -rf /          # 删除根目录(若非测试,则后果很严重!!!)
 - `$` 提示符号表示普通用户
   - 可以使用 sudo su 切换的root用户
 
-#### 10.Linux的目录结构
+#### 10.删除特定后缀的文件
+
+```sh
+find . -name "*.rar" -type f -print -exec rm -rf {} \; // 所有文件
+```
+
+#### 11.Linux的目录结构
 
 ![OIP](images/OIP.jpeg)
 
-#### 11.寻找某个文件的位置
+#### 12.寻找某个文件的位置
 
 ```sh
 find / -name '文件名'
 ```
 
-## Linux对用户的操作命令:
+## 用户的操作命令:
 
 #### 1.添加用户
 
@@ -423,7 +429,94 @@ Password:
 [root@iZ2zebjmyftm9yp868oy0aZ admin]#
 ```
 
-## Linux部署常用命名
+## 内存的命令
+
+#### 1.显示系统的内存使用情况
+
+```sh
+# 1.第一种
+free
+
+# 示例
+[root@am8nlontcnkhzmpb ~]# free
+              total        used        free      shared  buff/cache   available
+Mem:        1882384     1714344       67812       65296      100228       10376
+Swap:       4194300      713216     3481084
+Mem：内存的使用信息
+Swap：交换空间的使用信息
+total ——系统总的可用物理内存大小（内存总数）
+used ——已被使用的物理内存大小
+free ——空闲的物理内存数（未使用的）
+shared —— 被共享的物理内存大小
+buff /cache —— 被buffer和cache使用的物理内存大小（缓存内存数）
+【buffer：写入到磁盘/cache：从磁盘读取】
+available ——还可被应用程序使用的物理内存大小（程序认为的）
+
+# 2.第二种
+vmstat
+
+# 3.第三种
+cat /proc/meminfo
+```
+
+#### 2.动态显示系统的内存使用情况
+
+```sh
+# 1.第一种
+top
+# 2.第二种
+yum install -y htop
+htop # 提供更好的图形化界面
+```
+
+#### 3.系统性能监控
+
+```sh
+glances
+```
+
+## 硬盘命令
+
+#### 1.查看物理与逻辑分区
+
+```sh
+lsblk -f
+
+# 示例
+[root@am8nlontcnkhzmpb ~]# lsblk -f
+NAME   FSTYPE LABEL UUID                                 MOUNTPOINT
+vda                                                      
+├─vda1 swap         1cc6f2a2-6894-40d5-8d96-097e19cae191 [SWAP] # 系统使用
+└─vda2 ext4         f728574b-31f5-4c23-946b-80a00355485d /
+```
+
+#### 2.分区使用情况
+
+```sh
+df -Th
+
+# 示例
+[root@am8nlontcnkhzmpb ~]# df -Th
+Filesystem     Type      Size  Used Avail Use% Mounted on
+devtmpfs       devtmpfs  909M     0  909M   0% /dev
+tmpfs          tmpfs     920M     0  920M   0% /dev/shm
+tmpfs          tmpfs     920M   97M  823M  11% /run
+tmpfs          tmpfs     920M     0  920M   0% /sys/fs/cgroup
+/dev/vda2      ext4       36G  3.6G   30G  11% /
+tmpfs          tmpfs     184M     0  184M   0% /run/user/0
+```
+
+#### 3.查看某个目录的占用空间
+
+```sh
+du -sh /etc
+
+# 示例
+[root@am8nlontcnkhzmpb ~]# du -sh /etc
+36M     /etc
+```
+
+## 部署常用命名
 
 #### 1.`yum`软件包管理命令与`wget`协议下载命令
 

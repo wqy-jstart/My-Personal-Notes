@@ -84,6 +84,9 @@ OK
 127.0.0.1:6379> config get requirepass # 3.查询密码
 1) "requirepass"
 2) "123456"
+# 设为默认
+127.0.0.1:6379> config set requirepass 123456 # 2.设置密码
+OK
 ```
 
 ## Linux下载

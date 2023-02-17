@@ -555,7 +555,12 @@ public void page(){
 1、样式代码：
 
 ```css
-<el-pagination
+<style>
+.pagination{
+  text-align: center; // 居中
+}
+</style>
+<el-pagination class="pagination"
     background
     @size-change="handleSizeChange" # 更换页面大小时触发，回调当前页大小
     @current-change="handleCurrentChange" # 切换页面时触发，回调当前页号
