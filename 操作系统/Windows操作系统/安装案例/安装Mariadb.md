@@ -55,6 +55,8 @@ Packet for query is too large (1,068 > 1,024). You can change this value on the 
 
 ##### 1.查询默认查询数据包大小：
 
+单位：kiB
+
 ```sh
 show variables like '%max_allowed_packet%';
 ```
@@ -90,7 +92,26 @@ max_allowed_packet = 10M
 
 ##### 4.重新启动数据库服务：
 
+**Linux**：
+
 ```sh
 systemctl restart mariadb    # 重新启动服务
 systemctl stop mariadb       # 停止服务 
 ```
+
+**Windows**：
+
+1.命令行：
+
+```sh
+net start mariadb # 启动
+net stop mariadb # 停止
+```
+
+2.打开服务：
+
+```sh
+win + R # 打开DOS
+services.msc # 打开服务
+```
+
