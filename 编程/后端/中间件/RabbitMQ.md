@@ -32,6 +32,20 @@
 
 很多服务之间的调用是异步的，如A调用B，B花很长时间去执行，A不知B何时执行完，通常：A一段时间内调B去查询，或者提供一个`CallBack API`，当B执行完调用`CallBack API`通知A。
 
+**远程调用问题**：
+
+Dubbo调用普遍存在于我们的微服务项目中，这些Dubbo调用全部是同步的操作
+
+这里的"同步"指:消费者A调用生产者B之后,A的线程会进入阻塞状态,等待生产者B运行结束返回之后,A才能运行之后的代码
+
+![image-20220519152055211](images/image-20220519152055211.png)
+
+Dubbo消费者发送调用后进入阻塞状态,这个状态表示该线程仍占用内存资源,但是什么动作都不做
+
+如果生产者运行耗时较久,消费者就一直等待,如果消费者利用这个时间,那么可以处理更多请求,业务整体效率会提升
+
+实际情况下,Dubbo有些必要的返回值必须等待,但是不必要等待的服务返回值,我们可以不等待去做别的事情
+
 **使用MQ消息队列解决该问题**：
 当A调用B服务后，只需监听B处理完成的消息，当B完成后会发送消息给MQ，并转告A服务，这样就无需循环调B查询API，也不用提供`CallBack API`,A服务也能及时得到异步处理的结果！
 
@@ -106,13 +120,104 @@
 
 ## 五、安装：
 
+### Windows环境：
+
+#### 1.下载软件
+
+![image-20220906114435678](images/image-20220906114435678.png)
+
+RabbitMQ是Erlang语言开发的,所以要先安装Erlang语言的运行环境
+
+下载Erlang的官方路径
+
+https://erlang.org/download/otp_versions_tree.html
+
+![image-20220520103318825](images/image-20220520103318825.png)
+
+安装的话就是双击
+
+安装过程中都可以使用默认设置,需要注意的是
+
+**不要安装在中文路径和有空格的路径下!!!**
+
+下载RabbitMQ的官方网址
+
+https://www.rabbitmq.com/install-windows.html
+
+![image-20220520104034920](images/image-20220520104034920.png)
+
+安装也是双击即可
+
+**不要安装在中文路径和有空格的路径下!!!**
+
+#### 2.配置Erlang的环境变量
+
+要想运行RabbitMQ必须保证系统有Erlang的环境变量
+
+配置Erlang环境变量
+
+把安装Erlang的bin目录配置在环境变量Path的属性中
+
+![image-20220907151502819](images/image-20220907151502819.png)
+
+#### 3.启动RabbitMQ
+
+找到RabbitMQ的安装目录
+
+例如：
+
+```shell
+D:\tools\rabbit\rabbitmq_server-3.10.1\sbin
+```
+
+具体路径根据自己的情况寻找
+
+地址栏运行cmd
+
+输入启动指令如下
+
+```sh
+D:\tools\rabbit\rabbitmq_server-3.10.1\sbin>rabbitmq-plugins enable rabbitmq_management
+```
+
+结果如下：
+
+![image-20220810153001965](images/image-20220810153001965.png)
+
+运行完成后,验证启动状态
+
+#### 4.测试访问
+
+RabbitMQ自带一个管理的界面,所以我们可以访问这个界面来验证它的运行状态
+
+http://localhost:15672
+
+![image-20220810153420567](images/image-20220810153420567.png)
+
+登录界面用户名密码
+
+```sh
+账号：guest
+密码：guest
+```
+
+登录成功后看到RabbitMQ运行的状态
+
+如果启动失败,可以手动启动RabbitMQ
+
+参考路径如下
+
+https://baijiahao.baidu.com/s?id=1720472084636520996&wfr=spider&for=pc
+
+### Linux环境：
+
 官网：https://rabbitmq.com/download.html
 
 安装RabbitMQ的前提需要安装[Erlang](https://baike.baidu.com/item/Erlang/1152752?fr=aladdin)语言的环境（网盘中有）
 
 通常企业使用Linux系统运行RabbitMQ
 
-### 1.安装Erlang语言环境：
+#### 1.安装Erlang语言环境：
 
 ```sh
 [root@localhost dev]# ls
@@ -120,7 +225,7 @@ erlang-21.3-1.el7.x86_64.rpm  rabbitmq-server-3.8.8-1.el7.noarch.rpm
 [root@localhost dev]# rpm -ivh erlang-21.3-1.el7.x86_64.rpm
 ```
 
-### 2.安装RabbitMQ
+#### 2.安装RabbitMQ
 
 先安装一个依赖包：
 
@@ -136,7 +241,7 @@ erlang-21.3-1.el7.x86_64.rpm  rabbitmq-server-3.8.8-1.el7.noarch.rpm
 [root@localhost dev]# rpm -ivh rabbitmq-server-3.8.8-1.el7.noarch.rpm
 ```
 
-### 3.启动RabbitMQ
+#### 3.启动RabbitMQ
 
 ```sh
 chkconfig rabbitmq-server on # 开机自启动
@@ -147,7 +252,7 @@ chkconfig rabbitmq-server on # 开机自启动
 
 > active说明是活着的，running说明已经启动！
 
-### 4.开启Web管理插件
+#### 4.开启Web管理插件
 
 先停止服务
 
@@ -161,7 +266,7 @@ chkconfig rabbitmq-server on # 开机自启动
 rabbitmq-plugins enable rabbitmq_management
 ```
 
-### 5.测试访问
+#### 5.测试访问
 
 保证RabbitMQ服务启动的情况下打开Google浏览器。
 
@@ -181,7 +286,7 @@ systemctl stop firewalld
 
 初次登录会出错：`User can only log in via localhost`
 
-### 6.添加新用户
+#### 6.添加新用户
 
 ##### 创建账号和密码：
 
@@ -1575,3 +1680,132 @@ public class Consumer2 {
 </dependencies>
 ```
 
+##### 2.yml文件配置
+
+```yaml
+spring:
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    # 设置虚拟host 单机模式下固定编写"/"即可
+    virtual-host: /
+```
+
+##### 3.交换机\路由Key\队列的配置类
+
+RabbitMQ要求我们在java代码级别设置交换机\路由Key\队列的关系
+
+我们在quartz包下,创建config包
+
+包中创建配置信息类RabbitMQConfig
+
+```java
+// 当前配置类配置RabbitMQ中 交换机\路由Key和队列的关系
+// 因为它们的关系需要保存到Spring容器中才能生效,所以需要这个配置类
+@Configuration
+public class RabbitMQConfig {
+    // 将业务中需要的所有交换机\路由Key\队列的名称都声明为常量
+    public static final String STOCK_EX="stock_ex";
+    public static final String STOCK_ROUT="stock_rout";
+    public static final String STOCK_QUEUE="stock_queue";
+
+    // 绑定关系中,交换机和队列是实际对象,直接实例化保存到Spring容器
+    @Bean
+    public DirectExchange stockDirectExchange(){
+        return new DirectExchange(STOCK_EX);
+    }
+    @Bean
+    public Queue stockQueue(){
+        return new Queue(STOCK_QUEUE);
+    }
+    // 路由Key是关系对象,保存方式特殊
+    @Bean
+    public Binding stockBinding(){
+        return BindingBuilder.bind(stockQueue())
+                            .to(stockDirectExchange()).with(STOCK_ROUT);
+    }
+
+}
+```
+
+##### 4.RabbitMQ发送消息
+
+我们在QuartzJob类中输出时间的代码后继续编写代码
+
+实现RabbitMQ消息的发送
+
+```java
+@Slf4j
+public class QuartzJob implements Job {
+
+    // 装配能够向RabbitMQ发送消息的对象
+    // 这个对象也是添加好依赖和配置之后,在springBoot启动时自动向容器中保存的
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+    
+    static int i=1;
+    // 这个方法就是当前job要定时执行的任务代码
+    @Override
+    public void execute(JobExecutionContext jobExecutionContext)
+            throws JobExecutionException {
+        // 一个简单的任务演示,输出当前系统时间,使用sout或log皆可
+        log.info("-------------------" + LocalDateTime.now() + "--------------------");
+        // 实例化Stock对象用于发送
+        Stock stock=new Stock();
+        stock.setId(i++);
+        stock.setCommodityCode("PC100");
+        stock.setReduceCount(1+ RandomUtils.nextInt(20));
+        // 下面开始发送消息的RabbitMQ
+        rabbitTemplate.convertAndSend(
+                RabbitMQConfig.STOCK_EX,
+                RabbitMQConfig.STOCK_ROUT,
+                stock);
+        log.info("发送消息完成:{}",stock);
+    }
+}
+```
+
+我们可以通过修改QuartzConfig类中的Cron表达式修改调用的周期**
+
+```java
+CronScheduleBuilder cron=
+        CronScheduleBuilder.cronSchedule("0/10 * * * * ?");
+```
+
+按上面的cron修改之后,会每隔10秒运行一次发送消息的操作
+
+启动服务,观察是否每隔10秒发送一条消息
+
+启动Nacos\RabbitMQ\Seata
+
+启动stock-webapi
+
+根据Cron表达式,消息会在0/10/20/30/40/50秒数时运行
+
+##### 5.接收消息
+
+quartz包下再创建一个新的类用于接收信息
+
+RabbitMQConsumer代码如下
+
+```java
+// Spring连接RabbitMQ的依赖中提供的资源,需要接收消息的类保存到Spring容器中才能使用
+@Component
+// 和Kafka不同,RabbitMQ监听器注解要求写在类上
+@RabbitListener(queues = RabbitMQConfig.STOCK_QUEUE)
+@Slf4j
+public class RabbitMQConsumer {
+
+    // 类上添加了监听器注解,但是不能指定接收消息后要运行的方法
+    // 使用@RabbitHandler注解标记,我们接收到消息后要运行的方法
+    // 每个类只允许一个方法被这个注解标记
+    // 注解下面编写方法,参数比Kafka简单
+    @RabbitHandler
+    public void process(Stock stock){
+        // Stock就是发送到RabbitMQ的消息,直接使用即可
+        log.info("接收到消息:{}",stock);
+    }
+}
+```
