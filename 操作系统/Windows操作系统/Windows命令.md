@@ -352,3 +352,9 @@ taskkill /f /t /im nginx.exe
 # /im示指定的进程名称 .
 ```
 
+##### 32.连接Linux服务器
+
+```sh
+ssh root@125.74.199.190
+```
+

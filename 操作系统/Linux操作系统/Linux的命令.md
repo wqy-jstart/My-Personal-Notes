@@ -429,6 +429,54 @@ Password:
 [root@iZ2zebjmyftm9yp868oy0aZ admin]#
 ```
 
+#### 4.★修改服务器密码
+
+下载修改密码的软件：
+
+```sh
+yum install passwd
+```
+
+**1.以root权限修改root密码**：
+
+```sh
+[root@am8nlontcnkhzmpb ~]# passwd
+Changing password for user root.
+New password:
+```
+
+**2.以root权限修改其他用户密码**：
+
+```sh
+[root@am8nlontcnkhzmpb ~]# passwd Tom
+Changing password for user Tom.
+New password:
+```
+
+> 注意修改密码的操作要谨慎！尤其是root用户
+
+#### 5.root查看用户密码
+
+查前3密码：
+
+```sh
+head -3 /etc/passwd
+```
+
+查看所有用户密码：
+
+```sh
+cat /etc/shadow  # 只能看到密文
+```
+
+查看查询密码的权限：
+
+```sh
+ls -l /etc/passwd /etc/shadow
+```
+
+> 注意：即使是root用户也查看不到真是的明文密码，只能查看密文密码。
+
 ## 内存的命令
 
 #### 1.显示系统的内存使用情况
@@ -639,7 +687,7 @@ Gun开源社区仿写一个版本 vim， vim比vi使用更加便利。
    ```
 
    连接成功后使用put上传文件:
-   
+
    ```sh
    C:\Users\21681>sftp root@125.74.199.190
    root@125.74.199.190's password:

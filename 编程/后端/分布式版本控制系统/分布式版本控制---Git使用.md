@@ -221,6 +221,21 @@ git config --global http.lowSpeedLimit 1000 #单位字节
 git config --global http.lowSpeedTime 600 # 单位毫秒
 ```
 
+##### 17.设置本机信任的储存库
+
+```sh
+git config --global --add safe.directory D:/www/your-project
+git config --global --add safe.directory "*" # 慎重(本机所有git仓库都信任)
+```
+
+若出现：`warning: safe.directory has multiple values`配置文件有多个值时
+
+**全部替换**：
+
+```sh
+git config --global --replace-all safe.directory "*"
+```
+
 ## <u>六、分支</u>
 
 #### 分支概念:
