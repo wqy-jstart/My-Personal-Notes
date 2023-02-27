@@ -45,6 +45,20 @@
 - title: 当鼠标在图片上悬停时显示的文本
 - width/height: 设置宽高,     两种赋值方式: 1.像素  2. 百分比    只设置宽度时高度会自动等比例缩放
 
+### 视频标签video
+
+```html
+<!--
+1.controls控制播放键 
+2.autoplay控制自动播放
+3.loop循环播放
+4.muted实现静音播放
+-->
+<video width="100%" height="800px" loop="loop" muted="muted" controls="controls" autoplay="autoplay">
+    <source src="../imgs/test.mp4" type="video/ogg">
+</video>
+```
+
 ### 超链接a
 
 - href: 类似于图片标签的src属性,设置资源路径
