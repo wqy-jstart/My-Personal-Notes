@@ -61,6 +61,7 @@ IOC和AOP
 
 - @Autowired：Spring提供
 - @Resource：JavaX提供
+- @Import：通过指定一个反射对象来注入
 
 #### 3.配置类注解：
 
@@ -121,6 +122,135 @@ request、session、global session在Web环境有效！
 2. 提供统一的依赖管理，使用很少的代码整合各种框架
 3. 内嵌servlet服务器，提供安全、健康检查等功能
 4. 提供打包工具，便于部署或使用shell进行启动
+
+### 11.SpringBoot中几种定义Bean对象的方式
+
+1. 通过`@Bean`标记方法返回需要创建的Bean对象
+
+   ```java
+   @Bean
+   public TestService testService(){
+       return TestService();
+   }
+   ```
+
+2. 通过`@Component`设为组件
+
+   ```java
+   @Component
+   public class TestService{}
+   ```
+
+3. `@Controller`、`@RestController(MVC)`、`@Service`、`@Repository`
+
+   ```java
+   @RestController
+   // Controller(特殊，在MVC中定义Bean的同时可配合@ResponseBody进行响应)
+   public class TestController{
+       @GetMapping("/test")
+       public String test(){
+           return "test";
+       }
+   }
+   ```
+
+4. `@ControllerAdvice(MVC)`、`@RestControllerAdvice(MVC)`
+
+   ```java
+   // Controller的一层切面
+   @RestControllerAdvice
+   public class TestHandler implements ResponseBodyAdvice<Object> {
+       @Override
+       public boolean supports(MethodParameter returnType, Class converterType) {
+           return true;
+       }
+   
+       @Override
+       public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
+           System.out.println("在响应到Response之前执行该代码");
+           return body;
+       }
+   }
+   ```
+
+   除此之外还可以实现全局异常处理！
+
+5. `@Configuration`配置类
+
+   ```java
+   // 该方式定义Bean也比较特殊，可以在该类中进行主键扫描@ComponentScan
+   // 或者定义其他的Bean，通常引入别人的Bean来用
+   @Configuration
+   public class TestConfig{}
+   ```
+
+6. `@Import`引入Bean
+
+   ```java
+   // 可以任意导入还没被Spring管理的Bean对象
+   @SpringBootApplication
+   @Import(AdminServiceImpl.class)
+   public class InterfaceTestApplication {
+   
+       public static void main(String[] args) {
+           SpringApplication.run(InterfaceTestApplication.class, args);
+       }
+   }
+   ```
+
+7. `BeanDefinition`底层
+
+   ```java
+   // 注册一个Bean对象
+   public class TestImportBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar {
+   
+       @Override
+       public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+           AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder.genericBeanDefinition().getBeanDefinition();
+           beanDefinition.setBeanClass(AdminServiceImpl.class);
+           registry.registerBeanDefinition("testService",beanDefinition);
+       }
+   }
+   ```
+
+   导入：
+
+   ```java
+   // 启动类进行导入
+   @SpringBootApplication
+   @Import(TestImportBeanDefinitionRegistrar.class)
+   public class InterfaceTestApplication {
+   
+       public static void main(String[] args) {
+           SpringApplication.run(InterfaceTestApplication.class, args);
+       }
+   }
+   ```
+
+8. `<bean/>`标签形式定义（较为古老）
+
+   ```java
+   // 书写spring.xml文件
+   <?xml version="1.0" encoding="UTF-8"?>
+   <beans xmlns="http://www.springframework.org/schema/beans"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       <bean id="testService" class="cn.jstart.interface_test.service.TestService"/>
+   </beans>
+   ```
+
+   导入：
+
+   ```java
+   @SpringBootApplication
+   @ImportResource("classpath:spring.xml")
+   public class InterfaceTestApplication {
+   
+       public static void main(String[] args) {
+           SpringApplication.run(InterfaceTestApplication.class, args);
+       }
+   }
+   ```
 
 ## SpringMVC框架
 
