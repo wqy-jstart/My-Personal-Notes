@@ -489,7 +489,7 @@ public class SynchronizedStaticMethodExample {
 
 ### ReentrantLock
 
-ReentrantLock 是 java.util.concurrent(J.U.C)包中的锁。
+**ReentrantLock 是 java.util.concurrent(J.U.C)包中的锁，锁的效果相当于方法锁！**
 
 它不同于synchronized关键字可以有多种不同使用方法，Lock对象锁相对比较单调。
 
