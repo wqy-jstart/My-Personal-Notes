@@ -1,10 +1,10 @@
 # 安装JAVA
 
-##### 1.下载JDK：
+## 1.下载JDK：
 
 华为JDK地址：https://mirrors.huaweicloud.com/java/jdk/
 
-##### 2.配置环境变量：
+## 2.配置环境变量：
 
 1. 打开资源管理器->我的电脑右键属性->高级系统设置->环境变量
 
@@ -27,7 +27,9 @@
    3.添加变量值：JDK含bin的目录路径
    ```
 
-##### 3.打开windows的Dos窗口
+## 3.测试
+
+打开windows的Dos窗口
 
 测试：
 
@@ -37,3 +39,24 @@ java -version
 ```
 
 出现版本号即成功！
+
+## 常用命令：
+
+1.启动SpringBoot项目的jar文件：
+
+```sh
+java -jar springboot.jar
+```
+
+2.编译字节码文件
+
+```sh
+javac XXX.java
+```
+
+3.反编译，查看.class文件信息
+
+```sh
+javap -verbose XXX.class
+```
+

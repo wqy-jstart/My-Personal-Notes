@@ -387,6 +387,8 @@ public static void main(String[] args) {
 
 #### 2.同步一个方法
 
+<u>synchronized修饰普通方法，锁对象默认为this！</u>
+
 ```java
 public class SynchronizedMethodExample {
 
@@ -403,21 +405,63 @@ public class SynchronizedMethodExample {
         ExecutorService executorService = Executors.newCachedThreadPool();
         executorService.execute(e1::func1);
         executorService.execute(e1::func1);
-        // 结果：0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9
+        // 结果：同步
         // 2.同一对象不同引用执行
 //        SynchronizedMethodExample e2 = new SynchronizedMethodExample();
 //        SynchronizedMethodExample e3 = new SynchronizedMethodExample();
 //        ExecutorService executorService1 = Executors.newCachedThreadPool();
 //        executorService1.execute(e2::func1);
 //        executorService1.execute(e3::func1);
-        // 结果：0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9
+        // 结果：并发
     }
 }
 ```
 
-它和同步代码块一样，作用于同一个对象，但是只要执行的是同一个方法，只能同步执行！
+它和同步代码块一样，作用于同一个对象！
 
-#### 3.同步一个类
+#### 3.同步一个静态方法
+
+<u>synchronized用在静态方法上，默认的锁就是当前所在的Class类，所以无论是哪个线程访问它，需要的锁都只有一把！</u>
+
+```java
+public class SynchronizedStaticMethodExample {
+
+    /*
+      静态方法本身就是整个类独享，执行静态方法是用类名打点调用，不管执行多少次，类都是同一个，
+      所以多个线程看到的是同一个对象，也就同步执行，
+      就算添加了synchronized锁，也是一样(多余操作).
+     */
+    public synchronized static void func1() {
+        for (int i = 0; i < 10; i++) {
+            System.out.print(i + " ");
+        }
+    }
+
+    public static void main(String[] args) {
+        // 只能对象引用执行
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        executorService.execute(SynchronizedStaticMethodExample::func1);
+        executorService.execute(SynchronizedStaticMethodExample::func1);
+        // 结果：同步
+    //        SynchronizedStaticMethodExample ssme = new SynchronizedStaticMethodExample();
+//        SynchronizedStaticMethodExample ssme1 = new SynchronizedStaticMethodExample();
+//        ExecutorService executorService1 = Executors.newCachedThreadPool();
+//        executorService1.execute(()->{
+//            ssme.func1();
+//        });
+//        executorService1.execute(()->{
+//            ssme1.func1();
+//        });
+        // 结果：同步
+    }
+}
+```
+
+作用于整个类。
+
+#### 4.同步一个Class类
+
+<u>所有线程需要的锁都是同一把!</u>
 
 ```java
 public void func() {
@@ -458,34 +502,6 @@ public class SynchronizedClassExample {
     }
 }
 ```
-
-#### 4.同步一个静态方法
-
-```java
-public class SynchronizedStaticMethodExample {
-
-    /*
-      静态方法本身就是整个类独享，执行静态方法是用类名打点调用，不管执行多少次，类都是同一个，
-      所以多个线程看到的是同一个对象，也就同步执行，
-      就算添加了synchronized锁，也是一样(多余操作).
-     */
-    public synchronized static void func1() {
-        for (int i = 0; i < 10; i++) {
-            System.out.print(i + " ");
-        }
-    }
-
-    public static void main(String[] args) {
-        // 只能对象引用执行
-        ExecutorService executorService = Executors.newCachedThreadPool();
-        executorService.execute(SynchronizedStaticMethodExample::func1);
-        executorService.execute(SynchronizedStaticMethodExample::func1);
-        // 结果：0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9
-    }
-}
-```
-
-作用于整个类。
 
 ### ReentrantLock
 
